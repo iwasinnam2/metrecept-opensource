@@ -163,7 +163,10 @@ async def ohm_fetch_web(
 
 
 async def _get(path: str, ctx: Optional[Context] = None) -> str:
-    base, _, _ = _cfg(ctx)
+    try:
+        base, _, _ = _cfg(ctx)
+    except RuntimeError as exc:
+        return str(exc)
     async with httpx.AsyncClient(timeout=30.0) as client:
         res = await client.get(f"{base}{path}", headers=_headers(ctx=ctx))
         return res.text
