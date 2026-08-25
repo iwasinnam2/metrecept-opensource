@@ -1,6 +1,6 @@
 # Metrecept — open client tools + architecture exhibition
 
-**Metrecept is a metered pipe between your app (or Cursor) and OpenAI/Anthropic/etc.** It replays byte-identical requests for free instead of re-paying the model, fetches public web context under compliance controls, and gives you one auditable, cryptographically-receipted bill instead of several opaque provider invoices. GitHub slug `withohm-open` is the public MIT mirror until a rename runbook.
+**Metrecept is a metered pipe between your app (or Cursor) and OpenAI/Anthropic/etc.** It replays byte-identical requests for free instead of re-paying the model, fetches public web context under compliance controls, and gives you one auditable, cryptographically-receipted bill instead of several opaque provider invoices. **GitHub slug `metrecept-opensource` is the public MIT mirror.**
 
 For **indie builders / Cursor users**, that's a waste check: stop re-paying for prompts you already sent. For **enterprises**, the same pipe is a **chaos governor**: SSO tenancy, compliant ingest, spend caps, and a clean ledger over shadow AI spend across a multi-vendor stack.
 
@@ -20,7 +20,7 @@ This is the **public, MIT-licensed** half of withOhm — the client-side surface
 | [`demo/`](demo/) | Runnable scripts that prove the claims against the **live** hosted API — no withOhm code required to verify a receipt |
 | [`sdks/python/`](sdks/python/) | Python OpenAI `base_url` helper (`at-utility-sdk` on PyPI) |
 | [`sdks/typescript/`](sdks/typescript/) | TypeScript/JS helper (`@at-utility/sdk` on npm) |
-| [`packages/ohm-mcp/`](packages/ohm-mcp/) | MCP server for Cursor/Claude agents (`withohm-mcp` on PyPI) |
+| [`packages/metrecept-mcp/`](packages/metrecept-mcp/) | MCP server for Cursor/Claude agents (`metrecept-mcp` on PyPI) |
 | [`templates/`](templates/) | Ready-to-clone agent integration templates |
 
 ## What's *not* in this repo
