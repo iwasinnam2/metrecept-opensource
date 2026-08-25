@@ -1,4 +1,4 @@
-"""Ohm MCP server — Cursor attach for cache + compliant web fetch.
+"""Metrecept MCP server — Cursor attach for cache + compliant web fetch.
 
 Transports:
   * stdio (default) — local Cursor attach; auth via OHM_API_KEY env.
@@ -28,7 +28,7 @@ except ImportError as exc:  # pragma: no cover
 
 mcp = MCPServer("ohm")
 
-DEFAULT_BASE = "https://api.withohm.dev/v1"
+DEFAULT_BASE = "https://api.metrecept.co.uk/v1"
 UPSTREAM_HEADER = "X-Ohm-Upstream-Key"
 
 
@@ -56,16 +56,18 @@ def _cfg(ctx: Optional[Context] = None) -> tuple[str, str, str]:
         key = (os.environ.get("OHM_API_KEY") or "").strip()
     if not key:
         raise RuntimeError(
-            "Ohm API key required: send 'Authorization: Bearer sk-at-*' on the "
+            "Metrecept API key required: send 'Authorization: Bearer sk-at-*' on the "
             "MCP HTTP request, or set OHM_API_KEY env for stdio. Create a seat "
-            "at https://www.withohm.dev/billing/intermediate "
+            "at https://metrecept.co.uk/billing/intermediate "
             "(do not use local bootstrap sk-at-dev in production)."
         )
     # Never point the local bootstrap key at the public API (verification / misuse).
-    if key == "sk-at-dev" and "api.withohm.dev" in base:
+    if key == "sk-at-dev" and (
+        "api.withohm.dev" in base or "api.metrecept.co.uk" in base
+    ):
         raise RuntimeError(
             "sk-at-dev is a local bootstrap key only. Issue a real seat key at "
-            "https://www.withohm.dev/billing/intermediate for api.withohm.dev."
+            "https://metrecept.co.uk/billing/intermediate for the public API."
         )
     upstream = _header_lookup(ctx, UPSTREAM_HEADER) or os.environ.get(
         "OHM_UPSTREAM_KEY", ""
@@ -216,7 +218,7 @@ async def ohm_receipt(display_name: str = "", ctx: Optional[Context] = None) -> 
     """
     Mint a public, shareable savings receipt (POST /v1/savings/receipt).
 
-    Returns a public page URL (withohm.dev/r/<token>) plus a shields.io
+    Returns a public page URL (metrecept.co.uk/r/<token>) plus a shields.io
     README badge snippet showing estimated upstream spend avoided. The
     receipt is an immutable snapshot, live for 90 days, and exposes only
     the display name — never the tenant id or API key.
@@ -411,6 +413,33 @@ async def ohm_chat(
         )
 
 
+# techmig-headers-tools (Black Box pivot, 2026-08-19): metrecept_* aliases
+# for every ohm_* tool above, registered against the identical handler —
+# same implementation, same docstring, same JSON schema. Additive only:
+# every existing ohm_* tool name keeps working completely unmodified, and
+# a client may call either name interchangeably. See docs/BRAND.md's
+# "Technical migration status" for why this is a dual-accept period rather
+# than a rename.
+_METRECEPT_TOOL_ALIASES: dict[str, Any] = {
+    "metrecept_fetch_web": ohm_fetch_web,
+    "metrecept_usage": ohm_usage,
+    "metrecept_models": ohm_models,
+    "metrecept_cache_trees": ohm_cache_trees,
+    "metrecept_cache_inventory": ohm_cache_inventory,
+    "metrecept_savings": ohm_savings,
+    "metrecept_receipt": ohm_receipt,
+    "metrecept_register_api_service": ohm_register_api_service,
+    "metrecept_api_services": ohm_api_services,
+    "metrecept_api_call": ohm_api_call,
+    "metrecept_session": ohm_session,
+    "metrecept_providers": ohm_providers,
+    "metrecept_policy": ohm_policy,
+    "metrecept_chat": ohm_chat,
+}
+for _alias_name, _handler_fn in _METRECEPT_TOOL_ALIASES.items():
+    mcp.tool(name=_alias_name)(_handler_fn)
+
+
 def _env_flag(name: str, default: bool) -> bool:
     raw = os.environ.get(name)
     if raw is None:
@@ -418,7 +447,11 @@ def _env_flag(name: str, default: bool) -> bool:
     return raw.strip().lower() in ("1", "true", "yes", "on")
 
 
-DEFAULT_ALLOWED_HOSTS = "mcp.withohm.dev,api.withohm.dev,localhost,127.0.0.1"
+DEFAULT_ALLOWED_HOSTS = (
+    "mcp.withohm.dev,mcp.metrecept.co.uk,"
+    "api.withohm.dev,api.metrecept.co.uk,"
+    "gateway,localhost,127.0.0.1"
+)
 
 
 def _transport_security():
@@ -432,6 +465,10 @@ def _transport_security():
         ).split(",")
         if h.strip()
     ]
+    region = (os.environ.get("AT_REGION") or "local").strip().lower()
+    env = (os.environ.get("AT_ENV") or "").strip().lower()
+    if env != "production" and region in {"", "local", "dev", "test"}:
+        hosts.extend(["test", "testserver"])
     origins = [
         o.strip()
         for o in (os.environ.get("OHM_MCP_ALLOWED_ORIGINS") or "").split(",")
@@ -445,13 +482,15 @@ def _transport_security():
     )
 
 
-def http_app(*, json_response: bool = True):
+def http_app(*, json_response: bool = True, streamable_http_path: str = "/mcp"):
     """Stateless streamable-HTTP ASGI app (MCP 2026-07-28 stateless core).
 
     No session identifiers, no server-held stream state: cacheable, routable,
-    horizontally scalable behind any load balancer. Mount at `/mcp`.
+    horizontally scalable behind any load balancer. Standalone serves
+    `POST /mcp`; pass `streamable_http_path="/"` when mounting under `/mcp`.
     """
     return mcp.streamable_http_app(
+        streamable_http_path=streamable_http_path,
         stateless_http=True,
         json_response=json_response,
         transport_security=_transport_security(),

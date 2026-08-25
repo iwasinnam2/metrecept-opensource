@@ -1,6 +1,6 @@
 # @at-utility/sdk (TypeScript)
 
-Thin helper so the official OpenAI SDK becomes a one-line `baseURL` swap for **Ohm**.
+Thin helper so the official OpenAI SDK becomes a one-line `baseURL` swap for **Metrecept**.
 
 Package name remains `@at-utility/sdk` until first npm publish; then rename to `@ohm/sdk`.
 

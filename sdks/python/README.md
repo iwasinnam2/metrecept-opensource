@@ -1,6 +1,6 @@
 # at-utility-sdk (Python)
 
-Thin helper so the official OpenAI SDK becomes a one-line `base_url` swap for **Ohm**.
+Thin helper so the official OpenAI SDK becomes a one-line `base_url` swap for **Metrecept**.
 
 Package name remains `at-utility-sdk` until first PyPI publish; then rename to `ohm-sdk`.
 

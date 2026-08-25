@@ -25,13 +25,13 @@ Payload fields:
 
 ```bash
 # 1. Capture a receipt (send the same request twice; the second is the HIT)
-curl -si https://api.withohm.dev/v1/chat/completions \
+curl -si https://api.metrecept.co.uk/v1/chat/completions \
   -H "Authorization: Bearer $OHM_API_KEY" -H "Content-Type: application/json" \
   -d '{"model":"mock","messages":[{"role":"user","content":"receipt demo"}]}' \
   | grep -i x-ohm-receipt
 
 # 2. Verify it against the public key directory — no withOhm code required
-python demo/verify_receipt.py "<X-Ohm-Receipt value>" --base https://api.withohm.dev
+python demo/verify_receipt.py "<X-Ohm-Receipt value>" --base https://api.metrecept.co.uk
 ```
 
 The verifier ([`demo/verify_receipt.py`](../demo/verify_receipt.py)) fetches `/.well-known/http-message-signatures-directory`, resolves the signing key by the JWS `kid` (RFC 7638 JWK thumbprint), and checks the Ed25519 signature itself using only the `cryptography` package — it imports nothing from withOhm. A forged or altered receipt fails to verify; so does a receipt signed by a key that isn't in the published directory.

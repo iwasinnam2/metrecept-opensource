@@ -1,10 +1,10 @@
 # Demo — verify the claims yourself
 
-Everything here runs against the **live, hosted** `https://api.withohm.dev` — no withOhm source code required, and none of it depends on trusting the docs in this repo.
+Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no withOhm source code required, and none of it depends on trusting the docs in this repo.
 
 ## Prerequisite
 
-One free key, no card: [withohm.dev/billing/intermediate](https://www.withohm.dev/billing/intermediate) → Checkout ($0 membership) → an `sk-at-…` key. Then:
+One free key, no card: [metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate) → Checkout ($0 membership) → an `sk-at-…` key. Then:
 
 ```bash
 export OHM_API_KEY="sk-at-..."
@@ -27,7 +27,7 @@ x-at-cache: HIT
 x-at-billed-usd: 0.000100
 
 == Verifying the signed receipt (zero withOhm code) ==
-OK: signature verifies against https://api.withohm.dev/.well-known/http-message-signatures-directory
+OK: signature verifies against https://api.metrecept.co.uk/.well-known/http-message-signatures-directory
 {
   "admit": "allow",
   "kind": "cache_hit",
@@ -62,9 +62,9 @@ Proves named cache trees ([docs/CACHE_TREES.md](../docs/CACHE_TREES.md)) are gen
 Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from withOhm.
 
 ```bash
-python demo/verify_receipt.py "<receipt-jws>" --base https://api.withohm.dev
+python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk
 ```
 
 ## Why no bundled demo key
 
-A shared, rate-limited proof key exists for the browser widget at [withohm.dev/demo](https://www.withohm.dev/demo) if you want a zero-setup, no-signup look first. These scripts use your own key on purpose — it's a more honest demo of the real BYOK/metering flow than a shared token would be, and it means the receipt you verify is genuinely yours.
+A shared, rate-limited proof key exists for the browser widget at [metrecept.co.uk/demo](https://metrecept.co.uk/demo) if you want a zero-setup, no-signup look first. These scripts use your own key on purpose — it's a more honest demo of the real BYOK/metering flow than a shared token would be, and it means the receipt you verify is genuinely yours.

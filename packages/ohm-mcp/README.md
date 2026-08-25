@@ -1,9 +1,11 @@
 # withohm-mcp
 
-Slim MCP server for [withOhm](https://www.withohm.dev): prompt cache
+Slim MCP server for [Metrecept](https://metrecept.co.uk): prompt cache
 replay, multi-provider model routing (BYOK), and compliant public-web fetch
 as Cursor tools — without installing the full gateway stack. Runs over
 stdio (default) or as a stateless remote streamable-HTTP server.
+
+Package name `withohm-mcp` is a legacy id until rename. Product is Metrecept.
 
 ## Install
 
@@ -11,28 +13,29 @@ stdio (default) or as a stateless remote streamable-HTTP server.
 pip install withohm-mcp
 ```
 
-## Cursor attach
+## Cursor attach (stdio)
 
 ```json
 {
   "mcpServers": {
-    "ohm": {
+    "metrecept": {
       "command": "ohm-mcp",
       "env": {
         "OHM_API_KEY": "sk-at-YOUR_ISSUED_KEY",
-        "OHM_UPSTREAM_KEY": "sk-proj-optional-byok-key"
+        "OHM_UPSTREAM_KEY": "sk-proj-optional-byok-key",
+        "OHM_BASE_URL": "https://api.metrecept.co.uk/v1"
       }
     }
   }
 }
 ```
 
-Get a key from the $0 Intermediate seat at
-[withohm.dev/billing/intermediate](https://www.withohm.dev/billing/intermediate).
+Hosted streamable HTTP (no local install): `https://api.metrecept.co.uk/mcp`
+with `Authorization: Bearer sk-at-…`. Stdio remains the
+[metrecept.co.uk/i](https://metrecept.co.uk/i) one-click default.
 
-Pipe rent is metered — cache hit `$0.002`/1k tokens, cache miss `$0.001`/1k
-tokens, web fetch `$0.003`/URL — or a fixed commit tier from $29/mo. Full
-rate card: [withohm.dev/pricing](https://www.withohm.dev/pricing).
+Get a key from the $0 Intermediate seat at
+[metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate).
 
 ## Tools
 
@@ -47,28 +50,31 @@ rate card: [withohm.dev/pricing](https://www.withohm.dev/pricing).
 - `ohm_providers` — upstream provider and failover status.
 - `ohm_policy` — compliance policy: allowed web-fetch purposes and limits.
 
+`metrecept_*` names alias the same handlers.
+
 ## Remote (stateless streamable HTTP)
 
 ```bash
 OHM_MCP_TRANSPORT=http ohm-mcp   # or: ohm-mcp-http — serves POST /mcp on :8091
 ```
 
+Production hosted endpoint: `https://api.metrecept.co.uk/mcp`.
+
 Auth is per-request: clients send `Authorization: Bearer sk-at-*` (and
 optional `X-Ohm-Upstream-Key`) on the MCP HTTP request; `OHM_API_KEY` env is
-the stdio/local fallback. Knobs: `OHM_MCP_HOST`, `OHM_MCP_PORT`,
-`OHM_MCP_ALLOWED_HOSTS` / `OHM_MCP_ALLOWED_ORIGINS`, `OHM_MCP_JSON_RESPONSE`.
+the stdio/local fallback.
 
 ## Env
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `OHM_API_KEY` | stdio: yes | Your withOhm tenant key (`sk-at-…`); HTTP mode can use per-request `Authorization` instead |
-| `OHM_BASE_URL` | no | Defaults to `https://api.withohm.dev/v1` |
+| `OHM_API_KEY` | stdio: yes | Your Metrecept tenant key (`sk-at-…`); HTTP mode can use per-request `Authorization` instead |
+| `OHM_BASE_URL` | no | Defaults to `https://api.metrecept.co.uk/v1` |
 | `OHM_UPSTREAM_KEY` | no | BYOK provider key for cache-miss model calls |
 
 MIT licensed. The hosted service is commercial — see
-[Pricing](https://www.withohm.dev/pricing) and
-[Terms](https://www.withohm.dev/docs/terms).
+[Pricing](https://metrecept.co.uk/pricing) and
+[Terms](https://metrecept.co.uk/docs/terms).
 
 Note for maintainers: `src/ohm_mcp/__init__.py` in the monorepo root is the
 source of truth; run `scripts/sync_ohm_mcp.ps1` before building this package.

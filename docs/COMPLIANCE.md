@@ -43,7 +43,7 @@ Blocked outright, regardless of purpose: social-profile bulk scraping / lead lis
 `cache_control: "no_store"` skips the Redis write entirely, for confidential prompts. Inspect the live, machine-readable policy any client can check before sending a request:
 
 ```bash
-curl -s https://api.withohm.dev/v1/compliance/policy
+curl -s https://api.metrecept.co.uk/v1/compliance/policy
 ```
 
 ## What's enforced before a model ever sees fetched text
@@ -59,7 +59,7 @@ curl -s https://api.withohm.dev/v1/compliance/policy
 Fetches identify themselves with a dedicated user agent and, when configured, RFC 9421 HTTP Message Signatures (`Signature`, `Signature-Input`, `Signature-Agent`) so origins can verify the crawler instead of treating it as anonymous. The public signing-key directory is the same one used for [receipts](RECEIPTS.md):
 
 ```bash
-curl -s https://api.withohm.dev/.well-known/http-message-signatures-directory
+curl -s https://api.metrecept.co.uk/.well-known/http-message-signatures-directory
 ```
 
 Two origin responses are honored, not worked around:

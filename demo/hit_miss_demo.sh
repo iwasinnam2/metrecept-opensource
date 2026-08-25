@@ -5,13 +5,13 @@
 # Usage:
 #   OHM_API_KEY=sk-at-... ./demo/hit_miss_demo.sh
 #
-# Get a free key (no card) at https://www.withohm.dev/billing/intermediate
+# Get a free key (no card) at https://metrecept.co.uk/billing/intermediate
 set -euo pipefail
 
-BASE_URL="${OHM_BASE_URL:-https://api.withohm.dev}"
+BASE_URL="${OHM_BASE_URL:-https://api.metrecept.co.uk}"
 
 if [ -z "${OHM_API_KEY:-}" ]; then
-  echo "Set OHM_API_KEY first — get a free \$0 key at https://www.withohm.dev/billing/intermediate" >&2
+  echo "Set OHM_API_KEY first — get a free \$0 key at https://metrecept.co.uk/billing/intermediate" >&2
   exit 1
 fi
 

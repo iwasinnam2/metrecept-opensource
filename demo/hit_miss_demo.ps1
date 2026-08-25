@@ -7,16 +7,16 @@
   $env:OHM_API_KEY = "sk-at-..."
   powershell -NoProfile -ExecutionPolicy Bypass -File demo\hit_miss_demo.ps1
 
-  Get a free key (no card) at https://www.withohm.dev/billing/intermediate
+  Get a free key (no card) at https://metrecept.co.uk/billing/intermediate
 #>
 param(
-    [string]$BaseUrl = $(if ($env:OHM_BASE_URL) { $env:OHM_BASE_URL } else { "https://api.withohm.dev" })
+    [string]$BaseUrl = $(if ($env:OHM_BASE_URL) { $env:OHM_BASE_URL } else { "https://api.metrecept.co.uk" })
 )
 
 $ErrorActionPreference = "Stop"
 
 if (-not $env:OHM_API_KEY) {
-    Write-Error "Set `$env:OHM_API_KEY first -- get a free `$0 key at https://www.withohm.dev/billing/intermediate"
+    Write-Error "Set `$env:OHM_API_KEY first -- get a free `$0 key at https://metrecept.co.uk/billing/intermediate"
     exit 1
 }
 

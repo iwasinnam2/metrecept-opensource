@@ -1,12 +1,12 @@
-# withOhm — open client tools + architecture exhibition
+# Metrecept — open client tools + architecture exhibition
 
-**withOhm is a metered pipe between your app (or Cursor) and OpenAI/Anthropic/etc.** It replays byte-identical requests for free instead of re-paying the model, fetches public web context under compliance controls, and gives you one auditable, cryptographically-receipted bill instead of several opaque provider invoices.
+**Metrecept is a metered pipe between your app (or Cursor) and OpenAI/Anthropic/etc.** It replays byte-identical requests for free instead of re-paying the model, fetches public web context under compliance controls, and gives you one auditable, cryptographically-receipted bill instead of several opaque provider invoices. GitHub slug `withohm-open` is the public MIT mirror until a rename runbook.
 
 For **indie builders / Cursor users**, that's a waste check: stop re-paying for prompts you already sent. For **enterprises**, the same pipe is a **chaos governor**: SSO tenancy, compliant ingest, spend caps, and a clean ledger over shadow AI spend across a multi-vendor stack.
 
 > Exact-replay hits that cost zero upstream tokens. Cross-provider consistency. Locality — Redis edge reads. Replay and audit value.
 
-**Site:** https://www.withohm.dev · **API:** https://api.withohm.dev/v1 · **Docs:** https://www.withohm.dev/docs
+**Site:** https://metrecept.co.uk · **API:** https://api.metrecept.co.uk/v1 · **Docs:** https://metrecept.co.uk/docs
 
 ---
 
@@ -65,21 +65,21 @@ Prose is cheap; every claim below ships with the command that checks it against 
 
 | Claim | Check |
 |-------|-------|
-| The pipe is up | `curl -s https://api.withohm.dev/health && curl -s https://api.withohm.dev/ready` |
+| The pipe is up | `curl -s https://api.metrecept.co.uk/health && curl -s https://api.metrecept.co.uk/ready` |
 | Hits replay and are billed as hits | Send the same body twice — second response has `X-AT-Cache: HIT` + `X-AT-Billed-USD` — see [`demo/hit_miss_demo.sh`](demo/hit_miss_demo.sh) |
 | **A hit is cryptographic, not asserted** | Hit responses carry `X-Ohm-Receipt` (signed JWS) — verify with zero withOhm code: `python demo/verify_receipt.py "<receipt>"` — see [`docs/RECEIPTS.md`](docs/RECEIPTS.md) |
-| Signing keys are public | `curl -s https://api.withohm.dev/.well-known/http-message-signatures-directory` |
-| Published limits and refusals | `curl -s https://api.withohm.dev/v1/public/honesty` — what the pipe won't do, with the endpoint that proves each item |
-| Cross-tenant savings counter | `curl -s https://api.withohm.dev/v1/public/stats` (always `estimate_only: true`) |
+| Signing keys are public | `curl -s https://api.metrecept.co.uk/.well-known/http-message-signatures-directory` |
+| Published limits and refusals | `curl -s https://api.metrecept.co.uk/v1/public/honesty` — what the pipe won't do, with the endpoint that proves each item |
+| Cross-tenant savings counter | `curl -s https://api.metrecept.co.uk/v1/public/stats` (always `estimate_only: true`) |
 
 ## Quickstart
 
-Get a free key ($0 seat, no card) at [withohm.dev/billing/intermediate](https://www.withohm.dev/billing/intermediate), then:
+Get a free key ($0 seat, no card) at [metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate), then:
 
 ```python
 from at_utility_sdk import openai_client
 
-client = openai_client("sk-at-...", base_url="https://api.withohm.dev/v1")
+client = openai_client("sk-at-...", base_url="https://api.metrecept.co.uk/v1")
 completion = client.chat.completions.create(
     model="mock",  # or gpt-*/claude-*/etc. with X-Ohm-Upstream-Key (BYOK)
     messages=[{"role": "user", "content": "Hello"}],
