@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "metrecept": {
+      "type": "stdio",
+      "command": "metrecept-mcp",
+      "env": {
+        "METRECEPT_BASE_URL": "https://api.metrecept.co.uk/v1"
+      }
+    },
+    "metrecept-hosted": {
+      "type": "streamable-http",
+      "url": "https://api.metrecept.co.uk/mcp"
+    }
+  }
+}

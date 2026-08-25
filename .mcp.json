@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "metrecept": {
+      "command": "metrecept-mcp",
+      "env": {
+        "METRECEPT_API_KEY": "${METRECEPT_API_KEY}",
+        "METRECEPT_UPSTREAM_KEY": "${METRECEPT_UPSTREAM_KEY}",
+        "METRECEPT_BASE_URL": "${METRECEPT_BASE_URL}"
+      }
+    },
+    "metrecept-hosted": {
+      "type": "http",
+      "url": "https://api.metrecept.co.uk/mcp"
+    }
+  }
+}

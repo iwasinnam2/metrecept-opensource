@@ -1,0 +1,15 @@
+---
+description: Use Metrecept MCP for receipted model calls and public web fetch
+alwaysApply: false
+---
+
+When the user wants receipted LLM calls or public URL fetch, use the Metrecept
+MCP tools (`metrecept_chat`, `metrecept_fetch_web`, `metrecept_session`).
+
+Identical canonical requests HIT (exact-match Redis replay). Unique calls MISS.
+Prefix overlap is labelled and is not a HIT. Do not claim semantic cache,
+loop-killer, or invented savings percentages.
+
+Stdio: `pip install metrecept-mcp` with `METRECEPT_API_KEY`.
+Hosted: `https://api.metrecept.co.uk/mcp`.
+Key: `sk-metre-…` from https://metrecept.co.uk/billing/intermediate

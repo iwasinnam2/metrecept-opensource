@@ -16,12 +16,34 @@ This is the **public, MIT-licensed** half of withOhm — the client-side surface
 
 | Path | What it is |
 |------|------------|
+| [`plugin.json`](plugin.json) | Agent Plugins manifest — plugin name **`metrecept`** |
+| [`mcp.json`](mcp.json) | Open Plugins MCP config (stdio `metrecept-mcp` + hosted `https://api.metrecept.co.uk/mcp`) |
+| [`.mcp.json`](.mcp.json) | Cursor Directory auto-detect |
+| [`skills/`](skills/) | Agent skills for `metrecept_*` tools |
+| [`rules/metrecept.mdc`](rules/metrecept.mdc) | Optional Cursor rule |
 | [`docs/`](docs/) | Architecture exhibition — how the pipe is built, what a signed receipt is, how compliant web fetch works, why this shape instead of a routing proxy |
-| [`demo/`](demo/) | Runnable scripts that prove the claims against the **live** hosted API — no withOhm code required to verify a receipt |
+| [`demo/`](demo/) | Runnable scripts that prove the claims against the **live** hosted API — no gateway source required to verify a receipt |
 | [`sdks/python/`](sdks/python/) | Python OpenAI `base_url` helper (`at-utility-sdk` on PyPI) |
 | [`sdks/typescript/`](sdks/typescript/) | TypeScript/JS helper (`@at-utility/sdk` on npm) |
 | [`packages/metrecept-mcp/`](packages/metrecept-mcp/) | MCP server for Cursor/Claude agents (`metrecept-mcp` on PyPI) |
 | [`templates/`](templates/) | Ready-to-clone agent integration templates |
+
+## Cursor Directory
+
+This repo is the public plugin package. Submit at
+[cursor.directory/plugins/new](https://cursor.directory/plugins/new): sign in,
+paste **`https://github.com/iwasinnam2/metrecept-opensource`**, submit. The
+directory auto-detects `.mcp.json`, `skills/*/SKILL.md`, and `rules/*.mdc`.
+Plugin name is **`metrecept`**. Do not submit as `ohm` / `withohm`.
+
+```bash
+pip install metrecept-mcp
+```
+
+Stdio env: `METRECEPT_API_KEY` (`sk-metre-…`), optional `METRECEPT_UPSTREAM_KEY`,
+`METRECEPT_BASE_URL` default `https://api.metrecept.co.uk/v1`.
+Hosted MCP (no local install): `https://api.metrecept.co.uk/mcp`.
+One-click attach: https://metrecept.co.uk/i
 
 ## What's *not* in this repo
 
