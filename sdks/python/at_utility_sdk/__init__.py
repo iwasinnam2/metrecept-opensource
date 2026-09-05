@@ -9,6 +9,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from at_utility_sdk.inhouse import wrap_generate
+from at_utility_sdk.receipt_check import check_receipt
+
 
 # Public API host (live). Use LOCAL_BASE_URL for local development.
 DEFAULT_BASE_URL = "https://api.withohm.dev/v1"
@@ -37,6 +40,15 @@ def openai_client(
 
         from at_utility_sdk import openai_client
         client = openai_client("sk-at-...", upstream_api_key="sk-proj-...")
+
+    Returns a bare ``openai.OpenAI(...)`` client — headers are not
+    intercepted here (see ``wrap_generate`` for the automatic check). To
+    verify a signed receipt on a HIT, call ``.with_raw_response`` and pass
+    the headers to ``check_receipt``:
+
+        resp = client.chat.completions.with_raw_response.create(...)
+        check_receipt(resp.headers, base_url=str(client.base_url))
+        completion = resp.parse()
     """
     try:
         from openai import OpenAI
@@ -125,9 +137,11 @@ __all__ = [
     "DEFAULT_BASE_URL",
     "LOCAL_BASE_URL",
     "UPSTREAM_KEY_HEADER",
+    "check_receipt",
     "compliance_policy_url",
     "openai_client",
     "usage_url",
     "enterprise_skus_url",
     "web_context_extra",
+    "wrap_generate",
 ]

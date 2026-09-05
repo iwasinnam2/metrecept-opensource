@@ -20,5 +20,9 @@ ohm_receipt(display_name="")
 Optional `display_name` labels the public page. Returns a `/r/…` URL (and
 badge markdown). Receipts are `estimate_only` — aggregates only, never prompts.
 
+Not the cryptographic per-call receipt: this mints an unsigned, aggregate
+savings snapshot. The signed `X-Ohm-Receipt` / `X-Metrecept-Receipt` JWS on
+a cache hit is a separate mechanism — see `docs/RECEIPTS.md`.
+
 Pair with `/ohm-savings` first if you need the numbers before minting.
 Requires Ohm MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.

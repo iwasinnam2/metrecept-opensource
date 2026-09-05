@@ -36,6 +36,17 @@ python demo/verify_receipt.py "<X-Ohm-Receipt value>" --base https://api.metrece
 
 The verifier ([`demo/verify_receipt.py`](../demo/verify_receipt.py)) fetches `/.well-known/http-message-signatures-directory`, resolves the signing key by the JWS `kid` (RFC 7638 JWK thumbprint), and checks the Ed25519 signature itself using only the `cryptography` package — it imports nothing from withOhm. A forged or altered receipt fails to verify; so does a receipt signed by a key that isn't in the published directory.
 
+## Built into the in-house wrap client
+
+The Python `wrap_generate` client runs this exact check automatically on
+every HIT — a duplicated private copy of the same algorithm, not an
+import, so it stays checkable independent of the rest of the package.
+Fail-open: a missing receipt (expected on a fresh commit) is silent; a
+present-and-invalid one, or an unreachable key directory, logs one warning
+and never changes what the call returns. `openai_client` has no
+automatic hook (it returns a bare `openai.OpenAI(...)` client), so the
+same function is exported for manual use against `.with_raw_response`.
+
 ## Operator-side, for context
 
 The receipt signing key is intentionally distinct from withOhm's separate Web Bot Auth signing key (used for compliant crawl identification, see [COMPLIANCE.md](COMPLIANCE.md)), so either can rotate independently; both public keys are served from the same well-known directory. The private key material never leaves the control plane — the edge only ever receives an already-minted receipt to attach to a response.

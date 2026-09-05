@@ -65,6 +65,19 @@ Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against th
 python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk
 ```
 
+### `otel_receipt_span.py`
+
+Verifies a receipt (same algorithm as `verify_receipt.py`, duplicated on purpose — each script here stands alone) and emits it as an OpenTelemetry span, with standard `gen_ai.*` attributes used only where they genuinely apply and everything Metrecept-specific under a vendor-prefixed `metrecept.*` namespace. This is the reference scenario for the distribution design in [`docs/superpowers/specs/2026-09-05-otel-genai-finops-distribution-design.md`](../../docs/superpowers/specs/2026-09-05-otel-genai-finops-distribution-design.md) — the point being demonstrated is that any OTel-instrumented client can capture a signed receipt as span evidence with no Metrecept code in the emitting process.
+
+```bash
+pip install opentelemetry-sdk cryptography
+python demo/otel_receipt_span.py "<receipt-jws>" --base https://api.metrecept.co.uk
+
+# Export to a real OTLP collector / backend (LangFuse, Phoenix, Langtrace, ...):
+pip install opentelemetry-exporter-otlp-proto-http
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 python demo/otel_receipt_span.py "<receipt-jws>"
+```
+
 ## Why no bundled demo key
 
 A shared, rate-limited proof key exists for the browser widget at [metrecept.co.uk/demo](https://metrecept.co.uk/demo) if you want a zero-setup, no-signup look first. These scripts use your own key on purpose — it's a more honest demo of the real BYOK/metering flow than a shared token would be, and it means the receipt you verify is genuinely yours.
