@@ -1,0 +1,243 @@
+{
+  "name": "Lead Triage with a Signed Cost Receipt (Metrecept)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Lead Triage with a Signed Cost Receipt\n\n### How it works\nA new lead comes in through the webhook. The workflow asks a model (via Metrecept, an OpenAI-compatible LLM gateway) to triage it as HOT / WARM / COLD with a one-line reason. The gateway returns the usual completion, but also a cache status, a billed amount, and a signed receipt on the response headers — so the row logged to the sheet carries proof of what was actually billed, not just an estimate. A second call pulls the account's live usage snapshot (same numbers the gateway bills from) so you can see running spend without leaving the workflow.\n\n### Setup steps\n1. Get a free Metrecept API key (no card): metrecept.co.uk/billing/intermediate\n2. Create an \"HTTP Header Auth\" credential named e.g. \"Metrecept API Key\" — Header Name: `Authorization`, Header Value: `Bearer sk-at-...` — and select it on both Metrecept HTTP Request nodes below.\n3. Connect your own Google Sheet in the last node (any sheet works — the columns are created by the workflow).\n4. Activate the workflow and POST a lead to the webhook URL, e.g. `{\"name\":\"Jane\",\"email\":\"jane@example.com\",\"message\":\"Hi, we process 50k support tickets a month and need pricing\"}`.\n\n### Customization\nSwap `model: \"mock\"` in the \"Score Lead\" node for a real model (e.g. `gpt-4o-mini`) once you've added an upstream provider key per metrecept.co.uk/docs — mock needs no upstream key and proves the cache + receipt behaviour end to end first.",
+        "height": 460,
+        "width": 460,
+        "color": 5
+      },
+      "id": "sticky-overview",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-480, -300]
+    },
+    {
+      "parameters": {
+        "content": "## 1. Trigger\nAny system that generates leads can POST here — a form backend, a CRM webhook, a chat widget. Expects JSON with at least `email` and `message`.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "sticky-trigger",
+      "name": "Trigger note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-480, 200]
+    },
+    {
+      "parameters": {
+        "content": "## 2. Score + receipt\nOpenAI-shaped request, but pointed at Metrecept. `fullResponse` is on so the headers (`x-at-cache`, `x-at-billed-usd`, `x-ohm-receipt`) are readable in the next node — that's the checkable evidence this template is built around, not just the model's text.",
+        "height": 220,
+        "width": 340
+      },
+      "id": "sticky-score",
+      "name": "Score note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, 200]
+    },
+    {
+      "parameters": {
+        "content": "## 3. Verify before you trust it\nThis workflow logs the raw receipt string — it does not cryptographically verify it in-canvas (that needs an Ed25519 check, deliberately kept out of n8n's Code-node sandbox for this template). To actually verify any receipt you log here, run it once through the standalone verifier — no Metrecept account needed, just the `cryptography` package:\n\n`python verify_receipt.py \"<receipt>\"`\n\ngithub.com/iwasinnam2/metrecept-opensource/blob/main/demo/verify_receipt.py",
+        "height": 260,
+        "width": 340,
+        "color": 4
+      },
+      "id": "sticky-verify-warning",
+      "name": "Verify warning",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [640, -60]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "metrecept-lead-triage",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "node-webhook",
+      "name": "New Lead In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-440, 320],
+      "webhookId": "metrecept-lead-triage-demo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.metrecept.co.uk/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"mock\", messages: [ { role: \"system\", content: \"You triage inbound sales leads. Reply with one line: HOT, WARM, or COLD, then a short reason. Nothing else.\" }, { role: \"user\", content: $json.body.message } ] }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "node-score-lead",
+      "name": "Score Lead (Metrecept)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-80, 320],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_CREDENTIAL_ID",
+          "name": "Metrecept API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "lead_email",
+              "type": "string",
+              "value": "={{ $('New Lead In').item.json.body.email }}"
+            },
+            {
+              "id": "a2",
+              "name": "lead_message",
+              "type": "string",
+              "value": "={{ $('New Lead In').item.json.body.message }}"
+            },
+            {
+              "id": "a3",
+              "name": "triage_result",
+              "type": "string",
+              "value": "={{ $json.body.choices[0].message.content }}"
+            },
+            {
+              "id": "a4",
+              "name": "model",
+              "type": "string",
+              "value": "={{ $json.body.model }}"
+            },
+            {
+              "id": "a5",
+              "name": "cache_status",
+              "type": "string",
+              "value": "={{ $json.headers['x-at-cache'] }}"
+            },
+            {
+              "id": "a6",
+              "name": "billed_usd",
+              "type": "string",
+              "value": "={{ $json.headers['x-at-billed-usd'] }}"
+            },
+            {
+              "id": "a7",
+              "name": "receipt_jws",
+              "type": "string",
+              "value": "={{ $json.headers['x-ohm-receipt'] || $json.headers['x-metrecept-receipt'] || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-extract",
+      "name": "Extract Score + Receipt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [200, 320]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.metrecept.co.uk/v1/usage",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "node-usage",
+      "name": "Get Live Usage Snapshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 320],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_CREDENTIAL_ID",
+          "name": "Metrecept API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "lead_email": "={{ $('Extract Score + Receipt').item.json.lead_email }}",
+            "triage_result": "={{ $('Extract Score + Receipt').item.json.triage_result }}",
+            "model": "={{ $('Extract Score + Receipt').item.json.model }}",
+            "cache_status": "={{ $('Extract Score + Receipt').item.json.cache_status }}",
+            "billed_usd_this_call": "={{ $('Extract Score + Receipt').item.json.billed_usd }}",
+            "receipt_jws": "={{ $('Extract Score + Receipt').item.json.receipt_jws }}",
+            "account_cache_hits_total": "={{ $json.cache_hits }}",
+            "account_cache_misses_total": "={{ $json.cache_misses }}",
+            "account_pipe_usd_total": "={{ $json.pipe_usd }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "node-sheets",
+      "name": "Log Lead + Cost + Receipt",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [760, 320],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PLACEHOLDER_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New Lead In": {
+      "main": [[{ "node": "Score Lead (Metrecept)", "type": "main", "index": 0 }]]
+    },
+    "Score Lead (Metrecept)": {
+      "main": [[{ "node": "Extract Score + Receipt", "type": "main", "index": 0 }]]
+    },
+    "Extract Score + Receipt": {
+      "main": [[{ "node": "Get Live Usage Snapshot", "type": "main", "index": 0 }]]
+    },
+    "Get Live Usage Snapshot": {
+      "main": [[{ "node": "Log Lead + Cost + Receipt", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "metrecept-opensource-demo"
+  }
+}

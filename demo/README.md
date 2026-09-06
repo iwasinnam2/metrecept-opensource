@@ -78,6 +78,24 @@ pip install opentelemetry-exporter-otlp-proto-http
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 python demo/otel_receipt_span.py "<receipt-jws>"
 ```
 
+### `n8n_lead_triage_receipt_template.json`
+
+An importable n8n workflow template — not a script, a canvas. Webhook
+receives a lead → an `HTTP Request` node scores it through Metrecept
+(`model: "mock"`, no upstream key needed) with `fullResponse` on so the
+cache/billed/receipt response headers are readable → a second
+`HTTP Request` node pulls the account's live `/v1/usage` snapshot → both
+get logged to a Google Sheet next to the model's answer. Every node is a
+core n8n node (`Webhook`, `HTTP Request`, `Set`, `Google Sheets`) — no
+community node install required to try it. Sticky notes on the canvas
+explain setup end to end; the workflow deliberately logs the raw receipt
+string rather than verifying it in-canvas — pair it with
+`verify_receipt.py` above for the actual cryptographic check.
+
+```
+n8n → Import from File → n8n_lead_triage_receipt_template.json
+```
+
 ## Why no bundled demo key
 
 A shared, rate-limited proof key exists for the browser widget at [metrecept.co.uk/demo](https://metrecept.co.uk/demo) if you want a zero-setup, no-signup look first. These scripts use your own key on purpose — it's a more honest demo of the real BYOK/metering flow than a shared token would be, and it means the receipt you verify is genuinely yours.
