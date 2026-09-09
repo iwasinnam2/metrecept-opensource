@@ -2,7 +2,7 @@
 # Smoke chat on an Ohm tip (mock model — no upstream key required).
 set -euo pipefail
 
-: "${OHM_API_URL:=https://api.withohm.dev}"
+: "${OHM_API_URL:=https://api.metrecept.co.uk}"
 : "${OHM_API_KEY:?OHM_API_KEY required}"
 : "${OHM_TIP:?OHM_TIP required}"
 

@@ -1,15 +1,15 @@
 # neon-ohm-ci
 
-Drop-in CI compose: **Neon branches database state** (and AI Gateway per branch in beta); **withOhm branches exact-replay inventory**. Same PR slug. Upgrade alongside Gateway — not instead of it.
+Drop-in CI compose: **Neon branches database state** (and AI Gateway per branch in beta); **Metrecept branches exact-replay inventory**. Same PR slug. Upgrade alongside Gateway — not instead of it.
 
-Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache trees](https://www.withohm.dev/docs/cache-trees) · [CI preview](https://www.withohm.dev/use-cases/ci-preview)
+Docs: [Compose with Neon](https://metrecept.co.uk/docs/compose-neon) · [Cache trees](https://metrecept.co.uk/docs/cache-trees) · [CI preview](https://metrecept.co.uk/use-cases/ci-preview)
 
 ## Fence
 
 | Product | Branches | Noun |
 |---------|----------|------|
 | Neon | Postgres state (+ Gateway endpoint per branch in beta) | Preview connection / branch |
-| withOhm | Exact-replay inventory | `X-Ohm-Cache-Tree` |
+| Metrecept | Exact-replay inventory | `X-Ohm-Cache-Tree` |
 
 ## Quick start
 
@@ -27,7 +27,7 @@ Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache t
 | Name | Required | Notes |
 |------|----------|--------|
 | `OHM_API_KEY` | yes | Intermediate or design-partner `sk-at-…` |
-| `OHM_API_URL` | no | Default `https://api.withohm.dev` |
+| `OHM_API_URL` | no | Default `https://api.metrecept.co.uk` |
 | `OHM_UPSTREAM_KEY` | for real model calls | BYOK on cache miss |
 | `DATABASE_URL` | if you run app tests | Neon branch connection string |
 
@@ -40,7 +40,7 @@ Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache t
 
 ```bash
 export OHM_KEY=sk-at-…
-export OHM_API_URL=https://api.withohm.dev
+export OHM_API_URL=https://api.metrecept.co.uk
 export OHM_TIP=pr-842
 
 curl -sS -X POST "$OHM_API_URL/v1/cache/trees" \
@@ -68,4 +68,4 @@ curl -sS -X POST "$OHM_API_URL/v1/cache/trees/${OHM_TIP}/promote" \
 | `.github/workflows/ohm-promote-on-merge.yml` | Merge: promote tip → `main` |
 | `scripts/ohm_tree.sh` | `fork` / `promote` / `echo-tree` helpers |
 
-Powered by [withOhm](https://www.withohm.dev) — pipe rent, not token wholesale. BYOK.
+Powered by [Metrecept](https://metrecept.co.uk) — pipe rent, not token wholesale. BYOK.

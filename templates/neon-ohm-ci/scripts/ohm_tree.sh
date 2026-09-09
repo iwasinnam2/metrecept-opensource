@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Ohm cache-tree helpers for Neon-compose CI.
+# Metrecept cache-tree helpers for Neon-compose CI.
 # Fence: Neon owns DATABASE_URL / NEON_BRANCH; Ohm owns X-Ohm-Cache-Tree.
 set -euo pipefail
 
-OHM_API_URL="${OHM_API_URL:-https://api.withohm.dev}"
+OHM_API_URL="${OHM_API_URL:-https://api.metrecept.co.uk}"
 OHM_BASE_URL="${OHM_BASE_URL:-${OHM_API_URL%/}/v1}"
 OHM_API_KEY="${OHM_API_KEY:?OHM_API_KEY is required}"
 

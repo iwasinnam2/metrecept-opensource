@@ -1,7 +1,7 @@
-"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Ohm.
+"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Metrecept.
 
-Package path remains at_utility_sdk / at-utility-sdk until first PyPI publish
-renames to ohm-sdk.
+Package path remains at_utility_sdk / at-utility-sdk until a coordinated
+package-name cutover. Product is Metrecept.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from at_utility_sdk.receipt_check import check_receipt
 
 
 # Public API host (live). Use LOCAL_BASE_URL for local development.
-DEFAULT_BASE_URL = "https://api.withohm.dev/v1"
+DEFAULT_BASE_URL = "https://api.metrecept.co.uk/v1"
 LOCAL_BASE_URL = "http://127.0.0.1:8081/v1"
 UPSTREAM_KEY_HEADER = "X-Ohm-Upstream-Key"
 

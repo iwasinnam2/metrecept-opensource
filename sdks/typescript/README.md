@@ -2,7 +2,7 @@
 
 Thin helper so the official OpenAI SDK becomes a one-line `baseURL` swap for **Metrecept**.
 
-Package name remains `@at-utility/sdk` until first npm publish; then rename to `@ohm/sdk`.
+Package name remains `@at-utility/sdk` until a coordinated npm rename. Product is Metrecept.
 
 ## Install
 
@@ -13,7 +13,7 @@ npm install
 
 ## Publish to npm
 
-Only after `https://api.withohm.dev/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
+Only after `https://api.metrecept.co.uk/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
 
 ```bash
 cd sdks/typescript
@@ -27,7 +27,7 @@ import OpenAI from "openai";
 import { openaiArgs, LOCAL_BASE_URL, DEFAULT_BASE_URL } from "@at-utility/sdk";
 
 const client = new OpenAI(openaiArgs("sk-at-dev", LOCAL_BASE_URL));
-// After cutover: openaiArgs("sk-at-...", DEFAULT_BASE_URL)
+// Hosted: openaiArgs("sk-at-...", DEFAULT_BASE_URL)
 ```
 
 Framework recipes: `examples/templates/`.

@@ -2,8 +2,7 @@
 name: metrecept-inventory
 description: >
   Metrecept cache-tree inventory via MCP metrecept_cache_trees and
-  metrecept_cache_inventory. Use when checking what is cached, on which tip,
-  and for how long — Metrecept, mcp, inventory, cache trees.
+  metrecept_cache_inventory (exact-replay namespaces; digest/model/TTL/size).
 ---
 
 # Metrecept inventory
@@ -13,8 +12,8 @@ metrecept_cache_trees()
 metrecept_cache_inventory(tree_id="main", limit=25, offset=0)
 ```
 
-`metrecept_cache_trees` lists named exact-replay namespaces.
-`metrecept_cache_inventory` lists entry metadata only (digest, model, TTL,
-size) — never cached message content.
+`metrecept_cache_trees` lists trees. `metrecept_cache_inventory` lists
+entries in one tree — metadata only, never cached message content.
+`ohm_cache_trees` / `ohm_cache_inventory` are the same handlers.
 
-Requires Metrecept MCP (`METRECEPT_API_KEY`). Docs: https://metrecept.co.uk/docs/cursor
+Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).

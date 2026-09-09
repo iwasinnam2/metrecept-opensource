@@ -1,6 +1,6 @@
 # Demo — verify the claims yourself
 
-Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no withOhm source code required, and none of it depends on trusting the docs in this repo.
+Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no Metrecept package required, and none of it depends on trusting the docs in this repo.
 
 ## Prerequisite
 
@@ -26,7 +26,7 @@ x-at-cache: MISS
 x-at-cache: HIT
 x-at-billed-usd: 0.000100
 
-== Verifying the signed receipt (zero withOhm code) ==
+== Verifying the signed receipt (zero Metrecept code) ==
 OK: signature verifies against https://api.metrecept.co.uk/.well-known/http-message-signatures-directory
 {
   "admit": "allow",
@@ -59,7 +59,7 @@ Proves named cache trees ([docs/CACHE_TREES.md](../docs/CACHE_TREES.md)) are gen
 
 ### `verify_receipt.py`
 
-Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from withOhm.
+Standalone verifier — takes any `X-Ohm-Receipt` / `X-Metrecept-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from Metrecept.
 
 ```bash
 python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk

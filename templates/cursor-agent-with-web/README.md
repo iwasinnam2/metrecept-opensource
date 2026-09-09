@@ -7,8 +7,8 @@ No sales call. Steal the skeleton.
 ## Clone → set key → fetch
 
 ```bash
-git clone https://github.com/iwasinnam2/withohm-open.git
-cd withohm-open/templates/cursor-agent-with-web
+git clone https://github.com/iwasinnam2/metrecept-opensource.git
+cd metrecept-opensource/templates/cursor-agent-with-web
 ```
 
 1. Get a free Intermediate seat (card on file, $0 membership): https://metrecept.co.uk/billing/intermediate

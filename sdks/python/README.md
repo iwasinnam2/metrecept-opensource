@@ -2,7 +2,7 @@
 
 Thin helper so the official OpenAI SDK becomes a one-line `base_url` swap for **Metrecept**.
 
-Package name remains `at-utility-sdk` until first PyPI publish; then rename to `ohm-sdk`.
+Package name remains `at-utility-sdk` until a coordinated PyPI rename. Product is Metrecept.
 
 ## Install (editable)
 
@@ -13,7 +13,7 @@ pip install -e ".[openai]"
 
 ## Publish to PyPI
 
-Only after `https://api.withohm.dev/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
+Only after `https://api.metrecept.co.uk/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
 
 ```bash
 cd sdks/python
@@ -27,7 +27,7 @@ twine upload dist/*
 from at_utility_sdk import openai_client, LOCAL_BASE_URL, DEFAULT_BASE_URL
 
 client = openai_client("sk-at-dev", base_url=LOCAL_BASE_URL)
-# After cutover:
+# Hosted:
 # client = openai_client("sk-at-...", base_url=DEFAULT_BASE_URL)
 ```
 

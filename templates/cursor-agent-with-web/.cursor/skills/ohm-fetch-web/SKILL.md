@@ -1,7 +1,7 @@
 ---
 name: ohm-fetch-web
 description: >
-  Compliant fetch for agents via withOhm MCP ohm_fetch_web (markdown or JSON).
+  Compliant fetch for agents via Metrecept MCP ohm_fetch_web (markdown or JSON).
   Use when the agent needs public URL / docs context without hand-browsing.
 ---
 
@@ -17,4 +17,4 @@ ohm_fetch_web(
 )
 ```
 
-Requires Ohm MCP (`OHM_API_KEY`). Install: https://www.withohm.dev/i
+Requires Metrecept MCP (`OHM_API_KEY`). Install: https://metrecept.co.uk/i

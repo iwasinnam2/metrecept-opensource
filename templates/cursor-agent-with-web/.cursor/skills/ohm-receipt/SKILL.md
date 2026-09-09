@@ -1,14 +1,14 @@
 ---
 name: ohm-receipt
 description: >
-  Mint a public withOhm savings receipt via MCP ohm_receipt (shareable /r/…
+  Mint a public Metrecept savings receipt via MCP ohm_receipt (shareable /r/…
   URL, estimate_only). Use when proving cache savings publicly — receipt,
-  bounty, share, withOhm, ohm.
+  bounty, share, Metrecept, ohm.
 ---
 
-# Ohm receipt
+# Metrecept receipt
 
-Call the Ohm MCP tool `ohm_receipt` to mint a public savings receipt from
+Call the Metrecept MCP tool `ohm_receipt` to mint a public savings receipt from
 the tenant's dual savings ledger.
 
 ## Call
@@ -25,4 +25,4 @@ savings snapshot. The signed `X-Ohm-Receipt` / `X-Metrecept-Receipt` JWS on
 a cache hit is a separate mechanism — see `docs/RECEIPTS.md`.
 
 Pair with `/ohm-savings` first if you need the numbers before minting.
-Requires Ohm MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.

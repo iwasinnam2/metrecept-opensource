@@ -1,10 +1,10 @@
 # Architecture overview
 
-Inside withOhm: an ephemeral exact-replay side and a durable governance pipeline, connected by one metered crossing.
+Inside Metrecept: an ephemeral exact-replay side and a durable governance pipeline, connected by one metered crossing. The black box is the signed record of that crossing.
 
 ## Top-level overview
 
-Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, withOhm splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and, on HIT, receipted.
+Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, Metrecept splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and, on HIT, receipted.
 
 This separation is what makes exact-replay economically and operationally real. Inventory can be forked, isolated, and promoted without pretending to be a database. Money, policy, and compliance stay durable without sitting on the Redis hot path.
 
@@ -46,7 +46,7 @@ flowchart TB
 
 ## Resource hierarchy
 
-withOhm organizes customer resources roughly as:
+Metrecept organizes customer resources roughly as:
 
 | Concept | Description | Relationship |
 |---------|-------------|---------------|
@@ -77,7 +77,7 @@ Exact-match is absolute inside a tree. There is no semantic or fuzzy cache — r
 
 ## Pipeline System
 
-If the Ephemeral Side is responsible for replay inventory, the Pipeline System is responsible for **who may cross, what it costs, and what withOhm will claim in public**.
+If the Ephemeral Side is responsible for replay inventory, the Pipeline System is responsible for **who may cross, what it costs, and what Metrecept will claim in public**.
 
 Governance is composed of clear roles rather than one monolithic "proxy brain":
 
@@ -115,7 +115,7 @@ sequenceDiagram
 
 1. **Canonicalize and hash** the request (tree-scoped key).
 2. **GET** from Redis on the Ephemeral Side.
-3. **Pipeline gate** records the HIT meter and may mint `X-Ohm-Receipt`.
+3. **Pipeline gate** records the HIT meter and mints `X-Ohm-Receipt` / `X-Metrecept-Receipt`.
 4. **Return** the blob. No upstream tokens.
 
 ## MISS path: ask the model, then store
@@ -146,7 +146,7 @@ Web context is never a back door around compliance: ingest runs on the Pipeline 
 
 ## Durability of governance (not of every blob)
 
-Durability in withOhm is layered on purpose:
+Durability in Metrecept is layered on purpose:
 
 - If the **edge** dies -> traffic falls through to the control plane; correctness of billing stays with the Pipeline.
 - If a **cache blob** TTLs -> that exact-replay entry is gone; meters and ledger remain untouched.
@@ -161,7 +161,7 @@ Durability in withOhm is layered on purpose:
 
 ## In short
 
-withOhm is an AI traffic control plane that treats:
+Metrecept is an AI traffic control plane that treats:
 
 - exact-replay inventory as **ephemeral and replaceable** (trees, TTL, edge);
 - money, policy, compliance, and trust as **durable pipeline concerns**;

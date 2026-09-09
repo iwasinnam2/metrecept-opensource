@@ -1,14 +1,14 @@
 ---
 name: ohm-policy
 description: >
-  withOhm compliance policy via MCP ohm_policy (allowed web-fetch purposes and
+  Metrecept compliance policy via MCP ohm_policy (allowed web-fetch purposes and
   limits). Use before a fetch to confirm the purpose is permitted, or when a
-  fetch is rejected — withOhm, ohm, policy, compliance, purposes.
+  fetch is rejected — Metrecept, ohm, policy, compliance, purposes.
 ---
 
-# Ohm policy
+# Metrecept policy
 
-Call the Ohm MCP tool `ohm_policy` for the tenant's compliance policy.
+Call the Metrecept MCP tool `ohm_policy` for the tenant's compliance policy.
 
 ## Call
 
@@ -21,4 +21,4 @@ Returns the allowed web-fetch purposes (`public_web_retrieval`,
 from `GET /v1/compliance/policy`. Use it to pick the right `purpose` for
 `/ohm-fetch-web`, or to explain why a fetch was refused.
 
-Requires Ohm MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.

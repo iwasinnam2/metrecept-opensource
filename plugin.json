@@ -2,10 +2,10 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "metrecept",
   "version": "1.0.0",
-  "description": "Metrecept: signed receipts, exact-match Redis replay, BYOK OpenAI-compatible pipe. Cursor optional. Hosted MCP or stdio.",
+  "description": "Metrecept: the black box for autonomous AI agents. Signed receipts, exact-match Redis replay, BYOK OpenAI-compatible pipe. Cursor optional. Hosted MCP or stdio (ohm-mcp from withohm-mcp).",
   "author": {
     "name": "Metrecept",
-    "email": "partners@withohm.dev",
+    "email": "partners@metrecept.co.uk",
     "url": "https://metrecept.co.uk"
   },
   "homepage": "https://metrecept.co.uk",
@@ -16,7 +16,6 @@
     "infrastructure",
     "cache",
     "byok",
-    "enterprise",
     "receipts",
     "finops",
     "agents",

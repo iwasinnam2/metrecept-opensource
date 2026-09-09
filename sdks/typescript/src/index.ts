@@ -1,6 +1,6 @@
 /**
- * Drop-in OpenAI baseURL helper for Ohm (package path still @at-utility/sdk
- * until the first npm publish renames to @ohm/sdk).
+ * Drop-in OpenAI baseURL helper for Metrecept (package path still
+ * @at-utility/sdk until a coordinated package-name cutover).
  *
  *   import OpenAI from "openai";
  *   import { openaiArgs } from "@at-utility/sdk";
@@ -13,7 +13,7 @@ export type ClientOptions = {
 };
 
 /** Public API host (live). Use LOCAL_BASE_URL for local development. */
-export const DEFAULT_BASE_URL = "https://api.withohm.dev/v1";
+export const DEFAULT_BASE_URL = "https://api.metrecept.co.uk/v1";
 export const LOCAL_BASE_URL = "http://127.0.0.1:8081/v1";
 export const UPSTREAM_KEY_HEADER = "X-Ohm-Upstream-Key";
 

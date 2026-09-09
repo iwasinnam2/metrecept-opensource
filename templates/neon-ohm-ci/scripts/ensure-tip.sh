@@ -3,7 +3,7 @@
 # create succeeds, or list confirms the tip is already present.
 set -euo pipefail
 
-: "${OHM_API_URL:=https://api.withohm.dev}"
+: "${OHM_API_URL:=https://api.metrecept.co.uk}"
 : "${OHM_API_KEY:?OHM_API_KEY required}"
 : "${OHM_TIP:?OHM_TIP required}"
 

@@ -1,6 +1,6 @@
 # Cache trees — branchable exact-replay inventory
 
-Named, isolated exact-replay inventory for withOhm. Complements a data-branching product like Neon (branches Postgres state) without cloning its model — withOhm branches **exact-replay inventory**, not a database.
+Named, isolated exact-replay inventory for Metrecept. Complements a data-branching product like Neon (branches Postgres state) without cloning its model — Metrecept branches **exact-replay inventory**, not a database.
 
 Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline System split.
 
@@ -11,7 +11,7 @@ Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline S
 | Hot exact-replay inventory (blobs, trees, edge HIT) | Durable money, policy, compliance, trust |
 | Fork / reset / promote / freeze | Auth, meters, receipts, audit |
 
-**The idea in one sentence:** other tools branch state, or discount a prefix. withOhm branches exact replay — and the pipeline bills the crossing.
+**The idea in one sentence:** other tools branch state, or discount a prefix. Metrecept branches exact replay — and the pipeline bills the crossing. The HIT is still receipted.
 
 ## Key layout
 

@@ -1,0 +1,53 @@
+{
+  "name": "n8n-nodes-metrecept",
+  "version": "0.1.0",
+  "description": "Metrecept for n8n: point any AI Agent / Chat Model workflow at a metered, caching LLM gateway that returns a signed, independently verifiable Ed25519 receipt on every cache hit, plus standalone receipt verification and a live usage/spend operation.",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "license": "MIT",
+  "homepage": "https://metrecept.co.uk",
+  "author": {
+    "name": "Ivan Karpusheff",
+    "email": "ivan@metrecept.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iwasinnam2/metrecept-opensource.git",
+    "directory": "packages/n8n-nodes-metrecept"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').cpSync('nodes/Metrecept/metrecept.svg','dist/nodes/Metrecept/metrecept.svg')\"",
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit",
+    "test": "jest --forceExit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/MetreceptApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Metrecept/Metrecept.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.0",
+    "jest": "^29.7.0",
+    "n8n-workflow": "^1.60.0",
+    "ts-jest": "^29.1.5",
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "engines": {
+    "node": ">=18.10"
+  }
+}

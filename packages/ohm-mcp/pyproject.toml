@@ -19,7 +19,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://metrecept.co.uk"
 Documentation = "https://metrecept.co.uk/docs/cursor"
-Repository = "https://github.com/iwasinnam2/withohm-open"
+Repository = "https://github.com/iwasinnam2/metrecept-opensource"
 
 [project.scripts]
 ohm-mcp = "ohm_mcp:main"

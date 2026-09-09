@@ -1,31 +1,27 @@
 ---
 name: metrecept-fetch-web
 description: >
-  Compliant public URL scrape via Metrecept MCP metrecept_fetch_web (markdown
-  or JSON). Use for public page content, docs scrape, catalog pages, or
-  browse-without-browser — Metrecept, mcp, web-fetch.
+  Compliant public URL scrape via Metrecept MCP metrecept_fetch_web
+  (markdown or JSON). Use when the agent needs public URL / docs context
+  without hand-browsing — Metrecept, web-fetch, compliance.
 ---
 
 # Metrecept fetch web
 
-Call `metrecept_fetch_web` for purpose-bound public-page retrieval
-(robots-aware, PII-redacted, metered).
-
-## Call
+Call `metrecept_fetch_web` for compliant public-page retrieval. `ohm_fetch_web`
+is the same handler.
 
 ```text
 metrecept_fetch_web(
   urls=["https://example.com"],
   purpose="public_web_retrieval",
   query="",
-  format="markdown",
+  format="markdown",   # or "json"
   session_id=""
 )
 ```
 
 **Purposes:** `public_web_retrieval`, `business_catalog`, `public_company_info`, `job_listings`.
 
-Optional `session_id` tags the fetch onto a signed session receipt
-(`metrecept_session`).
-
-Requires Metrecept MCP (`METRECEPT_API_KEY`). Docs: https://metrecept.co.uk/docs/cursor
+Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`). Stdio: `ohm-mcp` from
+`pip install withohm-mcp`. Docs: https://metrecept.co.uk/docs/cursor
