@@ -11,9 +11,11 @@ Identical canonical requests HIT (exact-match Redis replay). Unique calls
 MISS. Prefix overlap is labelled and is not a HIT. Do not claim semantic
 cache, loop-killer, or invented savings percentages.
 
-Stdio: `pip install withohm-mcp`, then `ohm-mcp` with `OHM_API_KEY`
-(`sk-at-…` from https://metrecept.co.uk/billing/intermediate). There is no
-`metrecept-mcp` PyPI package and no `sk-metre-` key prefix yet.
+Stdio: `pip install "git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp"`,
+then `ohm-mcp` with `OHM_API_KEY` (`sk-at-…` from
+https://metrecept.co.uk/billing/intermediate). There is no `metrecept-mcp`
+PyPI package, no `withohm-mcp` on PyPI yet, and no `sk-metre-` key prefix.
+`ohm-mcp` on PyPI is an unrelated third-party tool — do not install that.
 
 Hosted: `https://api.metrecept.co.uk/mcp` with
 `Authorization: Bearer sk-at-…`.

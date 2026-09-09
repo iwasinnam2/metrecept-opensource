@@ -22,7 +22,7 @@ try:
     from mcp.server.mcpserver import Context
 except ImportError as exc:  # pragma: no cover
     raise SystemExit(
-        "MCP support missing: pip install withohm-mcp "
+        "MCP support missing: pip install git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp "
         "(or, in the monorepo: pip install 'at-utility[mcp]')"
     ) from exc
 

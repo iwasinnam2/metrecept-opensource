@@ -42,11 +42,11 @@ The product, site, and API host are Metrecept. A few identifiers still use the p
 |---------------|------------|
 | `sk-at-…` | Tenant API key prefix (legacy). There is no `sk-metre-` prefix yet. |
 | `X-Ohm-*` / `X-Metrecept-*` | Request/response headers. Both work; new wins if both are sent. Receipts dual-emit as `X-Ohm-Receipt` and `X-Metrecept-Receipt`. |
-| `withohm-mcp` / `ohm-mcp` | PyPI package and stdio command. `pip install withohm-mcp`, then run `ohm-mcp`. |
+| `withohm-mcp` / `ohm-mcp` | Distribution name (not on PyPI yet) and stdio command. Install from GitHub, then run `ohm-mcp`. |
 | `at-utility-sdk` / `@at-utility/sdk` | Client SDK package names until first publish-under-new-name. |
 | `OHM_API_KEY` / `OHM_BASE_URL` | Env vars the MCP server actually reads. |
 
-Do not `pip install metrecept-mcp` — that name is not the published package.
+Neither `withohm-mcp` nor `metrecept-mcp` is on PyPI yet. `ohm-mcp` on PyPI is someone else's refactoring tool.
 
 ## Architecture at a glance
 
@@ -111,8 +111,12 @@ completion = client.chat.completions.create(
 
 **Cursor / MCP**
 
+Hosted (no install): `https://api.metrecept.co.uk/mcp` with `Authorization: Bearer sk-at-…`. One-click attach: [metrecept.co.uk/i](https://metrecept.co.uk/i).
+
+Stdio from this repo (the name `withohm-mcp` is not on PyPI yet — `ohm-mcp` on PyPI is an unrelated third-party package):
+
 ```bash
-pip install withohm-mcp
+pip install "git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp"
 ```
 
 ```json
@@ -128,8 +132,7 @@ pip install withohm-mcp
   }
 }
 ```
-
-Hosted streamable HTTP (no local install): `https://api.metrecept.co.uk/mcp` with `Authorization: Bearer sk-at-…`. One-click attach: [metrecept.co.uk/i](https://metrecept.co.uk/i).
+```
 
 Or jump straight to the proof: [`demo/`](demo/) walks through cache MISS → HIT → a verified receipt in under a minute.
 
