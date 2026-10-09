@@ -1,6 +1,6 @@
 # Compliant public-web fetch
 
-Metrecept's optional web-fetch feature is designed as a **public-web retrieval** utility — not a lead harvester, account-access tool, or person-dossier engine. This is enforced in code (gate logic runs before a fetched byte ever reaches a model), not just asserted in a terms page.
+withOhm's optional web-fetch feature is designed as a **public-web retrieval** utility — not a lead harvester, account-access tool, or person-dossier engine. This is enforced in code (gate logic runs before a fetched byte ever reaches a model), not just asserted in a terms page.
 
 > Not legal advice. Operators and tenants remain responsible for their own use cases and jurisdictions.
 
@@ -64,7 +64,7 @@ curl -s https://api.metrecept.co.uk/.well-known/http-message-signatures-director
 
 Two origin responses are honored, not worked around:
 
-- **HTTP 402** (pay-per-crawl) — treated as the origin's licensing decision; Metrecept does not auto-pay, and the refusal is surfaced to the caller.
+- **HTTP 402** (pay-per-crawl) — treated as the origin's licensing decision; withOhm does not auto-pay, and the refusal is surfaced to the caller.
 - **HTTP 401/403** — access revocation is honored: no retries, no block evasion.
 
 ## Why this is architecture, not just policy

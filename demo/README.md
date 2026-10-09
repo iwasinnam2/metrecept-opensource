@@ -1,6 +1,6 @@
 # Demo — verify the claims yourself
 
-Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no Metrecept package required, and none of it depends on trusting the docs in this repo.
+Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no withOhm source code required, and none of it depends on trusting the docs in this repo.
 
 ## Prerequisite
 
@@ -26,7 +26,7 @@ x-at-cache: MISS
 x-at-cache: HIT
 x-at-billed-usd: 0.000100
 
-== Verifying the signed receipt (zero Metrecept code) ==
+== Verifying the signed receipt (zero withOhm code) ==
 OK: signature verifies against https://api.metrecept.co.uk/.well-known/http-message-signatures-directory
 {
   "admit": "allow",
@@ -57,43 +57,18 @@ Proves named cache trees ([docs/CACHE_TREES.md](../docs/CACHE_TREES.md)) are gen
 ./demo/cache_tree_demo.sh
 ```
 
+### `n8n_retry_hit_receipt_template.json`
+
+Creator Hub workflow: **Prove an n8n AI retry was a cache HIT**. Core n8n nodes only. Click **Test once** (pinned `mock` payload): Call 1 MISS, identical Call 2 HIT, Ed25519 receipt checked in a Code node against the public JWKS. Import the JSON in the n8n editor, map HTTP Header Auth (`Authorization: Bearer sk-at-...`), then look at the canvas before submitting to creators.n8n.io — this file is generated from `build_n8n_retry_hit_template.py`; a live editor pass is still the Hub layout gate.
+
+The older lead-triage template stays in this folder until the Hub accepts this one.
+
 ### `verify_receipt.py`
 
-Standalone verifier — takes any `X-Ohm-Receipt` / `X-Metrecept-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from Metrecept.
+Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from withOhm.
 
 ```bash
 python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk
-```
-
-### `otel_receipt_span.py`
-
-Verifies a receipt (same algorithm as `verify_receipt.py`, duplicated on purpose — each script here stands alone) and emits it as an OpenTelemetry span, with standard `gen_ai.*` attributes used only where they genuinely apply and everything Metrecept-specific under a vendor-prefixed `metrecept.*` namespace. This is the reference scenario for the distribution design in [`docs/superpowers/specs/2026-09-05-otel-genai-finops-distribution-design.md`](../../docs/superpowers/specs/2026-09-05-otel-genai-finops-distribution-design.md) — the point being demonstrated is that any OTel-instrumented client can capture a signed receipt as span evidence with no Metrecept code in the emitting process.
-
-```bash
-pip install opentelemetry-sdk cryptography
-python demo/otel_receipt_span.py "<receipt-jws>" --base https://api.metrecept.co.uk
-
-# Export to a real OTLP collector / backend (LangFuse, Phoenix, Langtrace, ...):
-pip install opentelemetry-exporter-otlp-proto-http
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 python demo/otel_receipt_span.py "<receipt-jws>"
-```
-
-### `n8n_lead_triage_receipt_template.json`
-
-An importable n8n workflow template — not a script, a canvas. Webhook
-receives a lead → an `HTTP Request` node scores it through Metrecept
-(`model: "mock"`, no upstream key needed) with `fullResponse` on so the
-cache/billed/receipt response headers are readable → a second
-`HTTP Request` node pulls the account's live `/v1/usage` snapshot → both
-get logged to a Google Sheet next to the model's answer. Every node is a
-core n8n node (`Webhook`, `HTTP Request`, `Set`, `Google Sheets`) — no
-community node install required to try it. Sticky notes on the canvas
-explain setup end to end; the workflow deliberately logs the raw receipt
-string rather than verifying it in-canvas — pair it with
-`verify_receipt.py` above for the actual cryptographic check.
-
-```
-n8n → Import from File → n8n_lead_triage_receipt_template.json
 ```
 
 ## Why no bundled demo key

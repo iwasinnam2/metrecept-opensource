@@ -1,8 +1,8 @@
-# Neon + Metrecept — PR preview tip
+# Neon + withOhm — PR preview tip
 # Copy to your app as .github/workflows/ohm-preview.yml
 #
 # Secrets: OHM_API_KEY (required), OHM_UPSTREAM_KEY (optional BYOK)
-# Vars:    OHM_API_URL (optional, default https://api.metrecept.co.uk)
+# Vars:    OHM_API_URL (optional, default https://api.withohm.dev)
 #
 # Neon owns DATABASE_URL / branch lifecycle in your own steps.
 # This job only ensures X-Ohm-Cache-Tree: pr-<N> exists and smokes it.
@@ -35,7 +35,7 @@ jobs:
           OHM_API_URL: ${{ vars.OHM_API_URL }}
           TREE_ID: ${{ steps.tree.outputs.tree_id }}
         run: |
-          export OHM_API_URL="${OHM_API_URL:-https://api.metrecept.co.uk}"
+          export OHM_API_URL="${OHM_API_URL:-https://api.withohm.dev}"
           export OHM_BASE_URL="${OHM_API_URL%/}/v1"
           SCRIPT=templates/neon-ohm-ci/scripts/ohm_tree.sh
           if [ -f "$SCRIPT" ]; then
@@ -59,7 +59,7 @@ jobs:
           OHM_API_URL: ${{ vars.OHM_API_URL }}
           TREE_ID: ${{ steps.tree.outputs.tree_id }}
         run: |
-          export OHM_API_URL="${OHM_API_URL:-https://api.metrecept.co.uk}"
+          export OHM_API_URL="${OHM_API_URL:-https://api.withohm.dev}"
           export OHM_BASE_URL="${OHM_API_URL%/}/v1"
           curl -sS "${OHM_BASE_URL}/chat/completions" \
             -H "Authorization: Bearer ${OHM_API_KEY}" \

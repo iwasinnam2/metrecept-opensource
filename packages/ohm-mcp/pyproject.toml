@@ -19,12 +19,11 @@ dependencies = [
 [project.urls]
 Homepage = "https://metrecept.co.uk"
 Documentation = "https://metrecept.co.uk/docs/cursor"
-Repository = "https://github.com/iwasinnam2/metrecept-opensource"
+Repository = "https://github.com/iwasinnam2/withohm-open"
 
 [project.scripts]
 ohm-mcp = "ohm_mcp:main"
 ohm-mcp-http = "ohm_mcp:main_http"
-metrecept-tap = "ohm_mcp.tap_client:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

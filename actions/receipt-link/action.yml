@@ -1,0 +1,44 @@
+name: "Metrecept receipt link"
+description: "Comment the signed Metrecept session receipt link on the pull request so reviewers can verify the agent's run in their browser, no account."
+author: "Metrecept"
+branding:
+  icon: "check-circle"
+  color: "gray-dark"
+
+inputs:
+  session-id:
+    description: "The X-Metrecept-Session id the agent used for this run."
+    required: true
+  api-key:
+    description: "Metrecept API key (pass a repository secret)."
+    required: true
+  api-base:
+    description: "Metrecept API base."
+    required: false
+    default: "https://api.metrecept.co.uk"
+  github-token:
+    description: "Token for gh pr comment."
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build comment from the session receipt
+      shell: bash
+      env:
+        METRECEPT_API_KEY: ${{ inputs.api-key }}
+      run: |
+        python3 "${{ github.action_path }}/fetch_session.py" \
+          --api-base "${{ inputs.api-base }}" \
+          --session-id "${{ inputs.session-id }}" \
+          --out "${RUNNER_TEMP}/metrecept-receipt-comment.md"
+    - name: Comment on the pull request
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        gh pr comment "${{ github.event.pull_request.number }}" \
+          --repo "${{ github.repository }}" \
+          --body-file "${RUNNER_TEMP}/metrecept-receipt-comment.md"

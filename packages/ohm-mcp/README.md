@@ -9,15 +9,9 @@ Package name `withohm-mcp` is a legacy id until rename. Product is Metrecept.
 
 ## Install
 
-The distribution name is `withohm-mcp`. It is **not on PyPI yet** (`ohm-mcp`
-on PyPI is an unrelated third-party package). Install from GitHub:
-
 ```bash
-pip install "git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp"
+pip install withohm-mcp
 ```
-
-No local install: attach the hosted server at
-`https://api.metrecept.co.uk/mcp` with `Authorization: Bearer sk-at-…`.
 
 ## Cursor attach (stdio)
 

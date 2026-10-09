@@ -22,7 +22,7 @@ try:
     from mcp.server.mcpserver import Context
 except ImportError as exc:  # pragma: no cover
     raise SystemExit(
-        "MCP support missing: pip install git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp "
+        "MCP support missing: pip install withohm-mcp "
         "(or, in the monorepo: pip install 'at-utility[mcp]')"
     ) from exc
 
@@ -342,6 +342,12 @@ async def ohm_session(session_id: str, ctx: Optional[Context] = None) -> str:
     X-Ohm-Session id into one signed receipt: event count, total cost,
     per-kind counts, first/last timestamps. Read-only — no new call made.
 
+    The response carries `receipt` (compact JWS) and `verify_url`
+    (https://metrecept.co.uk/verify#<jws>). Put `verify_url` in whatever
+    this session produced — the PR description, the ticket, the email — so
+    whoever reads that artefact can verify the run in their browser against
+    the public JWKS, no account.
+
     Args:
       session_id: The same id passed as X-Ohm-Session on the calls that made
         up this session.
@@ -440,32 +446,6 @@ _METRECEPT_TOOL_ALIASES: dict[str, Any] = {
     "metrecept_chat": ohm_chat,
 }
 for _alias_name, _handler_fn in _METRECEPT_TOOL_ALIASES.items():
-    mcp.tool(name=_alias_name)(_handler_fn)
-
-
-# metre_* aliases: a third additive name for every ohm_* tool above, same
-# zero-breakage pattern as _METRECEPT_TOOL_ALIASES above — registered
-# against the identical handler, additive only. ohm_*, metrecept_*, and
-# metre_* all keep working forever; nothing existing had to change. See
-# docs/BRAND.md's "Technical migration status" for why this is dual-accept,
-# not a rename.
-_METRE_TOOL_ALIASES: dict[str, Any] = {
-    "metre_fetch_web": ohm_fetch_web,
-    "metre_usage": ohm_usage,
-    "metre_models": ohm_models,
-    "metre_cache_trees": ohm_cache_trees,
-    "metre_cache_inventory": ohm_cache_inventory,
-    "metre_savings": ohm_savings,
-    "metre_receipt": ohm_receipt,
-    "metre_register_api_service": ohm_register_api_service,
-    "metre_api_services": ohm_api_services,
-    "metre_api_call": ohm_api_call,
-    "metre_session": ohm_session,
-    "metre_providers": ohm_providers,
-    "metre_policy": ohm_policy,
-    "metre_chat": ohm_chat,
-}
-for _alias_name, _handler_fn in _METRE_TOOL_ALIASES.items():
     mcp.tool(name=_alias_name)(_handler_fn)
 
 

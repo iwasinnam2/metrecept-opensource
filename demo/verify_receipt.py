@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Verify a Metrecept cache-hit receipt from a cold start.
+"""Verify a withOhm cache-hit receipt from a cold start.
 
 Usage:
   python demo/verify_receipt.py <receipt-jws> [--base https://api.metrecept.co.uk]
 
-Takes the X-Ohm-Receipt / X-Metrecept-Receipt response header value, fetches
-the public JWKS from /.well-known/http-message-signatures-directory on the
-given base, resolves the signing key by the JWS `kid` (RFC 7638
-thumbprint), and verifies the Ed25519 signature. Prints the receipt payload
-on success; exits non-zero on any mismatch. Requires only `cryptography`
-(no Metrecept package, on purpose — the point is that a stranger can
-check the claim).
+Takes the X-Ohm-Receipt response header value, fetches the public JWKS from
+/.well-known/http-message-signatures-directory on the given base, resolves
+the signing key by the JWS `kid` (RFC 7638 thumbprint), and verifies the
+Ed25519 signature. Prints the receipt payload on success; exits non-zero on
+any mismatch. Requires only `cryptography` (no withOhm code, on purpose —
+the point is that a stranger can check the claim).
 """
 
 from __future__ import annotations
@@ -43,10 +42,7 @@ def jwk_thumbprint(jwk: dict) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "receipt",
-        help="X-Ohm-Receipt / X-Metrecept-Receipt header value (compact JWS)",
-    )
+    parser.add_argument("receipt", help="X-Ohm-Receipt header value (compact JWS)")
     parser.add_argument("--base", default="https://api.metrecept.co.uk")
     args = parser.parse_args()
 
@@ -70,7 +66,7 @@ def main() -> int:
             for k in directory.get("keys", [])
             if k.get("kty") == "OKP"
             and k.get("crv") == "Ed25519"
-            and jwk_thumbprint(k) == kid
+            and (k.get("kid") == kid or jwk_thumbprint(k) == kid)
         ),
         None,
     )

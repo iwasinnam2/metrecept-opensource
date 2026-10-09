@@ -1,14 +1,14 @@
 ---
 name: ohm-savings
 description: >
-  Metrecept cache savings snapshot via MCP ohm_savings (dual ledger: provider
+  withOhm cache savings snapshot via MCP ohm_savings (dual ledger: provider
   avoided, pipe rent, ROI). Use when checking how much the prompt cache is
-  saving — Metrecept, ohm, savings, cache.
+  saving — withOhm, ohm, savings, cache.
 ---
 
-# Metrecept savings
+# Ohm savings
 
-Call the Metrecept MCP tool `ohm_savings` for a cache savings snapshot.
+Call the Ohm MCP tool `ohm_savings` for a cache savings snapshot.
 
 ## Call
 
@@ -19,4 +19,4 @@ ohm_savings()
 Returns the dual savings ledger from `GET /v1/savings`: estimated provider
 $ avoided, pipe rent, roi_ratio (all estimate_only). Pair with `/ohm-usage`.
 
-Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Ohm MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.

@@ -22,7 +22,7 @@ if (-not $env:OHM_API_KEY) {
 
 $body = @{
     model    = "mock"
-    messages = @(@{ role = "user"; content = "metrecept-opensource demo $(Get-Date -UFormat %s)" })
+    messages = @(@{ role = "user"; content = "withohm-open demo $(Get-Date -UFormat %s)" })
 } | ConvertTo-Json -Compress
 
 $headers = @{
@@ -42,14 +42,11 @@ if ($resp2.Headers['X-AT-Billed-USD']) {
     Write-Output "X-AT-Billed-USD: $($resp2.Headers['X-AT-Billed-USD'])"
 }
 
-$receipt = $resp2.Headers['X-Metrecept-Receipt']
-if (-not $receipt) {
-    $receipt = $resp2.Headers['X-Ohm-Receipt']
-}
+$receipt = $resp2.Headers['X-Ohm-Receipt']
 if ($receipt) {
     Write-Output ""
-    Write-Output "== Verifying the signed receipt (zero Metrecept code) =="
+    Write-Output "== Verifying the signed receipt (zero withOhm code) =="
     python "$PSScriptRoot\verify_receipt.py" "$receipt" --base $BaseUrl
 } else {
-    Write-Output "(no X-Ohm-Receipt / X-Metrecept-Receipt header on this response -- receipts may be disabled for this tenant)"
+    Write-Output "(no X-Ohm-Receipt header on this response -- receipts may be disabled for this tenant)"
 }

@@ -1,7 +1,7 @@
-"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Metrecept.
+"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Ohm.
 
-Package path remains at_utility_sdk / at-utility-sdk until a coordinated
-package-name cutover. Product is Metrecept.
+Package path remains at_utility_sdk / at-utility-sdk until first PyPI publish
+renames to ohm-sdk.
 """
 
 from __future__ import annotations
@@ -9,12 +9,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from at_utility_sdk.inhouse import wrap_generate
-from at_utility_sdk.receipt_check import check_receipt
-
 
 # Public API host (live). Use LOCAL_BASE_URL for local development.
-DEFAULT_BASE_URL = "https://api.metrecept.co.uk/v1"
+DEFAULT_BASE_URL = "https://api.withohm.dev/v1"
 LOCAL_BASE_URL = "http://127.0.0.1:8081/v1"
 UPSTREAM_KEY_HEADER = "X-Ohm-Upstream-Key"
 
@@ -40,15 +37,6 @@ def openai_client(
 
         from at_utility_sdk import openai_client
         client = openai_client("sk-at-...", upstream_api_key="sk-proj-...")
-
-    Returns a bare ``openai.OpenAI(...)`` client — headers are not
-    intercepted here (see ``wrap_generate`` for the automatic check). To
-    verify a signed receipt on a HIT, call ``.with_raw_response`` and pass
-    the headers to ``check_receipt``:
-
-        resp = client.chat.completions.with_raw_response.create(...)
-        check_receipt(resp.headers, base_url=str(client.base_url))
-        completion = resp.parse()
     """
     try:
         from openai import OpenAI
@@ -131,6 +119,27 @@ def web_context_extra(
     return body
 
 
+def __getattr__(name: str):
+    """Load wrap_generate without pulling cryptography into openai_client."""
+    if name == "wrap_generate":
+        from at_utility_sdk.inhouse import wrap_generate
+
+        return wrap_generate
+    if name == "packet_digest":
+        from at_utility_sdk.inhouse import packet_digest
+
+        return packet_digest
+    if name == "check_receipt":
+        from at_utility_sdk.receipt_check import check_receipt
+
+        return check_receipt
+    if name in ("receipt_trailer", "verify_url", "verify_url_from_headers"):
+        from at_utility_sdk import receipt_link
+
+        return getattr(receipt_link, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 __all__ = [
     "ALLOWED_WEB_PURPOSES",
     "AtUtilityClientOptions",
@@ -140,8 +149,12 @@ __all__ = [
     "check_receipt",
     "compliance_policy_url",
     "openai_client",
+    "packet_digest",
+    "receipt_trailer",
     "usage_url",
     "enterprise_skus_url",
+    "verify_url",
+    "verify_url_from_headers",
     "web_context_extra",
     "wrap_generate",
 ]

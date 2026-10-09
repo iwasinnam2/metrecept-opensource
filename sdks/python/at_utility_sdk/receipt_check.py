@@ -97,7 +97,11 @@ def _resolve_jwk(root: str, kid: str) -> Optional[dict]:
         return None
     for jwk in directory.get("keys", []):
         if jwk.get("kty") == "OKP" and jwk.get("crv") == "Ed25519":
-            cached[_jwk_thumbprint(jwk)] = jwk
+            thumb = _jwk_thumbprint(jwk)
+            cached[thumb] = jwk
+            published = jwk.get("kid")
+            if published:
+                cached[published] = jwk
     if kid not in cached:
         log.warning(
             "metrecept receipt check: no Ed25519 key with kid=%r in %s%s",
