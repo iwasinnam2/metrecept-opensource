@@ -47,3 +47,14 @@ body = body + "\n\n" + receipt_trailer(response.headers)
 It also accepts the JSON of `GET /v1/sessions/{id}`. Returns `""` when
 there is nothing to link. The JWS rides the URL fragment, so it never
 reaches a server log.
+
+A streamed MISS cannot carry its receipt in a header (the headers leave
+before the provider has finished), so it rides as the last `data:` chunk
+before `[DONE]`, with empty `choices`. Read it out of the stream you kept:
+
+```python
+from at_utility_sdk import receipt_from_sse_lines, verify_url
+
+jws = receipt_from_sse_lines(captured.splitlines())   # "" when the stream did not finish
+link = verify_url(jws) if jws else ""
+```

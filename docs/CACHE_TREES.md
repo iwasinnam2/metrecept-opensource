@@ -27,7 +27,7 @@ Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline S
 
 ## Storage honesty (what's actually shipped)
 
-Named-tree blobs use per-tree keys today. **Promote** copies child-local digests into the parent key space — it is not yet a single shared content-addressed object store with reference counting. This is a deliberate distinction worth stating plainly rather than glossing over: **do not expect "zero duplication, one blob many refs"** from the current implementation. A more storage-efficient shared-object design is a named future phase, not shipped, and this doc will keep saying so until it is.
+Named-tree blobs use per-tree Redis keys. CoW reads walk the parent chain and serve a parent blob without copying it into the child. **Promote is a metadata write**: for each digest the child holds, the parent gets one ref naming the tree that holds the bytes, the owner blob's expiry is extended to at least the cache TTL and never shortened, and the parent index gains the digest. Bytes are never copied (`bytes_copied` is always `0` in the promote response). A ref whose bytes have expired is a MISS, not a stale HIT. `GET /v1/cache/trees/{tree_id}/entries` shows `served_from`, `ref` and `refs` per digest. This is one blob, many refs, within one tenant; there is no cross-tenant sharing.
 
 This candor is itself part of the pitch: the goal is a repo that tells you what's true today, not what's aspirational.
 

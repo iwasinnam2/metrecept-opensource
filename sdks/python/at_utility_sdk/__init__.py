@@ -133,10 +133,17 @@ def __getattr__(name: str):
         from at_utility_sdk.receipt_check import check_receipt
 
         return check_receipt
-    if name in ("receipt_trailer", "verify_url", "verify_url_from_headers"):
+    if name in (
+        "receipt_trailer", "verify_url", "verify_url_from_headers", "receipt_from_sse_lines",
+        "share_link", "receipt_kind",
+    ):
         from at_utility_sdk import receipt_link
 
         return getattr(receipt_link, name)
+    if name in ("attest_headers", "new_attest_key", "check_cosigned"):
+        from at_utility_sdk import attest
+
+        return getattr(attest, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
@@ -146,13 +153,19 @@ __all__ = [
     "DEFAULT_BASE_URL",
     "LOCAL_BASE_URL",
     "UPSTREAM_KEY_HEADER",
+    "attest_headers",
+    "check_cosigned",
     "check_receipt",
     "compliance_policy_url",
     "openai_client",
     "packet_digest",
+    "receipt_from_sse_lines",
+    "receipt_kind",
+    "share_link",
     "receipt_trailer",
     "usage_url",
     "enterprise_skus_url",
+    "new_attest_key",
     "verify_url",
     "verify_url_from_headers",
     "web_context_extra",

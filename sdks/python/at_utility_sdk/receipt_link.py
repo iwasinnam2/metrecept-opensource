@@ -15,11 +15,21 @@ Design: docs/superpowers/specs/2026-10-09-receipt-link-distribution-design.md
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+import json
+from typing import Any, Iterable, Mapping
 
 PUBLIC_VERIFY_BASE = "https://metrecept.co.uk/verify"
 VERIFY_HEADER_NAME = "x-metrecept-verify"
 RECEIPT_HEADER_NAMES = ("x-metrecept-receipt", "x-ohm-receipt")
+RECEIPT_SSE_KEY = "metrecept"
+# The stamped link (twin of ``at_utility.receipts.share_link``): unfurlers
+# fetch without the fragment, so the kind rides in the query and the site
+# serves "Metrecept | 1x Signed Receipt · <kind>" as the preview; the JWS
+# stays after the # and is handed to /verify unchanged.
+RECEIPT_LINK_BASE = "https://metrecept.co.uk/functions/receipt"
+LINK_KINDS = frozenset(
+    {"session", "cache_hit", "cache_miss", "cache_bypass", "api_call", "custody", "statement", "carve", "disperse"}
+)
 
 
 def verify_url(jws: str) -> str:
@@ -28,6 +38,31 @@ def verify_url(jws: str) -> str:
     if text.count(".") != 2 or not all(text.split(".")):
         raise ValueError("verify_url expects a compact JWS (three dot-separated parts)")
     return f"{PUBLIC_VERIFY_BASE}#{text}"
+
+
+def receipt_kind(jws: str) -> str:
+    """The ``kind`` the receipt's own payload carries (unverified read of the
+    middle segment), ``""`` when it cannot be read."""
+    parts = (jws or "").strip().split(".")
+    if len(parts) != 3 or not all(parts):
+        return ""
+    try:
+        import base64
+
+        payload = json.loads(base64.urlsafe_b64decode(parts[1] + "=" * (-len(parts[1]) % 4)))
+    except (ValueError, TypeError):
+        return ""
+    return str(payload.get("kind") or "") if isinstance(payload, dict) else ""
+
+
+def share_link(jws: str) -> str:
+    """The link to paste where a preview will be drawn: stamped with the
+    receipt's kind when the site names that kind, else ``verify_url``."""
+    url = verify_url(jws)
+    kind = receipt_kind(jws)
+    if kind in LINK_KINDS:
+        return f"{RECEIPT_LINK_BASE}?kind={kind}#{jws.strip()}"
+    return url
 
 
 def _lower(headers: Mapping[str, Any]) -> dict[str, str]:
@@ -73,10 +108,40 @@ def receipt_trailer(source: Mapping[str, Any], *, label: str = "Receipt") -> str
     return f"{label}: {url}" if url else ""
 
 
+def receipt_from_sse_lines(lines: Iterable[str]) -> str:
+    """The receipt out of a captured stream: the ``data:`` chunk whose
+    ``metrecept.receipt`` is a compact JWS. ``""`` when the stream carried
+    none (a stream that did not finish cleanly carries none)."""
+    for raw in lines:
+        line = str(raw).strip()
+        if not line.startswith("data:"):
+            continue
+        body = line[5:].strip()
+        if not body or body == "[DONE]":
+            continue
+        try:
+            obj = json.loads(body)
+        except ValueError:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        tag = obj.get(RECEIPT_SSE_KEY)
+        jws = str((tag or {}).get("receipt") or "").strip() if isinstance(tag, dict) else ""
+        if jws.count(".") == 2 and all(jws.split(".")):
+            return jws
+    return ""
+
+
 __all__ = [
+    "LINK_KINDS",
     "PUBLIC_VERIFY_BASE",
     "RECEIPT_HEADER_NAMES",
+    "RECEIPT_LINK_BASE",
+    "RECEIPT_SSE_KEY",
     "VERIFY_HEADER_NAME",
+    "receipt_from_sse_lines",
+    "receipt_kind",
+    "share_link",
     "receipt_trailer",
     "verify_url",
     "verify_url_from_headers",

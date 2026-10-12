@@ -104,6 +104,41 @@ export function verifyUrl(jws: string): string {
   return `${PUBLIC_VERIFY_BASE}#${text}`;
 }
 
+/** The stamped link, for pasting where a preview will be drawn. Unfurlers
+ * fetch without the fragment, so the kind rides in the query and the site
+ * serves "Metrecept | 1x Signed Receipt · <kind>" as the preview; the JWS
+ * stays after the # and is handed to /verify unchanged. Twin of
+ * at_utility.receipts.share_link. Unknown kinds fall back to verifyUrl. */
+export const RECEIPT_LINK_BASE = "https://metrecept.co.uk/functions/receipt";
+export const LINK_KINDS: ReadonlySet<string> = new Set([
+  "session", "cache_hit", "cache_miss", "cache_bypass", "api_call", "custody", "statement", "carve", "disperse",
+]);
+
+/** The `kind` the receipt's own payload carries (unverified read), or "". */
+export function receiptKind(jws: string): string {
+  const parts = (jws || "").trim().split(".");
+  if (parts.length !== 3 || parts.some((p) => p.length === 0)) return "";
+  try {
+    // atob is a global in browsers, Node >= 16, Deno and Bun; no Buffer so
+    // this file stays free of Node-only names.
+    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const bin: string = atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const payload = JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>;
+    return String(payload?.kind ?? "");
+  } catch {
+    return "";
+  }
+}
+
+export function shareLink(jws: string): string {
+  const url = verifyUrl(jws);
+  const kind = receiptKind(jws);
+  if (LINK_KINDS.has(kind)) return `${RECEIPT_LINK_BASE}?kind=${kind}#${jws.trim()}`;
+  return url;
+}
+
 function headerGet(headers: Headers | Record<string, unknown>, name: string): string {
   if (typeof Headers !== "undefined" && headers instanceof Headers) {
     return (headers.get(name) || "").trim();
@@ -159,4 +194,26 @@ export function receiptTrailer(
     url = verifyUrlFromHeaders(source as Headers | Record<string, string>);
   }
   return url ? `${label}: ${url}` : "";
+}
+
+/** The receipt out of a captured SSE stream: the `data:` chunk whose
+ * `metrecept.receipt` is a compact JWS. Empty string when none (a stream
+ * that did not finish cleanly carries none). */
+export function receiptFromSse(text: string): string {
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line.startsWith("data:")) continue;
+    const body = line.slice(5).trim();
+    if (!body || body === "[DONE]") continue;
+    let obj: unknown;
+    try {
+      obj = JSON.parse(body);
+    } catch {
+      continue;
+    }
+    const tag = (obj as { metrecept?: { receipt?: unknown } } | null)?.metrecept;
+    const jws = typeof tag?.receipt === "string" ? tag.receipt.trim() : "";
+    if (jws.split(".").length === 3 && jws.split(".").every(Boolean)) return jws;
+  }
+  return "";
 }

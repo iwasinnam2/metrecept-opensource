@@ -85,8 +85,50 @@ def main() -> int:
 
     payload = json.loads(b64u_decode(parts[1]))
     print("OK: signature verifies against", directory_url)
+    print(summarize(payload))
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
+
+
+def _short(value: object) -> str:
+    text = str(value or "")
+    return f"{text[:16]}\u2026" if len(text) > 16 else text
+
+
+def summarize(payload: dict) -> str:
+    """One line in words. The signature check above is the same for every
+    kind; only this line changes. Unknown kinds are still verified."""
+    kind = payload.get("kind", "?")
+    if kind == "cache_hit":
+        line = (
+            f"cache_hit: model={payload.get('model')!r} tokens_replayed={payload.get('tokens_replayed')} "
+            f"pipe_usd={payload.get('pipe_usd')} plane={payload.get('plane')}"
+        )
+    elif kind in ("cache_miss", "cache_bypass"):
+        tree = payload.get("tree_id") or "main"
+        tail = (
+            f"filled tree={tree} (the window the next HIT replays from)"
+            if kind == "cache_miss"
+            else f"not cached (caller asked to bypass tree={tree})"
+        )
+        line = (
+            f"{kind}: model={payload.get('model')!r} pipe_usd={payload.get('pipe_usd')} "
+            f"plane={payload.get('plane')} request_sha256={_short(payload.get('request_sha256'))} {tail}"
+        )
+    elif kind == "api_call":
+        line = f"api_call: pipe_usd={payload.get('pipe_usd')} request_sha256={_short(payload.get('request_sha256'))}"
+    elif kind == "session":
+        line = (
+            f"session (id hashed, never embedded raw): event_count={payload.get('event_count')} "
+            f"api_calls={payload.get('api_calls')} cache_hits={payload.get('cache_hits')} "
+            f"cache_misses={payload.get('cache_misses')} fetches={payload.get('fetches')} "
+            f"pipe_usd={payload.get('pipe_usd')}"
+        )
+    else:
+        line = f"kind={kind!r} (no one-line summary for this kind; verified all the same)"
+    if payload.get("response_sha256"):
+        line += f" response_sha256={_short(payload.get('response_sha256'))}"
+    return line
 
 
 if __name__ == "__main__":

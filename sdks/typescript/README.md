@@ -49,3 +49,14 @@ const prBody = `${data.choices[0].message.content}\n\n${receiptTrailer(response.
 when the response carried no receipt. It also accepts the body of
 `GET /v1/sessions/{id}`. The reader checks the Ed25519 signature in their
 browser against the public JWKS, no account. The JWS rides the URL fragment.
+
+A streamed MISS cannot carry its receipt in a header (the headers leave
+before the provider has finished), so it rides as the last `data:` chunk
+before `[DONE]`, with empty `choices`. Read it out of the stream you kept:
+
+```ts
+import { receiptFromSse, verifyUrl } from "@at-utility/sdk";
+
+const jws = receiptFromSse(captured); // "" when the stream did not finish
+const link = jws ? verifyUrl(jws) : "";
+```
