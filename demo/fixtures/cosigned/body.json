@@ -1,9 +1,0 @@
-{
-  "messages": [
-    {
-      "content": "One co-signed crossing: the caller signed this body, the pipe signed the receipt. State in one line what each signature proves.",
-      "role": "user"
-    }
-  ],
-  "model": "mock"
-}
