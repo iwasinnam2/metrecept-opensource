@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-"""Verify a withOhm cache-hit receipt from a cold start.
+"""Verify a Metrecept receipt from a cold start.
 
 Usage:
   python demo/verify_receipt.py <receipt-jws> [--base https://api.metrecept.co.uk]
+  python demo/verify_receipt.py <receipt-jws> --attest <X-Metrecept-Attest-jws>
 
-Takes the X-Ohm-Receipt response header value, fetches the public JWKS from
+Takes the X-Metrecept-Receipt (legacy X-Ohm-Receipt) response header value,
+or a https://metrecept.co.uk/verify#<jws> link, fetches the public JWKS from
 /.well-known/http-message-signatures-directory on the given base, resolves
 the signing key by the JWS `kid` (RFC 7638 thumbprint), and verifies the
 Ed25519 signature. Prints the receipt payload on success; exits non-zero on
-any mismatch. Requires only `cryptography` (no withOhm code, on purpose —
+any mismatch. Requires only `cryptography` (no Metrecept code, on purpose -
 the point is that a stranger can check the claim).
+
+With --attest it also checks the other half of a co-signed receipt: the
+caller's own Ed25519 signature over the request body (sent as the
+X-Metrecept-Attest header) and the binding between the two
+(receipt.attest_sha256 == sha256(attestation),
+receipt.body_sha256 == attestation.body_sha256). Two parties, one count.
 """
 
 from __future__ import annotations
@@ -24,6 +32,7 @@ import urllib.request
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 DIRECTORY_PATH = "/.well-known/http-message-signatures-directory"
+ATTEST_TYP = "metrecept-attest+jws"
 
 
 def b64u_decode(text: str) -> bytes:
@@ -40,22 +49,25 @@ def jwk_thumbprint(jwk: dict) -> str:
     return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("receipt", help="X-Ohm-Receipt header value (compact JWS)")
-    parser.add_argument("--base", default="https://api.metrecept.co.uk")
-    args = parser.parse_args()
+def extract_jws(text: str) -> str:
+    """Accept a bare compact JWS or a verify link with the JWS in the fragment."""
+    text = text.strip()
+    if "#" in text and "://" in text:
+        return text.split("#", 1)[1].strip()
+    return text
 
-    parts = args.receipt.strip().split(".")
+
+def verify(receipt: str, base: str = "https://api.metrecept.co.uk", attest: str = "") -> tuple[bool, dict | None, list[str]]:
+    """Return (ok, payload, lines). Network: one GET of the key directory."""
+    lines: list[str] = []
+    parts = extract_jws(receipt).split(".")
     if len(parts) != 3:
-        print("FAIL: not a compact JWS (expected three dot-separated parts)")
-        return 1
+        return False, None, ["FAIL: not a compact JWS (expected three dot-separated parts)"]
     header = json.loads(b64u_decode(parts[0]))
     if header.get("alg") != "EdDSA":
-        print(f"FAIL: unexpected alg {header.get('alg')!r}")
-        return 1
+        return False, None, [f"FAIL: unexpected alg {header.get('alg')!r}"]
 
-    directory_url = args.base.rstrip("/") + DIRECTORY_PATH
+    directory_url = base.rstrip("/") + DIRECTORY_PATH
     with urllib.request.urlopen(directory_url, timeout=15) as res:
         directory = json.loads(res.read().decode("utf-8"))
 
@@ -71,8 +83,7 @@ def main() -> int:
         None,
     )
     if jwk is None:
-        print(f"FAIL: no Ed25519 key with kid={kid!r} in {directory_url}")
-        return 1
+        return False, None, [f"FAIL: no Ed25519 key with kid={kid!r} in {directory_url}"]
 
     public = Ed25519PublicKey.from_public_bytes(b64u_decode(jwk["x"]))
     try:
@@ -80,14 +91,52 @@ def main() -> int:
             b64u_decode(parts[2]), (parts[0] + "." + parts[1]).encode("ascii")
         )
     except Exception:  # noqa: BLE001
-        print("FAIL: signature does not verify — receipt is forged or altered")
-        return 1
+        return False, None, ["FAIL: signature does not verify - receipt is forged or altered"]
 
     payload = json.loads(b64u_decode(parts[1]))
-    print("OK: signature verifies against", directory_url)
-    print(summarize(payload))
-    print(json.dumps(payload, indent=2, sort_keys=True))
-    return 0
+    lines.append(f"OK: signature verifies against {directory_url}")
+    lines.append(summarize(payload))
+    if attest:
+        problem = check_cosigned(payload, attest.strip())
+        if problem:
+            lines.append(f"FAIL (co-sign): {problem}")
+            return False, payload, lines
+        lines.append(
+            f"OK (co-sign): caller key {payload.get('attest_kid')} signed "
+            f"body_sha256 {payload.get('body_sha256')} and the pipe bound that "
+            "attestation into this receipt"
+        )
+    elif payload.get("attest_sha256"):
+        lines.append(
+            "NOTE: this receipt is co-signed (attest_sha256 present). Pass "
+            "--attest <X-Metrecept-Attest JWS> to check the caller's half."
+        )
+    return True, payload, lines
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "receipt",
+        help="X-Metrecept-Receipt header value (compact JWS) or a "
+        "https://metrecept.co.uk/verify#<jws> link",
+    )
+    parser.add_argument("--base", default="https://api.metrecept.co.uk")
+    parser.add_argument(
+        "--attest",
+        default="",
+        help="The X-Metrecept-Attest JWS the caller sent with this request. "
+        "When given, also checks the caller's own signature and that the "
+        "receipt binds exactly this attestation (co-signed receipt).",
+    )
+    args = parser.parse_args()
+
+    ok, payload, lines = verify(args.receipt, args.base, args.attest)
+    for line in lines:
+        print(line)
+    if payload is not None:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    return 0 if ok else 1
 
 
 def _short(value: object) -> str:
@@ -128,7 +177,54 @@ def summarize(payload: dict) -> str:
         line = f"kind={kind!r} (no one-line summary for this kind; verified all the same)"
     if payload.get("response_sha256"):
         line += f" response_sha256={_short(payload.get('response_sha256'))}"
+    if payload.get("attest_sha256"):
+        line += f" co-signed(attest_kid={payload.get('attest_kid')})"
     return line
+
+
+def check_cosigned(payload: dict, attest_jws: str) -> str:
+    """Return "" when the attestation verifies on its own embedded key and
+    the receipt binds exactly it; otherwise one sentence saying what failed.
+
+    Receipt side (already signature-checked above): attest_sha256,
+    attest_kid, body_sha256. Attestation side: EdDSA compact JWS, typ
+    metrecept-attest+jws, header.jwk OKP/Ed25519 with kid == RFC 7638
+    thumbprint, payload {"v":1,"body_sha256":<hex>,"iat":<unix>}.
+    """
+    expected = payload.get("attest_sha256")
+    if not expected:
+        return "receipt carries no attest_sha256; it was not co-signed"
+    if hashlib.sha256(attest_jws.encode("ascii")).hexdigest() != expected:
+        return "this attestation is not the one bound into the receipt"
+    parts = attest_jws.split(".")
+    if len(parts) != 3 or not all(parts):
+        return "attestation is not a compact JWS"
+    try:
+        header = json.loads(b64u_decode(parts[0]))
+        body = json.loads(b64u_decode(parts[1]))
+        sig = b64u_decode(parts[2])
+    except Exception:  # noqa: BLE001
+        return "attestation segments do not decode"
+    if header.get("alg") != "EdDSA" or header.get("typ") != ATTEST_TYP:
+        return f"attestation alg/typ must be EdDSA/{ATTEST_TYP}"
+    jwk = header.get("jwk") or {}
+    if jwk.get("kty") != "OKP" or jwk.get("crv") != "Ed25519" or not jwk.get("x"):
+        return "attestation header must carry an OKP/Ed25519 jwk"
+    if header.get("kid") != jwk_thumbprint(jwk):
+        return "attestation kid is not the RFC 7638 thumbprint of its jwk"
+    if header.get("kid") != payload.get("attest_kid"):
+        return "receipt attest_kid does not match the attestation key"
+    try:
+        Ed25519PublicKey.from_public_bytes(b64u_decode(jwk["x"])).verify(
+            sig, (parts[0] + "." + parts[1]).encode("ascii")
+        )
+    except Exception:  # noqa: BLE001
+        return "attestation signature does not verify"
+    if body.get("v") != 1:
+        return "attestation v must be 1"
+    if body.get("body_sha256") != payload.get("body_sha256"):
+        return "attestation body_sha256 differs from the receipt's body_sha256"
+    return ""
 
 
 if __name__ == "__main__":
