@@ -342,12 +342,6 @@ async def ohm_session(session_id: str, ctx: Optional[Context] = None) -> str:
     X-Ohm-Session id into one signed receipt: event count, total cost,
     per-kind counts, first/last timestamps. Read-only — no new call made.
 
-    The response carries `receipt` (compact JWS) and `verify_url`
-    (https://metrecept.co.uk/verify#<jws>). Put `verify_url` in whatever
-    this session produced — the PR description, the ticket, the email — so
-    whoever reads that artefact can verify the run in their browser against
-    the public JWKS, no account.
-
     Args:
       session_id: The same id passed as X-Ohm-Session on the calls that made
         up this session.
