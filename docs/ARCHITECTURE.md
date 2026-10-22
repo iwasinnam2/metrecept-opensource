@@ -4,7 +4,7 @@ Inside withOhm: an ephemeral exact-replay side and a durable governance pipeline
 
 ## Top-level overview
 
-Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, withOhm splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and, on HIT, receipted.
+Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, withOhm splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and receipted — every call, HIT or MISS, gets an Ed25519-signed receipt.
 
 This separation is what makes exact-replay economically and operationally real. Inventory can be forked, isolated, and promoted without pretending to be a database. Money, policy, and compliance stay durable without sitting on the Redis hot path.
 
@@ -63,13 +63,13 @@ The Ephemeral Side is where identical requests become free of upstream tokens. F
 **It exists to serve and store exact-replay inventory, not to define money or law.**
 
 - **Edge (`gateway-rs`, Rust)** — Redis GET on the hot path; stamps cache/plane headers.
-- **Content-addressed blobs** — immutable completion JSON at `digest` (SHA-256 of canonicalized model + messages + extras).
+- **Content-addressed blobs** — immutable completion JSON at `digest` (SHA-256 of the exact request bytes).
 - **Cache trees** — named namespaces over digests. Default `main` keeps the durable, shared inventory; named trees isolate a branch/PR/agent run. See [CACHE_TREES.md](CACHE_TREES.md).
 - **Request context** — BYOK header (never persisted), optional tree header, `cache_control: no_store`.
 
 When a chat request arrives:
 
-- The request is canonicalized and hashed.
+- The exact request bytes are hashed (SHA-256).
 - On **HIT**, the blob is returned; the Pipeline mints a meter event and optional signed receipt. The lab is not called.
 - On **MISS**, the Pipeline routes to an upstream provider (BYOK); the completion is written into the active tree (unless `no_store`).
 
@@ -85,7 +85,7 @@ Governance is composed of clear roles rather than one monolithic "proxy brain":
 - **Meters -> ledger** — HIT / MISS / fetch, metered and auditable
 - **Compliance ingest** — purpose, robots.txt, SSRF, PII — before bytes reach a model. See [COMPLIANCE.md](COMPLIANCE.md).
 - **Provider route** — multi-vendor BYOK; pre-first-byte failover honesty (no mid-stream magic)
-- **Trust** — JWKS directory, HIT receipts, a published honesty map
+- **Trust** — JWKS directory, per-call receipts (HIT or MISS), a published honesty map
 
 ### Correctness of claims
 
@@ -113,7 +113,7 @@ sequenceDiagram
   E-->>C: completion (X-AT-Cache: HIT)
 ```
 
-1. **Canonicalize and hash** the request (tree-scoped key).
+1. **Hash** the exact request bytes with SHA-256 (tree-scoped key).
 2. **GET** from Redis on the Ephemeral Side.
 3. **Pipeline gate** records the HIT meter and may mint `X-Ohm-Receipt`.
 4. **Return** the blob. No upstream tokens.

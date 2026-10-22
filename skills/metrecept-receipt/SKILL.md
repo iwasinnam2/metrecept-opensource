@@ -11,7 +11,7 @@ Call `metrecept_receipt(display_name="")` to mint a public **aggregate**
 savings receipt from the dual savings ledger. Returns a `/r/…` URL.
 Receipts are `estimate_only` — aggregates only, never prompts.
 
-This is not the cryptographic per-call JWS on a cache HIT
+This is not the cryptographic per-call JWS minted on every call, HIT or MISS
 (`X-Ohm-Receipt` / `X-Metrecept-Receipt`). Pair with `metrecept_savings`
 if you need the numbers before minting.
 

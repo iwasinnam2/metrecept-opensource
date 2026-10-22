@@ -1,10 +1,10 @@
-# Signed cache-hit receipts
+# Signed receipts
 
-Every cache HIT can carry a **signed receipt** — a detached proof of what the pipe did, verifiable by anyone against a public key. This is "replay and audit value" as an artifact instead of a sentence: don't trust the savings copy, verify the receipt.
+A receipt is signed for each hop that clears, HIT or MISS: an Ed25519-signed **receipt** — a detached proof of what the pipe did, verifiable by anyone against a public key. This is "replay and audit value" as an artifact instead of a sentence: don't trust the savings copy, verify the receipt.
 
 ## What a receipt is
 
-A compact JWS (EdDSA / Ed25519) in the `X-Ohm-Receipt` response header of every served cache hit — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
+A compact JWS (EdDSA / Ed25519) in the `X-Ohm-Receipt` response header — a receipt is signed for each hop that clears, HIT or MISS — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
 
 Payload fields:
 
@@ -15,7 +15,7 @@ Payload fields:
 | `model` | Requested model id |
 | `tokens_replayed` | Upstream tokens that were **not** re-bought |
 | `pipe_usd` | What withOhm billed for the hit (the meter event, 6 dp) |
-| `request_sha256` | The exact-replay identity — digest of the canonicalized request |
+| `request_sha256` | The exact-replay identity — SHA-256 of the exact request bytes |
 | `tenant_sha256` | Truncated tenant fingerprint (self-verifiable, not identifying) |
 | `admit` | `allow` on a served HIT |
 | `meter_event_id` | Digest-scoped meter identifier fragment bound to this release |

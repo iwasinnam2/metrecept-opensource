@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
   Proves the core claim live: an identical request MISSes once, then HITs for
-  free -- and the HIT carries a signed receipt you can verify yourself.
+  free -- and every call, HIT or MISS, carries a signed receipt you can verify yourself.
 
 .EXAMPLE
   $env:OHM_API_KEY = "sk-at-..."

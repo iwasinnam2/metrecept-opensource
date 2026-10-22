@@ -9,7 +9,7 @@ description: >
 # Metrecept chat
 
 Call `metrecept_chat` for OpenAI-compatible chat through the pipe (Redis
-cache on identical prompts; signed receipt on HIT). `ohm_chat` is the
+cache on identical prompts; signed receipt on every call, HIT or MISS). `ohm_chat` is the
 same handler.
 
 ```text

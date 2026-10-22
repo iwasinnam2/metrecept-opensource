@@ -58,7 +58,7 @@ flowchart TB
   ingest --> meters
 ```
 
-One OpenAI-compatible ingress. Two containers that meet at every request on a named crossing — **HIT or MISS** — that's always metered and, on HIT, receipted. Full walkthrough: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+One OpenAI-compatible ingress. Two containers that meet at every request on a named crossing — **HIT or MISS** — that's always metered and receipted — every call, HIT or MISS, gets an Ed25519-signed receipt. Full walkthrough: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Verify it yourself
 
@@ -95,7 +95,7 @@ Or jump straight to the proof: [`demo/`](demo/) walks through cache MISS -> HIT 
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the Ephemeral Side / Pipeline System split, HIT and MISS sequence diagrams
 - [`docs/CACHE_TREES.md`](docs/CACHE_TREES.md) — branchable exact-replay inventory, and the honesty note on what's shipped vs. not
-- [`docs/RECEIPTS.md`](docs/RECEIPTS.md) — the signed cache-hit receipt, field by field
+- [`docs/RECEIPTS.md`](docs/RECEIPTS.md) — the signed per-call receipt (HIT or MISS), field by field
 - [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) — the purpose-bound, robots-aware, PII-redacting web fetch gate
 - [`docs/POSITIONING.md`](docs/POSITIONING.md) — why this shape instead of a routing proxy or provider-native caching
 - [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — tip/tree, HIT/MISS, receipt, pipe rent, BYOK in one page
