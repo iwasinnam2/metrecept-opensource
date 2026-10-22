@@ -168,9 +168,8 @@ def wrap_generate(
         )
         if status >= 400:
             raise RuntimeError(f"inhouse commit failed ({status}): {committed}")
-        # A fresh commit never mints a receipt (receipts prove replay, not
-        # first authorship); the check is intentionally not hooked here, so
-        # absence stays silent.
+        # The receipt check is intentionally not hooked on the commit path,
+        # so absence stays silent here (fail-open).
         return content
 
     return wrapped

@@ -20,7 +20,7 @@ other tenants.
 
 ## What this repo can and cannot prove
 
-- Cache-hit receipts are Ed25519 JWS values. Anyone can verify them
+- Receipts (minted on every call, HIT or MISS) are Ed25519 JWS values. Anyone can verify them
   against `https://api.metrecept.co.uk/.well-known/http-message-signatures-directory`
   using `demo/verify_receipt.py` (depends only on `cryptography`).
 - The signing private key never ships in this repo. A PR that adds a

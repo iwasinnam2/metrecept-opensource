@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Proves the core claim live: an identical request MISSes once, then HITs for
-# free — and the HIT carries a signed receipt you can verify yourself.
+# free — and every call, HIT or MISS, carries a signed receipt you can verify yourself.
 #
 # Usage:
 #   OHM_API_KEY=sk-at-... ./demo/hit_miss_demo.sh

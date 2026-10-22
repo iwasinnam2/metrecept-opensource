@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-metrecept",
   "version": "0.1.0",
-  "description": "Metrecept for n8n: point any AI Agent / Chat Model workflow at a metered, caching LLM gateway that returns a signed, independently verifiable Ed25519 receipt on every cache hit, plus standalone receipt verification and a live usage/spend operation.",
+  "description": "Metrecept for n8n: point any AI Agent / Chat Model workflow at a metered, caching LLM gateway that returns a signed, independently verifiable Ed25519 receipt on every call (HIT or MISS), plus standalone receipt verification and a live usage/spend operation.",
   "keywords": [
     "n8n-community-node-package"
   ],

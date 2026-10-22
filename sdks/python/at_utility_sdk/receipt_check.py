@@ -8,8 +8,8 @@ Ed25519 signature. This module's only import outside stdlib is
 ``cryptography``, on purpose, so a pip-installed caller can audit it
 without trusting anything else in this package either. See docs/RECEIPTS.md.
 
-A receipt is only minted on a cache HIT; a fresh commit never carries one.
-So a missing header here is expected, not a signal, and ``check_receipt``
+Every call through the metrecept workstation gets an Ed25519-signed
+receipt, HIT or MISS. This check is fail-open, so ``check_receipt``
 never warns about absence — only about a receipt that *is* present and
 fails to verify, or a JWKS directory that cannot be reached. Never raises.
 
@@ -116,7 +116,7 @@ def _resolve_jwk(root: str, kid: str) -> Optional[dict]:
 def check_receipt(headers: Mapping[str, Any], *, base_url: str) -> str:
     """Fail-open check of a Metrecept signed receipt header, if present.
 
-    Returns ``"absent"`` (no header — expected on a fresh commit, silent),
+    Returns ``"absent"`` (no header — silent, fail-open),
     ``"valid"`` (signature verified), or ``"invalid"`` (present but did not
     verify, or the JWKS directory could not be resolved — one warning was
     already logged). Never raises; callers should not branch on failure.

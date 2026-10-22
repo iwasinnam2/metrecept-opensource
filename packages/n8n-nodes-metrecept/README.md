@@ -1,8 +1,8 @@
 # n8n-nodes-metrecept
 
 An [n8n](https://n8n.io) community node for [Metrecept](https://metrecept.co.uk) —
-a metered LLM gateway that caches exact-repeat calls and signs every cache
-hit with an independently verifiable Ed25519 receipt. Point a workflow at
+a metered LLM gateway that caches exact-repeat calls and signs every call,
+HIT or MISS, with an independently verifiable Ed25519 receipt. Point a workflow at
 it and a repeated AI Agent / Chat Model call returns for free instead of
 re-billing the model, with cryptographic proof of what actually happened
 attached to the response.

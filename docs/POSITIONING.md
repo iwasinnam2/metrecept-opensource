@@ -27,7 +27,7 @@ withOhm does not sell bigger context windows or wholesale tokens. It rents plumb
 Different jobs — not a strict superset of any one category:
 
 - **Provider-native prompt caching** discounts repeated *input prefix* tokens on a continuation. It never replays a full response, does not work cross-provider, and does nothing for web fetch. Many clients place the cache breakpoint wrong or not at all, so they don't reliably get that discount. withOhm's exact-replay cache skips the call entirely on a byte-identical repeat.
-- **Gateway / routing proxies** are routing layers first; caching bolted on top is typically best-effort in that category and not always billing-grade. withOhm's cache is billing-grade: cross-language (Python/Rust) key parity, a signed receipt per hit.
+- **Gateway / routing proxies** are routing layers first; caching bolted on top is typically best-effort in that category and not always billing-grade. withOhm's cache is billing-grade: cross-language (Python/Rust) key parity, a signed receipt per call, HIT or MISS.
 - **Observability platforms** instrument and log calls; they don't, by default, remove the call. withOhm's replay removes the call itself on an exact repeat.
 
 If routing or logging is genuinely all a team needs, one of the above is the right tool. The bet here is specifically metered, auditable, cross-provider exact-replay plus compliant fetch, in one pipe.

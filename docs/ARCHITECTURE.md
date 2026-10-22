@@ -4,7 +4,7 @@ Inside withOhm: an ephemeral exact-replay side and a durable governance pipeline
 
 ## Top-level overview
 
-Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, withOhm splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and, on HIT, receipted.
+Instead of treating an AI gateway as a single opaque proxy tied to one vendor's session, withOhm splits AI traffic control into two independent containers: an **Ephemeral Side** and a **Pipeline System**. Clients (Agent Shell, SDKs, MCP) talk to one OpenAI-compatible ingress; the two containers meet on every request at a named crossing — **HIT or MISS** — that is always metered and receipted — every call, HIT or MISS, gets an Ed25519-signed receipt.
 
 This separation is what makes exact-replay economically and operationally real. Inventory can be forked, isolated, and promoted without pretending to be a database. Money, policy, and compliance stay durable without sitting on the Redis hot path.
 
@@ -85,7 +85,7 @@ Governance is composed of clear roles rather than one monolithic "proxy brain":
 - **Meters -> ledger** — HIT / MISS / fetch, metered and auditable
 - **Compliance ingest** — purpose, robots.txt, SSRF, PII — before bytes reach a model. See [COMPLIANCE.md](COMPLIANCE.md).
 - **Provider route** — multi-vendor BYOK; pre-first-byte failover honesty (no mid-stream magic)
-- **Trust** — JWKS directory, HIT receipts, a published honesty map
+- **Trust** — JWKS directory, per-call receipts (HIT or MISS), a published honesty map
 
 ### Correctness of claims
 

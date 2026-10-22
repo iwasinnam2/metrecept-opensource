@@ -1,10 +1,10 @@
-# Signed cache-hit receipts
+# Signed receipts
 
-Every cache HIT can carry a **signed receipt** — a detached proof of what the pipe did, verifiable by anyone against a public key. This is "replay and audit value" as an artifact instead of a sentence: don't trust the savings copy, verify the receipt.
+Every call routed through the metrecept workstation — HIT or MISS — carries an Ed25519-signed **receipt** — a detached proof of what the pipe did, verifiable by anyone against a public key. This is "replay and audit value" as an artifact instead of a sentence: don't trust the savings copy, verify the receipt.
 
 ## What a receipt is
 
-A compact JWS (EdDSA / Ed25519) in the `X-Ohm-Receipt` response header of every served cache hit — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
+A compact JWS (EdDSA / Ed25519) in the `X-Ohm-Receipt` response header of every call through the metrecept workstation, HIT or MISS — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
 
 Payload fields:
 

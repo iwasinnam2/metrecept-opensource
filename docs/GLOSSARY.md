@@ -6,7 +6,7 @@ Fast on-ramp if you landed on a deep-dive doc first.
 |------|---------|
 | **Pipe** | withOhm itself — the metered layer between clients and upstream labs. Indie/Cursor-facing framing. |
 | **Chaos governor** | Same pipe, enterprise framing — SSO tenancy, compliant ingest, spend caps, clean ledger over shadow AI spend. |
-| **HIT** | A request whose canonicalized digest already exists in inventory — served from Redis, no upstream call, optionally receipted. |
+| **HIT** | A request whose canonicalized digest already exists in inventory — served from Redis, no upstream call, receipted (as is every MISS). |
 | **MISS** | A request with no matching digest — routed upstream (BYOK), then stored. |
 | **Crossing** | The HIT/MISS decision point. Always metered; the source of economic truth for the pipe. |
 | **Ephemeral Side** | The half of the system that serves and stores exact-replay inventory (edge, cache trees, blobs). Safe to TTL or freeze without losing the ledger. |
