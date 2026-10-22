@@ -7,7 +7,7 @@ When the user wants receipted LLM calls or public URL fetch, use the
 Metrecept MCP tools (`metrecept_chat`, `metrecept_fetch_web`,
 `metrecept_session`). `ohm_*` and `metre_*` names are the same handlers.
 
-Identical canonical requests HIT (exact-match Redis replay). Unique calls
+Byte-identical requests HIT (exact-match Redis replay). Unique calls
 MISS. Prefix overlap is labelled and is not a HIT. Do not claim semantic
 cache, loop-killer, or invented savings percentages.
 

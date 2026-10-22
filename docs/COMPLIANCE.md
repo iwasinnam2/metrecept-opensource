@@ -69,4 +69,4 @@ Two origin responses are honored, not worked around:
 
 ## Why this is architecture, not just policy
 
-The purpose gate, robots check, PII redaction, and SSRF protections all run on the durable Pipeline System (see [ARCHITECTURE.md](ARCHITECTURE.md)) — the same layer that owns billing truth — *before* a request is canonicalized, digested, or sent to a model. A misconfigured or malicious fetch request cannot bypass compliance by racing the cache or the upstream call; there is no path from "client asked for a URL" to "model sees text" that skips the gate.
+The purpose gate, robots check, PII redaction, and SSRF protections all run on the durable Pipeline System (see [ARCHITECTURE.md](ARCHITECTURE.md)) — the same layer that owns billing truth — *before* a request's exact bytes are digested or sent to a model. A misconfigured or malicious fetch request cannot bypass compliance by racing the cache or the upstream call; there is no path from "client asked for a URL" to "model sees text" that skips the gate.

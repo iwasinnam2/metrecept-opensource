@@ -20,7 +20,7 @@ Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline S
 | Default `main` (no header) | Durable, shared exact-replay inventory |
 | Named tree | Isolated per-tree inventory, same digest scheme |
 
-- The digest is always a SHA-256 of the canonicalized request (model + messages + extras) — this is what a receipt's `request_sha256` field refers to.
+- The digest is always the SHA-256 of the exact request bytes — this is what a receipt's `request_sha256` field refers to.
 - Tree id: `[a-z0-9_-]{1,64}`; header `X-Ohm-Cache-Tree` wins over an equivalent body field.
 - Unknown / invalid explicit tree -> `400`.
 - Exact-match only inside a tree. No semantic cache. No cross-tenant trees.

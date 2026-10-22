@@ -63,13 +63,13 @@ The Ephemeral Side is where identical requests become free of upstream tokens. F
 **It exists to serve and store exact-replay inventory, not to define money or law.**
 
 - **Edge (`gateway-rs`, Rust)** — Redis GET on the hot path; stamps cache/plane headers.
-- **Content-addressed blobs** — immutable completion JSON at `digest` (SHA-256 of canonicalized model + messages + extras).
+- **Content-addressed blobs** — immutable completion JSON at `digest` (SHA-256 of the exact request bytes).
 - **Cache trees** — named namespaces over digests. Default `main` keeps the durable, shared inventory; named trees isolate a branch/PR/agent run. See [CACHE_TREES.md](CACHE_TREES.md).
 - **Request context** — BYOK header (never persisted), optional tree header, `cache_control: no_store`.
 
 When a chat request arrives:
 
-- The request is canonicalized and hashed.
+- The exact request bytes are hashed (SHA-256).
 - On **HIT**, the blob is returned; the Pipeline mints a meter event and optional signed receipt. The lab is not called.
 - On **MISS**, the Pipeline routes to an upstream provider (BYOK); the completion is written into the active tree (unless `no_store`).
 
@@ -113,7 +113,7 @@ sequenceDiagram
   E-->>C: completion (X-AT-Cache: HIT)
 ```
 
-1. **Canonicalize and hash** the request (tree-scoped key).
+1. **Hash** the exact request bytes with SHA-256 (tree-scoped key).
 2. **GET** from Redis on the Ephemeral Side.
 3. **Pipeline gate** records the HIT meter and may mint `X-Ohm-Receipt`.
 4. **Return** the blob. No upstream tokens.

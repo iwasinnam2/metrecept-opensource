@@ -8,8 +8,8 @@ Ed25519 signature. This module's only import outside stdlib is
 ``cryptography``, on purpose, so a pip-installed caller can audit it
 without trusting anything else in this package either. See docs/RECEIPTS.md.
 
-Every call through the metrecept workstation gets an Ed25519-signed
-receipt, HIT or MISS. This check is fail-open, so ``check_receipt``
+A receipt is signed for each hop that clears, HIT or MISS (Ed25519).
+A live, signing pipe is all that is required. This check is fail-open, so ``check_receipt``
 never warns about absence — only about a receipt that *is* present and
 fails to verify, or a JWKS directory that cannot be reached. Never raises.
 
