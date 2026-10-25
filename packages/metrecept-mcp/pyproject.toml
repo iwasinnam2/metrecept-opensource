@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 # commands and the ohm_mcp import name are kept as compatibility aliases;
 # metrecept-mcp / metrecept_mcp are primary.
 name = "metrecept-mcp"
-version = "0.2.3"
+version = "0.3.1"
 description = "Metrecept MCP server: signed, independently verifiable Ed25519 receipts for autonomous AI agent calls (chat, web fetch, third-party APIs). Thin client; hosted gateway needs an API key."
 readme = "README.md"
 license = { text = "MIT" }
