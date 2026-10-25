@@ -1,7 +1,7 @@
 {
   "name": "@at-utility/sdk",
   "version": "0.1.1",
-  "description": "Drop-in OpenAI baseURL helpers for Ohm (api.withohm.dev)",
+  "description": "Drop-in OpenAI baseURL helpers for Metrecept (api.metrecept.co.uk)",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iwasinnam2/withohm-open.git",
+    "url": "https://github.com/iwasinnam2/metrecept-opensource.git",
     "directory": "sdks/typescript"
   },
   "keywords": [
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "node -e \"console.log('Publish only after https://api.withohm.dev/v1 answers chat — see docs/PLATFORM.md')\""
+    "prepublishOnly": "node -e \"console.log('Publish only after https://api.metrecept.co.uk/v1 answers chat — see docs/PLATFORM.md')\""
   },
   "peerDependencies": {
     "openai": ">=4.0.0"

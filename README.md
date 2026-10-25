@@ -20,7 +20,7 @@ This is the **public, MIT-licensed** half of Metrecept — the client-side surfa
 | [`demo/`](demo/) | Runnable scripts that prove the claims against the **live** hosted API — no Metrecept code required to verify a receipt |
 | [`sdks/python/`](sdks/python/) | Python OpenAI `base_url` helper (`at-utility-sdk` on PyPI) |
 | [`sdks/typescript/`](sdks/typescript/) | TypeScript/JS helper (`@at-utility/sdk` on npm) |
-| [`packages/ohm-mcp/`](packages/ohm-mcp/) | MCP server for Cursor/Claude agents (`withohm-mcp` on PyPI) |
+| [`packages/ohm-mcp/`](packages/ohm-mcp/) | MCP server for Cursor/Claude agents |
 | [`templates/`](templates/) | Ready-to-clone agent integration templates |
 | [`actions/receipt-link/`](actions/receipt-link/) | GitHub Action: comment the run's signed session receipt on a pull request as a link (`https://metrecept.co.uk/verify#<jws>`) — whoever opens it checks the Ed25519 signature in their browser against the public key directory, no account |
 

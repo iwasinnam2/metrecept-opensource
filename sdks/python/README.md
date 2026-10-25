@@ -13,7 +13,7 @@ pip install -e ".[openai]"
 
 ## Publish to PyPI
 
-Only after `https://api.withohm.dev/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
+Only after `https://api.metrecept.co.uk/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
 
 ```bash
 cd sdks/python
