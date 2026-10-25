@@ -23,5 +23,5 @@ metrecept_fetch_web(
 
 **Purposes:** `public_web_retrieval`, `business_catalog`, `public_company_info`, `job_listings`.
 
-Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`). Stdio: `ohm-mcp` from
+Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`). Stdio: `metrecept-mcp` from
 the GitHub install in the repo README. Docs: https://metrecept.co.uk/docs/cursor

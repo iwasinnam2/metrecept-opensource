@@ -1,10 +1,10 @@
 # Neon + Metrecept — Promote tip into main on merge
-# Copy to your app as .github/workflows/ohm-promote-on-merge.yml
+# Copy to your app as .github/workflows/metrecept-promote-on-merge.yml
 #
-# Secrets: OHM_API_KEY
-# Vars:    OHM_API_URL (optional, default https://api.withohm.dev)
+# Secrets: METRECEPT_API_KEY
+# Vars:    METRECEPT_API_URL (optional, default https://api.metrecept.co.uk)
 
-name: ohm-promote-on-merge
+name: metrecept-promote-on-merge
 
 on:
   push:
@@ -41,19 +41,19 @@ jobs:
       - name: Promote cache tip into main
         if: steps.tree.outputs.skip != 'true'
         env:
-          OHM_API_KEY: ${{ secrets.OHM_API_KEY }}
-          OHM_API_URL: ${{ vars.OHM_API_URL }}
+          METRECEPT_API_KEY: ${{ secrets.METRECEPT_API_KEY }}
+          METRECEPT_API_URL: ${{ vars.METRECEPT_API_URL }}
           TREE_ID: ${{ steps.tree.outputs.tree_id }}
         run: |
-          export OHM_API_URL="${OHM_API_URL:-https://api.withohm.dev}"
-          export OHM_BASE_URL="${OHM_API_URL%/}/v1"
-          SCRIPT=templates/neon-ohm-ci/scripts/ohm_tree.sh
+          export METRECEPT_API_URL="${METRECEPT_API_URL:-https://api.metrecept.co.uk}"
+          export METRECEPT_BASE_URL="${METRECEPT_API_URL%/}/v1"
+          SCRIPT=templates/neon-metrecept-ci/scripts/metrecept_tree.sh
           if [ -f "$SCRIPT" ]; then
             bash "$SCRIPT" promote "$TREE_ID" main
           else
             curl -sS -X POST \
-              "${OHM_BASE_URL}/cache/trees/${TREE_ID}/promote" \
-              -H "Authorization: Bearer ${OHM_API_KEY}" \
+              "${METRECEPT_BASE_URL}/cache/trees/${TREE_ID}/promote" \
+              -H "Authorization: Bearer ${METRECEPT_API_KEY}" \
               -H "Content-Type: application/json" \
               -d '{}'
             echo

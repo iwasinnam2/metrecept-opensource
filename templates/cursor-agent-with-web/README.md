@@ -14,7 +14,7 @@ cd metrecept-opensource/templates/cursor-agent-with-web
 1. Get a free Intermediate seat (card on file, $0 membership): https://metrecept.co.uk/billing/intermediate
    Or open the one-liner install: https://metrecept.co.uk/i
 2. Copy `.cursor/mcp.json.example` → your Cursor MCP config (or merge into project `.cursor/mcp.json`).
-3. Set `OHM_API_KEY` to your `sk-at-…` key. Optional: `OHM_UPSTREAM_KEY` for BYOK model calls.
+3. Set `METRECEPT_API_KEY` to your `sk-at-…` key. Optional: `METRECEPT_UPSTREAM_KEY` for BYOK model calls.
 4. In Cursor chat: ask the agent to fetch a public docs URL.
 
 Paste this to a teammate:

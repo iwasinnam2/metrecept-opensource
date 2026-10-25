@@ -7,7 +7,7 @@ Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` 
 One free key, no card: [metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate) → Checkout ($0 membership) → an `sk-at-…` key. Then:
 
 ```bash
-export OHM_API_KEY="sk-at-..."
+export METRECEPT_API_KEY="sk-at-..."
 ```
 
 Everything below uses `model: "mock"`, which needs no upstream provider key (no BYOK required) — it exists specifically so cache/receipt/tree behavior can be proven without paying an upstream lab.
@@ -65,7 +65,7 @@ The older lead-triage template stays in this folder until the Hub accepts this o
 
 ### `verify_receipt.py`
 
-Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from Metrecept.
+Standalone verifier — takes any `X-Metrecept-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from Metrecept.
 
 ```bash
 python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk

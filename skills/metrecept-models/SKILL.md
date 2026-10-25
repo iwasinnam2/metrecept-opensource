@@ -14,4 +14,4 @@ metrecept_models()
 Returns model ids from `GET /v1/models` (mock works without keys;
 gpt/claude need BYOK). `metrecept_models` is the same handler.
 
-Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).
+Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`).

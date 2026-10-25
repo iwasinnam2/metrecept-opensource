@@ -16,4 +16,4 @@ metrecept_cache_inventory(tree_id="main", limit=25, offset=0)
 entries in one tree — metadata only, never cached message content.
 `metrecept_cache_trees` / `metrecept_cache_inventory` are the same handlers.
 
-Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).
+Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`).

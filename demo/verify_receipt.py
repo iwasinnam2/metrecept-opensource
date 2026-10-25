@@ -5,7 +5,7 @@ Usage:
   python demo/verify_receipt.py <receipt-jws> [--base https://api.metrecept.co.uk]
   python demo/verify_receipt.py <receipt-jws> --attest <X-Metrecept-Attest-jws>
 
-Takes the X-Metrecept-Receipt (legacy X-Ohm-Receipt) response header value,
+Takes the X-Metrecept-Receipt (legacy X-Metrecept-Receipt) response header value,
 or a https://metrecept.co.uk/verify#<jws> link, fetches the public JWKS from
 /.well-known/http-message-signatures-directory on the given base, resolves
 the signing key by the JWS `kid` (RFC 7638 thumbprint), and verifies the

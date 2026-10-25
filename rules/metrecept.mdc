@@ -5,17 +5,16 @@ alwaysApply: false
 
 When the user wants receipted LLM calls or public URL fetch, use the
 Metrecept MCP tools (`metrecept_chat`, `metrecept_fetch_web`,
-`metrecept_session`). `ohm_*` and `metre_*` names are the same handlers.
+`metrecept_session`).
 
 Identical canonical requests HIT (exact-match Redis replay). Unique calls
 MISS. Prefix overlap is labelled and is not a HIT. Do not claim semantic
 cache, loop-killer, or invented savings percentages.
 
-Stdio: `pip install "git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/ohm-mcp"`,
-then `ohm-mcp` with `OHM_API_KEY` (`sk-at-…` from
-https://metrecept.co.uk/billing/intermediate). There is no `metrecept-mcp`
-PyPI package, no `withohm-mcp` on PyPI yet, and no `sk-metre-` key prefix.
-`ohm-mcp` on PyPI is an unrelated third-party tool — do not install that.
+Stdio: `pip install "git+https://github.com/iwasinnam2/metrecept-opensource.git#subdirectory=packages/metrecept-mcp"`,
+then `metrecept-mcp` with `METRECEPT_API_KEY` (`sk-at-…` from
+https://metrecept.co.uk/billing/intermediate). `pip install metrecept-mcp`
+also works. There is no `sk-metre-` key prefix.
 
 Hosted: `https://api.metrecept.co.uk/mcp` with
 `Authorization: Bearer sk-at-…`.

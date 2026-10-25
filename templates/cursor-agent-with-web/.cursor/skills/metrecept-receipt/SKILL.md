@@ -21,4 +21,4 @@ Optional `display_name` labels the public page. Returns a `/r/…` URL (and
 badge markdown). Receipts are `estimate_only` — aggregates only, never prompts.
 
 Pair with `/metrecept-savings` first if you need the numbers before minting.
-Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`METRECEPT_BASE_URL`, `METRECEPT_API_KEY`). See `docs/CURSOR.md`.

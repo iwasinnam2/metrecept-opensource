@@ -41,7 +41,7 @@ function jwkThumbprint(jwk: JwkEd25519): string {
 }
 
 /**
- * Verify a Metrecept receipt (X-Ohm-Receipt / X-Metrecept-Receipt header
+ * Verify a Metrecept receipt (X-Metrecept-Receipt header
  * value — a compact Ed25519 JWS) against the gateway's public JWKS.
  * Never throws; failures resolve to { verified: false, ... }.
  */
@@ -123,7 +123,7 @@ export interface MetreceptChatResult {
  * POST an OpenAI-shaped chat/completions request to the Metrecept gateway
  * and pull the cache + receipt evidence straight off the HTTP response —
  * the same headers any generic HTTP client already sees
- * (X-AT-Cache, X-AT-Billed-USD, X-Ohm-Receipt / X-Metrecept-Receipt).
+ * (X-AT-Cache, X-AT-Billed-USD, X-Metrecept-Receipt).
  * If a receipt header is present, verify it inline so the node's output
  * carries a parsed, checked result rather than a bare string.
  */
@@ -150,7 +150,7 @@ export async function metreceptChatCompletion(
 		throw new Error(`Metrecept gateway returned HTTP ${res.status}: ${JSON.stringify(json)}`);
 	}
 
-	const receiptRaw = res.headers.get('x-ohm-receipt') ?? res.headers.get('x-metrecept-receipt');
+	const receiptRaw = res.headers.get('x-metrecept-receipt');
 	const receipt = receiptRaw ? await verifyReceipt(receiptRaw, baseUrl) : null;
 
 	return {

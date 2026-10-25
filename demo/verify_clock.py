@@ -149,7 +149,7 @@ def inclusion_from_slot_file(leaf: bytes, slot: dict) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--receipt", help="compact JWS (X-Ohm-Receipt value)")
+    parser.add_argument("--receipt", help="compact JWS (X-Metrecept-Receipt value)")
     parser.add_argument(
         "--digest",
         help="64-hex digest sealed as an external leaf via POST /v1/clock/leaf",

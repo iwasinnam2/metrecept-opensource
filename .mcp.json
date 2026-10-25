@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "metrecept": {
-      "command": "ohm-mcp",
+      "command": "metrecept-mcp",
       "env": {
-        "OHM_API_KEY": "${OHM_API_KEY}",
-        "OHM_UPSTREAM_KEY": "${OHM_UPSTREAM_KEY}",
-        "OHM_BASE_URL": "${OHM_BASE_URL}"
+        "METRECEPT_API_KEY": "${METRECEPT_API_KEY}",
+        "METRECEPT_UPSTREAM_KEY": "${METRECEPT_UPSTREAM_KEY}",
+        "METRECEPT_BASE_URL": "${METRECEPT_BASE_URL}"
       }
     },
     "metrecept-hosted": {

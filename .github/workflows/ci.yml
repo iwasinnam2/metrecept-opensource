@@ -17,6 +17,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
-      - run: pip install ./packages/ohm-mcp
+      - run: pip install ./packages/metrecept-mcp
       - name: MCP stdio smoke test
-        run: python .github/scripts/smoke_mcp.py
+        run: python .github/scripts/smoke_mcp.py metrecept-mcp
+      - name: Compatibility command smoke test
+        run: python .github/scripts/smoke_mcp.py ohm-mcp

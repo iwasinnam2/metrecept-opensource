@@ -21,7 +21,7 @@ Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline S
 | Named tree | Isolated per-tree inventory, same digest scheme |
 
 - The digest is always a SHA-256 of the canonicalized request (model + messages + extras) — this is what a receipt's `request_sha256` field refers to.
-- Tree id: `[a-z0-9_-]{1,64}`; header `X-Ohm-Cache-Tree` wins over an equivalent body field.
+- Tree id: `[a-z0-9_-]{1,64}`; header `X-Metrecept-Cache-Tree` wins over an equivalent body field.
 - Unknown / invalid explicit tree -> `400`.
 - Exact-match only inside a tree. No semantic cache. No cross-tenant trees.
 
@@ -33,15 +33,15 @@ This candor is itself part of the pitch: the goal is a repo that tells you what'
 
 ## Client surface
 
-- Header: `X-Ohm-Cache-Tree: pr-842` (optional)
+- Header: `X-Metrecept-Cache-Tree: pr-842` (optional)
 - Body: `cache_tree` (optional; header wins)
-- Response echo: `X-Ohm-Cache-Tree`
+- Response echo: `X-Metrecept-Cache-Tree`
 
 ```bash
 curl -sS https://api.metrecept.co.uk/v1/chat/completions \
-  -H "Authorization: Bearer $OHM_API_KEY" \
+  -H "Authorization: Bearer $METRECEPT_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "X-Ohm-Cache-Tree: pr-842" \
+  -H "X-Metrecept-Cache-Tree: pr-842" \
   -d '{"model":"mock","messages":[{"role":"user","content":"hi"}]}'
 ```
 
@@ -70,17 +70,17 @@ Every fork/reset/promote/freeze (and denied variant) is an audited Pipeline acti
 If you already branch database state per PR (e.g. a preview `DATABASE_URL`), pair it with a same-named cache tree in CI: same job, two headers, two clear nouns (data state vs. exact-replay inventory). This doesn't replace database branching — it's the inventory peer in the same workflow, so preview-branch traffic doesn't silently warm (or pollute) the durable `main` inventory.
 
 ```bash
-export OHM_TIP="pr-${PR_NUMBER}"
+export METRECEPT_TIP="pr-${PR_NUMBER}"
 
 curl -sS https://api.metrecept.co.uk/v1/chat/completions \
-  -H "Authorization: Bearer $OHM_API_KEY" \
+  -H "Authorization: Bearer $METRECEPT_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "X-Ohm-Cache-Tree: $OHM_TIP" \
+  -H "X-Metrecept-Cache-Tree: $METRECEPT_TIP" \
   -d @prompt.json
 
 # on green — promote inventory to main
-curl -sS -X POST "https://api.metrecept.co.uk/v1/cache/trees/${OHM_TIP}/promote" \
-  -H "Authorization: Bearer $OHM_API_KEY" \
+curl -sS -X POST "https://api.metrecept.co.uk/v1/cache/trees/${METRECEPT_TIP}/promote" \
+  -H "Authorization: Bearer $METRECEPT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"target":"main"}'
 ```

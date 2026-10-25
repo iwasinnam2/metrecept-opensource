@@ -27,4 +27,4 @@ metrecept_session(session_id="audit-run-42")
 `session_id` is optional and off by default. `event_count: 0` (never an
 error) when the id hasn't been used yet.
 
-Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).
+Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`).

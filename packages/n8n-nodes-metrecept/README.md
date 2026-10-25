@@ -29,7 +29,7 @@ today with zero custom code by pointing that field at
   the node panel, instead of requiring you to already know about the
   generic Base URL trick.
 - **Inline, verified receipts** — the Chat operation parses the
-  `X-Ohm-Receipt` / `X-Metrecept-Receipt` response header and verifies it
+  `X-Metrecept-Receipt` / `X-Metrecept-Receipt` response header and verifies it
   against Metrecept's public JWKS automatically, returning a checked
   `receiptVerified: true/false` field instead of a bare header string you'd
   otherwise have to verify yourself.

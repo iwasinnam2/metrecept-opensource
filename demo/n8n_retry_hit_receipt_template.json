@@ -405,7 +405,7 @@
               "id": "e9",
               "name": "receipt_jws",
               "type": "string",
-              "value": "={{ ($json.headers && ($json.headers['x-ohm-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Ohm-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || '' }}"
+              "value": "={{ ($json.headers && ($json.headers['x-metrecept-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Metrecept-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || '' }}"
             },
             {
               "id": "e10",
@@ -687,7 +687,7 @@
               "id": "x10",
               "name": "receipt_jws",
               "type": "string",
-              "value": "={{ ($json.headers && ($json.headers['x-ohm-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Ohm-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || $('Extract call 1').item.json.receipt_jws }}"
+              "value": "={{ ($json.headers && ($json.headers['x-metrecept-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Metrecept-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || $('Extract call 1').item.json.receipt_jws }}"
             },
             {
               "id": "x11",

@@ -17,4 +17,4 @@ metrecept_fetch_web(
 )
 ```
 
-Requires Metrecept MCP (`OHM_API_KEY`). Install: https://metrecept.co.uk/i
+Requires Metrecept MCP (`METRECEPT_API_KEY`). Install: https://metrecept.co.uk/i

@@ -8,7 +8,7 @@ script, not on every private commit.
 ## What belongs here
 
 - Client SDKs (`sdks/`)
-- MCP server (`packages/ohm-mcp`)
+- MCP server (`packages/metrecept-mcp`)
 - n8n community node (`packages/n8n-nodes-metrecept`)
 - Integration templates (`templates/`)
 - Architecture exhibition + live demos (`docs/`, `demo/`)
@@ -39,7 +39,7 @@ Demos against the live API (needs a free `sk-at-…` key from
 https://metrecept.co.uk/billing/intermediate):
 
 ```bash
-export OHM_API_KEY=sk-at-...
+export METRECEPT_API_KEY=sk-at-...
 ./demo/hit_miss_demo.sh
 python demo/verify_receipt.py "<receipt-jws>"
 ```
@@ -47,7 +47,7 @@ python demo/verify_receipt.py "<receipt-jws>"
 MCP package (from this checkout):
 
 ```bash
-cd packages/ohm-mcp
+cd packages/metrecept-mcp
 pip install -e .
 ```
 

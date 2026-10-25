@@ -7,13 +7,15 @@ stdio (default) or as a stateless remote streamable-HTTP server. It is a thin
 MIT client: the hosted gateway at `https://api.metrecept.co.uk` is
 proprietary, and every real call needs a Metrecept API key.
 
-Installed from PyPI as `withohm-mcp` (the distribution name is kept for
-existing installs); the command is `ohm-mcp` and the module is `ohm_mcp`.
+Installed from PyPI as `metrecept-mcp`; the command is `metrecept-mcp` and
+the module is `metrecept_mcp`.
+
+> **Ohm is a sibling brand name of Metrecept; some identifiers keep the ohm prefix for compatibility.** These are: the `ohm-mcp` and `ohm-mcp-http` commands and the `ohm_mcp` Python import name (aliases of `metrecept-mcp`, `metrecept-mcp-http` and `metrecept_mcp`); `OHM_*` environment variables (`OHM_API_KEY`, `OHM_BASE_URL`, `OHM_UPSTREAM_KEY`, `OHM_SERVICE_KEY`, `OHM_MCP_*`), read by the MCP server only when the matching `METRECEPT_*` variable is unset; the `api.withohm.dev` and `mcp.withohm.dev` hostnames in the MCP server's host allowlist; and the `X-Ohm-*` headers the hosted gateway still accepts and emits next to their `X-Metrecept-*` equivalents. This client sends only `X-Metrecept-*` headers. Use the Metrecept names in new setups.
 
 ## Install
 
 ```bash
-pip install withohm-mcp
+pip install metrecept-mcp
 ```
 
 ## Cursor attach (stdio)
@@ -22,11 +24,11 @@ pip install withohm-mcp
 {
   "mcpServers": {
     "metrecept": {
-      "command": "ohm-mcp",
+      "command": "metrecept-mcp",
       "env": {
-        "OHM_API_KEY": "sk-at-YOUR_ISSUED_KEY",
-        "OHM_UPSTREAM_KEY": "sk-proj-optional-byok-key",
-        "OHM_BASE_URL": "https://api.metrecept.co.uk/v1"
+        "METRECEPT_API_KEY": "sk-at-YOUR_ISSUED_KEY",
+        "METRECEPT_UPSTREAM_KEY": "sk-proj-optional-byok-key",
+        "METRECEPT_BASE_URL": "https://api.metrecept.co.uk/v1"
       }
     }
   }
@@ -42,8 +44,7 @@ Get a key from the $0 Intermediate seat at
 
 ## Tools
 
-28 tools: 14 `metrecept_*` tools (preferred) plus 14 `ohm_*` legacy aliases
-with identical behaviour. All require a Metrecept API key and are scoped to
+14 tools. All require a Metrecept API key and are scoped to
 that key's tenant.
 
 | Tool | What it does |
@@ -66,26 +67,26 @@ that key's tenant.
 ## Remote (stateless streamable HTTP)
 
 ```bash
-OHM_MCP_TRANSPORT=http ohm-mcp   # or: ohm-mcp-http — serves POST /mcp on :8091
+METRECEPT_MCP_TRANSPORT=http metrecept-mcp   # or: metrecept-mcp-http — serves POST /mcp on :8091
 ```
 
 Production hosted endpoint: `https://api.metrecept.co.uk/mcp`.
 
 Auth is per-request: clients send `Authorization: Bearer sk-at-*` (and
-optional `X-Ohm-Upstream-Key`) on the MCP HTTP request; `OHM_API_KEY` env is
+optional `X-Metrecept-Upstream-Key`) on the MCP HTTP request; `METRECEPT_API_KEY` env is
 the stdio/local fallback.
 
 ## Env
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `OHM_API_KEY` | stdio: yes | Your Metrecept tenant key (`sk-at-…`); HTTP mode can use per-request `Authorization` instead |
-| `OHM_BASE_URL` | no | Defaults to `https://api.metrecept.co.uk/v1` |
-| `OHM_UPSTREAM_KEY` | no | BYOK provider key for non-mock model calls |
+| `METRECEPT_API_KEY` | stdio: yes | Your Metrecept tenant key (`sk-at-…`); HTTP mode can use per-request `Authorization` instead |
+| `METRECEPT_BASE_URL` | no | Defaults to `https://api.metrecept.co.uk/v1` |
+| `METRECEPT_UPSTREAM_KEY` | no | BYOK provider key for non-mock model calls |
 
 MIT licensed. The hosted service is commercial — see
 [Pricing](https://metrecept.co.uk/pricing) and
 [Terms](https://metrecept.co.uk/docs/terms).
 
-Note for maintainers: `src/ohm_mcp/__init__.py` in the monorepo root is the
-source of truth; run `scripts/sync_ohm_mcp.ps1` before building this package.
+Note for maintainers: this package is mirrored from the private Metrecept
+monorepo, which is the source of truth.

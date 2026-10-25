@@ -13,7 +13,7 @@ from typing import Any, Optional
 # Public API host (live). Use LOCAL_BASE_URL for local development.
 DEFAULT_BASE_URL = "https://api.metrecept.co.uk/v1"
 LOCAL_BASE_URL = "http://127.0.0.1:8081/v1"
-UPSTREAM_KEY_HEADER = "X-Ohm-Upstream-Key"
+UPSTREAM_KEY_HEADER = "X-Metrecept-Upstream-Key"
 
 
 @dataclass
