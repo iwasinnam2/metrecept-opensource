@@ -2,11 +2,11 @@
   "mcpServers": {
     "metrecept": {
       "command": "python",
-      "args": ["-m", "ohm_mcp"],
+      "args": ["-m", "metrecept_mcp"],
       "env": {
-        "OHM_BASE_URL": "https://api.metrecept.co.uk/v1",
-        "OHM_API_KEY": "sk-at-REPLACE_ME",
-        "OHM_UPSTREAM_KEY": ""
+        "METRECEPT_BASE_URL": "https://api.metrecept.co.uk/v1",
+        "METRECEPT_API_KEY": "sk-at-REPLACE_ME",
+        "METRECEPT_UPSTREAM_KEY": ""
       }
     }
   }

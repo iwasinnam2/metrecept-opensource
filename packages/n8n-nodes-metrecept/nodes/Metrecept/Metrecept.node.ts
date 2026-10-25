@@ -94,7 +94,7 @@ export class Metrecept implements INodeType {
 						value: 'verify',
 						action: 'Verify a receipt',
 						description:
-							'Verify an Ed25519 JWS receipt (e.g. captured from an X-Ohm-Receipt header by an HTTP Request node elsewhere in the workflow) against the gateway\'s public JWKS',
+							'Verify an Ed25519 JWS receipt (e.g. captured from an X-Metrecept-Receipt header by an HTTP Request node elsewhere in the workflow) against the gateway\'s public JWKS',
 					},
 				],
 				default: 'verify',
@@ -106,7 +106,7 @@ export class Metrecept implements INodeType {
 				default: '',
 				required: true,
 				displayOptions: { show: { resource: ['receipt'] } },
-				description: 'The X-Ohm-Receipt / X-Metrecept-Receipt header value to verify',
+				description: 'The X-Metrecept-Receipt header value to verify',
 			},
 			// --- Usage resource ---
 			{

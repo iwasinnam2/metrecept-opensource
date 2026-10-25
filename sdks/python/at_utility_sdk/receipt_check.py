@@ -38,7 +38,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 log = logging.getLogger("at_utility_sdk.receipt_check")
 
-RECEIPT_HEADER_NAMES = ("x-ohm-receipt", "x-metrecept-receipt")
+RECEIPT_HEADER_NAMES = ("x-metrecept-receipt",)
 DIRECTORY_PATH = "/.well-known/http-message-signatures-directory"
 
 # API root -> {kid: jwk}. Process-lifetime; refetched only on a cache-miss

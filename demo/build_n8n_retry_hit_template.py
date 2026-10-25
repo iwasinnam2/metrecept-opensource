@@ -178,8 +178,8 @@ BILLED_H = (
     "={{ ($json.headers && ($json.headers['x-at-billed-usd'] || $json.headers['X-AT-Billed-USD'])) || '' }}"
 )
 RECEIPT_H = (
-    "={{ ($json.headers && ($json.headers['x-ohm-receipt'] || $json.headers['x-metrecept-receipt'] "
-    "|| $json.headers['X-Ohm-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || '' }}"
+    "={{ ($json.headers && ($json.headers['x-metrecept-receipt'] || $json.headers['x-metrecept-receipt'] "
+    "|| $json.headers['X-Metrecept-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || '' }}"
 )
 CONTENT_H = (
     "={{ ($json.body && $json.body.choices && $json.body.choices[0] && $json.body.choices[0].message "
@@ -557,7 +557,7 @@ def main() -> None:
                 {
                     "id": "x10",
                     "name": "receipt_jws",
-                    "value": "={{ ($json.headers && ($json.headers['x-ohm-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Ohm-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || $('Extract call 1').item.json.receipt_jws }}",
+                    "value": "={{ ($json.headers && ($json.headers['x-metrecept-receipt'] || $json.headers['x-metrecept-receipt'] || $json.headers['X-Metrecept-Receipt'] || $json.headers['X-Metrecept-Receipt'])) || $('Extract call 1').item.json.receipt_jws }}",
                 },
                 {"id": "x11", "name": "session_id", "value": "={{ $('Extract call 1').item.json.session_id }}"},
             ],

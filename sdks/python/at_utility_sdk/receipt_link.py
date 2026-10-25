@@ -20,7 +20,7 @@ from typing import Any, Iterable, Mapping
 
 PUBLIC_VERIFY_BASE = "https://metrecept.co.uk/verify"
 VERIFY_HEADER_NAME = "x-metrecept-verify"
-RECEIPT_HEADER_NAMES = ("x-metrecept-receipt", "x-ohm-receipt")
+RECEIPT_HEADER_NAMES = ("x-metrecept-receipt",)
 RECEIPT_SSE_KEY = "metrecept"
 # The stamped link (twin of ``at_utility.receipts.share_link``): unfurlers
 # fetch without the fragment, so the kind rides in the query and the site

@@ -14,4 +14,4 @@ metrecept_usage()
 Returns cache hit ratio, fetch counts, and web attach rate from
 `GET /v1/usage`. `metrecept_usage` is the same handler.
 
-Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).
+Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`).

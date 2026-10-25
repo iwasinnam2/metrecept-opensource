@@ -19,4 +19,4 @@ metrecept_providers()
 Returns provider health and failover state from `GET /v1/providers`. Check
 this first when `metrecept_chat` errors on a real (non-mock) model.
 
-Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`METRECEPT_BASE_URL`, `METRECEPT_API_KEY`). See `docs/CURSOR.md`.

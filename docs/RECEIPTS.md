@@ -4,7 +4,7 @@ Every call through Metrecept carries a **signed receipt**: a detached proof of w
 
 ## What a receipt is
 
-A compact JWS (EdDSA / Ed25519) in the `X-Ohm-Receipt` response header of every served cache hit — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
+A compact JWS (EdDSA / Ed25519) in the `X-Metrecept-Receipt` response header of every served cache hit — served from either the control plane or the edge (the edge itself never holds the signing key; receipts are minted by the control plane and handed to the edge to attach).
 
 Payload fields:
 
@@ -26,12 +26,12 @@ Payload fields:
 ```bash
 # 1. Capture a receipt (send the same request twice; the second is the HIT)
 curl -si https://api.metrecept.co.uk/v1/chat/completions \
-  -H "Authorization: Bearer $OHM_API_KEY" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $METRECEPT_API_KEY" -H "Content-Type: application/json" \
   -d '{"model":"mock","messages":[{"role":"user","content":"receipt demo"}]}' \
-  | grep -i x-ohm-receipt
+  | grep -i x-metrecept-receipt
 
 # 2. Verify it against the public key directory — no Metrecept code required
-python demo/verify_receipt.py "<X-Ohm-Receipt value>" --base https://api.metrecept.co.uk
+python demo/verify_receipt.py "<X-Metrecept-Receipt value>" --base https://api.metrecept.co.uk
 ```
 
 The verifier ([`demo/verify_receipt.py`](../demo/verify_receipt.py)) fetches `/.well-known/http-message-signatures-directory`, resolves the signing key by the JWS `kid` (RFC 7638 JWK thumbprint), and checks the Ed25519 signature itself using only the `cryptography` package — it imports nothing from Metrecept. A forged or altered receipt fails to verify; so does a receipt signed by a key that isn't in the published directory.

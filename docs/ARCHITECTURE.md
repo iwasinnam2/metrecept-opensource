@@ -54,7 +54,7 @@ Metrecept organizes customer resources roughly as:
 | Tenant | Billing and meter identity | Owns cache trees and ledger events |
 | Cache tree | Named exact-replay inventory (`main`, `pr-842`, …) | Holds digests -> blobs |
 | API key | Auth material (`sk-at-*`) | Bound to a tenant (and optionally an org) |
-| Path / cost center | Attribution labels (`X-Ohm-Path`) | Ledger dimensions — **not** cache partitions |
+| Path / cost center | Attribution labels (`X-Metrecept-Path`) | Ledger dimensions — **not** cache partitions |
 
 ## Ephemeral Side
 
@@ -115,7 +115,7 @@ sequenceDiagram
 
 1. **Canonicalize and hash** the request (tree-scoped key).
 2. **GET** from Redis on the Ephemeral Side.
-3. **Pipeline gate** records the HIT meter and may mint `X-Ohm-Receipt`.
+3. **Pipeline gate** records the HIT meter and may mint `X-Metrecept-Receipt`.
 4. **Return** the blob. No upstream tokens.
 
 ## MISS path: ask the model, then store

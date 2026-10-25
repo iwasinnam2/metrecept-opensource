@@ -3,9 +3,9 @@
   "mcpServers": {
     "metrecept": {
       "type": "stdio",
-      "command": "ohm-mcp",
+      "command": "metrecept-mcp",
       "env": {
-        "OHM_BASE_URL": "https://api.metrecept.co.uk/v1"
+        "METRECEPT_BASE_URL": "https://api.metrecept.co.uk/v1"
       }
     },
     "metrecept-hosted": {

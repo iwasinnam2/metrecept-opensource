@@ -12,7 +12,7 @@ savings receipt from the dual savings ledger. Returns a `/r/…` URL.
 Receipts are `estimate_only` — aggregates only, never prompts.
 
 This is not the cryptographic per-call JWS on a cache HIT
-(`X-Ohm-Receipt` / `X-Metrecept-Receipt`). Pair with `metrecept_savings`
+(`X-Metrecept-Receipt` / `X-Metrecept-Receipt`). Pair with `metrecept_savings`
 if you need the numbers before minting.
 
-Requires Metrecept MCP (`OHM_API_KEY`). Docs: https://metrecept.co.uk/docs/cursor
+Requires Metrecept MCP (`METRECEPT_API_KEY`). Docs: https://metrecept.co.uk/docs/cursor

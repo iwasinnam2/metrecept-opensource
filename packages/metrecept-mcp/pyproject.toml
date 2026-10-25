@@ -3,9 +3,10 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-# Distribution is withohm-mcp ("ohm-mcp" on PyPI is an unrelated third-party
-# project). The console script and import module remain ohm-mcp / ohm_mcp.
-name = "withohm-mcp"
+# Ohm is a sibling brand name of Metrecept: the ohm-mcp / ohm-mcp-http
+# commands and the ohm_mcp import name are kept as compatibility aliases;
+# metrecept-mcp / metrecept_mcp are primary.
+name = "metrecept-mcp"
 version = "0.2.3"
 description = "Metrecept MCP server: signed, independently verifiable Ed25519 receipts for autonomous AI agent calls (chat, web fetch, third-party APIs). Thin client; hosted gateway needs an API key."
 readme = "README.md"
@@ -22,8 +23,10 @@ Documentation = "https://metrecept.co.uk/docs/cursor"
 Repository = "https://github.com/iwasinnam2/metrecept-opensource"
 
 [project.scripts]
-ohm-mcp = "ohm_mcp:main"
-ohm-mcp-http = "ohm_mcp:main_http"
+metrecept-mcp = "metrecept_mcp:main"
+metrecept-mcp-http = "metrecept_mcp:main_http"
+ohm-mcp = "metrecept_mcp:main"
+ohm-mcp-http = "metrecept_mcp:main_http"
 
 [tool.setuptools.packages.find]
 where = ["src"]

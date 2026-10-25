@@ -14,7 +14,7 @@ export type ClientOptions = {
 /** Public API host (live). Use LOCAL_BASE_URL for local development. */
 export const DEFAULT_BASE_URL = "https://api.metrecept.co.uk/v1";
 export const LOCAL_BASE_URL = "http://127.0.0.1:8081/v1";
-export const UPSTREAM_KEY_HEADER = "X-Ohm-Upstream-Key";
+export const UPSTREAM_KEY_HEADER = "X-Metrecept-Upstream-Key";
 
 export function createClientConfig(
   apiKey: string,
@@ -91,7 +91,7 @@ export function compliancePolicyUrl(baseURL: string = DEFAULT_BASE_URL): string 
 
 export const PUBLIC_VERIFY_BASE = "https://metrecept.co.uk/verify";
 const VERIFY_HEADER_NAME = "x-metrecept-verify";
-const RECEIPT_HEADER_NAMES = ["x-metrecept-receipt", "x-ohm-receipt"] as const;
+const RECEIPT_HEADER_NAMES = ["x-metrecept-receipt"] as const;
 
 /** Public, no-login verify link for one compact JWS. Throws on a non-JWS. */
 export function verifyUrl(jws: string): string {

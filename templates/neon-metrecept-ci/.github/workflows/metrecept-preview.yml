@@ -1,0 +1,77 @@
+# Neon + Metrecept — PR preview tip
+# Copy to your app as .github/workflows/metrecept-preview.yml
+#
+# Secrets: METRECEPT_API_KEY (required), METRECEPT_UPSTREAM_KEY (optional BYOK)
+# Vars:    METRECEPT_API_URL (optional, default https://api.metrecept.co.uk)
+#
+# Neon owns DATABASE_URL / branch lifecycle in your own steps.
+# This job only ensures X-Metrecept-Cache-Tree: pr-<N> exists and smokes it.
+
+name: metrecept-preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  preview-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive TREE_ID (same slug as Neon PR branch)
+        id: tree
+        run: |
+          TREE_ID="pr-${{ github.event.pull_request.number }}"
+          echo "tree_id=${TREE_ID}" >> "$GITHUB_OUTPUT"
+          echo "X-Metrecept-Cache-Tree=${TREE_ID}"
+
+      - name: Fork cache tip from main (reuse if exists)
+        env:
+          METRECEPT_API_KEY: ${{ secrets.METRECEPT_API_KEY }}
+          METRECEPT_API_URL: ${{ vars.METRECEPT_API_URL }}
+          TREE_ID: ${{ steps.tree.outputs.tree_id }}
+        run: |
+          export METRECEPT_API_URL="${METRECEPT_API_URL:-https://api.metrecept.co.uk}"
+          export METRECEPT_BASE_URL="${METRECEPT_API_URL%/}/v1"
+          SCRIPT=templates/neon-metrecept-ci/scripts/metrecept_tree.sh
+          if [ -f "$SCRIPT" ]; then
+            bash "$SCRIPT" fork "$TREE_ID" main
+          else
+            code=$(curl -sS -o /tmp/metrecept_fork.json -w "%{http_code}" -X POST \
+              "${METRECEPT_BASE_URL}/cache/trees" \
+              -H "Authorization: Bearer ${METRECEPT_API_KEY}" \
+              -H "Content-Type: application/json" \
+              -d "{\"name\":\"${TREE_ID}\",\"parent\":\"main\"}")
+            if [ "$code" != "200" ] && [ "$code" != "201" ] && [ "$code" != "409" ]; then
+              echo "fork failed HTTP $code"; cat /tmp/metrecept_fork.json; exit 1
+            fi
+            echo "fork ok / reuse (HTTP $code)"
+          fi
+
+      - name: Smoke chat on tip (optional — replace with your suite)
+        env:
+          METRECEPT_API_KEY: ${{ secrets.METRECEPT_API_KEY }}
+          METRECEPT_UPSTREAM_KEY: ${{ secrets.METRECEPT_UPSTREAM_KEY }}
+          METRECEPT_API_URL: ${{ vars.METRECEPT_API_URL }}
+          TREE_ID: ${{ steps.tree.outputs.tree_id }}
+        run: |
+          export METRECEPT_API_URL="${METRECEPT_API_URL:-https://api.metrecept.co.uk}"
+          export METRECEPT_BASE_URL="${METRECEPT_API_URL%/}/v1"
+          curl -sS "${METRECEPT_BASE_URL}/chat/completions" \
+            -H "Authorization: Bearer ${METRECEPT_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "X-Metrecept-Cache-Tree: ${TREE_ID}" \
+            ${METRECEPT_UPSTREAM_KEY:+-H "X-Metrecept-Upstream-Key: ${METRECEPT_UPSTREAM_KEY}"} \
+            -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"metrecept-ci-self-proof-v1"}]}' \
+            | head -c 2000
+          echo
+
+      # - name: App tests against Neon preview branch
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      #     METRECEPT_TIP: ${{ steps.tree.outputs.tree_id }}
+      #   run: npm test

@@ -185,8 +185,8 @@ def cmd_send(args: argparse.Namespace) -> int:
     except urllib.error.HTTPError as exc:
         print(f"HTTP {exc.code}: {exc.read().decode('utf-8', 'replace')[:400]}")
         return 1
-    receipt = headers.get(RECEIPT_HEADER) or headers.get("X-Ohm-Receipt") or ""
-    path = headers.get("X-Metrecept-Path") or headers.get("X-Ohm-Path") or "?"
+    receipt = headers.get(RECEIPT_HEADER) or headers.get("X-Metrecept-Receipt") or ""
+    path = headers.get("X-Metrecept-Path") or headers.get("X-Metrecept-Path") or "?"
     print(f"HTTP {status} path={path}")
     if not receipt:
         print("no receipt header on the response; nothing to bind")

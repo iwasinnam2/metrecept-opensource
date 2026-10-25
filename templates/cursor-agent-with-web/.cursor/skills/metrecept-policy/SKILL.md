@@ -21,4 +21,4 @@ Returns the allowed web-fetch purposes (`public_web_retrieval`,
 from `GET /v1/compliance/policy`. Use it to pick the right `purpose` for
 `/metrecept-fetch-web`, or to explain why a fetch was refused.
 
-Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`METRECEPT_BASE_URL`, `METRECEPT_API_KEY`). See `docs/CURSOR.md`.

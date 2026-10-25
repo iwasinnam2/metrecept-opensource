@@ -4,13 +4,13 @@
 # it already HIT on the other tree (or on main). See docs/CACHE_TREES.md.
 #
 # Usage:
-#   OHM_API_KEY=sk-at-... ./demo/cache_tree_demo.sh
+#   METRECEPT_API_KEY=sk-at-... ./demo/cache_tree_demo.sh
 set -euo pipefail
 
-BASE_URL="${OHM_BASE_URL:-https://api.metrecept.co.uk}"
+BASE_URL="${METRECEPT_BASE_URL:-https://api.metrecept.co.uk}"
 
-if [ -z "${OHM_API_KEY:-}" ]; then
-  echo "Set OHM_API_KEY first — get a free \$0 key at https://metrecept.co.uk/billing/intermediate" >&2
+if [ -z "${METRECEPT_API_KEY:-}" ]; then
+  echo "Set METRECEPT_API_KEY first — get a free \$0 key at https://metrecept.co.uk/billing/intermediate" >&2
   exit 1
 fi
 
@@ -20,10 +20,10 @@ BODY='{"model":"mock","messages":[{"role":"user","content":"tree-demo '"$STAMP"'
 request() {
   local tree="$1"
   curl -sSi "$BASE_URL/v1/chat/completions" \
-    -H "Authorization: Bearer $OHM_API_KEY" \
+    -H "Authorization: Bearer $METRECEPT_API_KEY" \
     -H "Content-Type: application/json" \
-    -H "X-Ohm-Cache-Tree: $tree" \
-    -d "$BODY" | grep -i "^x-at-cache:\|^x-ohm-cache-tree:"
+    -H "X-Metrecept-Cache-Tree: $tree" \
+    -d "$BODY" | grep -i "^x-at-cache:\|^x-metrecept-cache-tree:"
 }
 
 echo "== Tree 'demo-a', first send (expect MISS) =="

@@ -19,4 +19,4 @@ metrecept_savings()
 Returns the dual savings ledger from `GET /v1/savings`: estimated provider
 $ avoided, metered charges, roi_ratio (all estimate_only). Pair with `/metrecept-usage`.
 
-Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.
+Requires Metrecept MCP attached (`METRECEPT_BASE_URL`, `METRECEPT_API_KEY`). See `docs/CURSOR.md`.

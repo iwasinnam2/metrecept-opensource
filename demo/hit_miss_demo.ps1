@@ -4,19 +4,19 @@
   free -- and the HIT carries a signed receipt you can verify yourself.
 
 .EXAMPLE
-  $env:OHM_API_KEY = "sk-at-..."
+  $env:METRECEPT_API_KEY = "sk-at-..."
   powershell -NoProfile -ExecutionPolicy Bypass -File demo\hit_miss_demo.ps1
 
   Get a free key (no card) at https://metrecept.co.uk/billing/intermediate
 #>
 param(
-    [string]$BaseUrl = $(if ($env:OHM_BASE_URL) { $env:OHM_BASE_URL } else { "https://api.metrecept.co.uk" })
+    [string]$BaseUrl = $(if ($env:METRECEPT_BASE_URL) { $env:METRECEPT_BASE_URL } else { "https://api.metrecept.co.uk" })
 )
 
 $ErrorActionPreference = "Stop"
 
-if (-not $env:OHM_API_KEY) {
-    Write-Error "Set `$env:OHM_API_KEY first -- get a free `$0 key at https://metrecept.co.uk/billing/intermediate"
+if (-not $env:METRECEPT_API_KEY) {
+    Write-Error "Set `$env:METRECEPT_API_KEY first -- get a free `$0 key at https://metrecept.co.uk/billing/intermediate"
     exit 1
 }
 
@@ -26,7 +26,7 @@ $body = @{
 } | ConvertTo-Json -Compress
 
 $headers = @{
-    Authorization  = "Bearer $env:OHM_API_KEY"
+    Authorization  = "Bearer $env:METRECEPT_API_KEY"
     "Content-Type" = "application/json"
 }
 
@@ -42,11 +42,11 @@ if ($resp2.Headers['X-AT-Billed-USD']) {
     Write-Output "X-AT-Billed-USD: $($resp2.Headers['X-AT-Billed-USD'])"
 }
 
-$receipt = $resp2.Headers['X-Ohm-Receipt']
+$receipt = $resp2.Headers['X-Metrecept-Receipt']
 if ($receipt) {
     Write-Output ""
     Write-Output "== Verifying the signed receipt (zero Metrecept code) =="
     python "$PSScriptRoot\verify_receipt.py" "$receipt" --base $BaseUrl
 } else {
-    Write-Output "(no X-Ohm-Receipt header on this response -- receipts may be disabled for this tenant)"
+    Write-Output "(no X-Metrecept-Receipt header on this response -- receipts may be disabled for this tenant)"
 }

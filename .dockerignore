@@ -1,4 +1,4 @@
-packages/ohm-mcp/build/
-packages/ohm-mcp/src/*.egg-info/
+packages/metrecept-mcp/build/
+packages/metrecept-mcp/src/*.egg-info/
 **/__pycache__/
 .git
