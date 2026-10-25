@@ -8,7 +8,7 @@ Comments the signed session receipt link on a pull request:
 ```
 ### Metrecept session receipt
 Receipt: https://metrecept.co.uk/verify#<jws>
-12 events · $0.0123 pipe · 3 cache hits · 9 misses · session `pr-842`
+12 events · $0.0123 billed · 3 cache hits · 9 misses · session `pr-842`
 This link proves the Metrecept key signed this record of the run; anyone can
 check it in their browser against the public key directory, no account. It
 does not grade the work, and it did not stop anything.
@@ -17,7 +17,7 @@ does not grade the work, and it did not stop anything.
 ## Use
 
 ```yaml
-- uses: iwasinnam2/withohm-open/actions/receipt-link@main
+- uses: iwasinnam2/metrecept-opensource/actions/receipt-link@main
   with:
     session-id: pr-${{ github.event.pull_request.number }}
     api-key: ${{ secrets.METRECEPT_API_KEY }}

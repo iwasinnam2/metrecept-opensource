@@ -1,11 +1,14 @@
-# withohm-mcp
+# Metrecept MCP server
 
-Slim MCP server for [Metrecept](https://metrecept.co.uk): prompt cache
-replay, multi-provider model routing (BYOK), and compliant public-web fetch
-as Cursor tools — without installing the full gateway stack. Runs over
-stdio (default) or as a stateless remote streamable-HTTP server.
+MCP server for [Metrecept](https://metrecept.co.uk), which issues a signed
+Ed25519 receipt (compact JWS) for each call an autonomous AI agent makes:
+model chat, compliant public-web fetch, and third-party API calls. Runs over
+stdio (default) or as a stateless remote streamable-HTTP server. It is a thin
+MIT client: the hosted gateway at `https://api.metrecept.co.uk` is
+proprietary, and every real call needs a Metrecept API key.
 
-Package name `withohm-mcp` is a legacy id until rename. Product is Metrecept.
+Installed from PyPI as `withohm-mcp` (the distribution name is kept for
+existing installs); the command is `ohm-mcp` and the module is `ohm_mcp`.
 
 ## Install
 
@@ -39,18 +42,26 @@ Get a key from the $0 Intermediate seat at
 
 ## Tools
 
-- `ohm_chat` — chat through the pipe; identical prompts replay from Redis cache.
-- `ohm_fetch_web` — compliant public URL fetch (robots-gated, PII-redacted, metered).
-- `ohm_usage` — usage snapshot: cache hit ratio, fetches, estimated pipe rent.
-- `ohm_models` — model ids the pipe routes to, including BYOK upstreams.
-- `ohm_cache_trees` — list the tenant's cache-tree inventory (named exact-replay namespaces).
-- `ohm_cache_inventory` — list cached entries in a tree: digest, model, TTL, size (metadata only).
-- `ohm_savings` — cache savings snapshot: replayed prompts, estimated spend avoided.
-- `ohm_receipt` — mint a public savings receipt (`/r/…`) from the savings snapshot.
-- `ohm_providers` — upstream provider and failover status.
-- `ohm_policy` — compliance policy: allowed web-fetch purposes and limits.
+28 tools: 14 `metrecept_*` tools (preferred) plus 14 `ohm_*` legacy aliases
+with identical behaviour. All require a Metrecept API key and are scoped to
+that key's tenant.
 
-`metrecept_*` names alias the same handlers.
+| Tool | What it does |
+|---|---|
+| `metrecept_chat` | One chat call through the gateway (OpenAI-compatible); metered and receipted; exact repeats served from cache; optional web context. |
+| `metrecept_fetch_web` | Compliant public-web fetch (purpose-bound, robots-aware, PII-redacted); metered and receipted. |
+| `metrecept_api_call` | Receipted, metered GET to a registered third-party API; the vendor key is forwarded, never stored. |
+| `metrecept_register_api_service` | Register or update a third-party API (base URL, path prefix, auth header name) for `metrecept_api_call`. |
+| `metrecept_api_services` | List registered third-party API services. |
+| `metrecept_session` | One signed receipt for every call tagged with a session id, plus a `verify_url` anyone can open. |
+| `metrecept_usage` | Current usage meters, plan and billing status. |
+| `metrecept_savings` | Estimated upstream spend avoided by cache hits versus what was billed. |
+| `metrecept_receipt` | Publish a public, signed savings snapshot page and badge (90 days). |
+| `metrecept_models` | Model ids the gateway can route to (BYOK). |
+| `metrecept_providers` | Which upstream vendors are configured and ready. |
+| `metrecept_policy` | Web-fetch compliance policy: allowed purposes and limits. |
+| `metrecept_cache_trees` | List the tenant's named cache namespaces. |
+| `metrecept_cache_inventory` | Metadata of cached entries in one namespace (never content). |
 
 ## Remote (stateless streamable HTTP)
 
@@ -70,7 +81,7 @@ the stdio/local fallback.
 |---|---|---|
 | `OHM_API_KEY` | stdio: yes | Your Metrecept tenant key (`sk-at-…`); HTTP mode can use per-request `Authorization` instead |
 | `OHM_BASE_URL` | no | Defaults to `https://api.metrecept.co.uk/v1` |
-| `OHM_UPSTREAM_KEY` | no | BYOK provider key for cache-miss model calls |
+| `OHM_UPSTREAM_KEY` | no | BYOK provider key for non-mock model calls |
 
 MIT licensed. The hosted service is commercial — see
 [Pricing](https://metrecept.co.uk/pricing) and

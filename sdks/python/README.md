@@ -1,8 +1,7 @@
 # at-utility-sdk (Python)
 
-Thin helper so the official OpenAI SDK becomes a one-line `base_url` swap for **Metrecept**.
+Thin helper so the official OpenAI SDK becomes a one-line `base_url` swap for **Metrecept**, which returns a signed Ed25519 receipt for every call.
 
-Package name remains `at-utility-sdk` until first PyPI publish; then rename to `ohm-sdk`.
 
 ## Install (editable)
 
@@ -13,7 +12,7 @@ pip install -e ".[openai]"
 
 ## Publish to PyPI
 
-Only after `https://api.withohm.dev/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
+Every real call needs a Metrecept API key; the default base URL is `https://api.metrecept.co.uk/v1`.
 
 ```bash
 cd sdks/python

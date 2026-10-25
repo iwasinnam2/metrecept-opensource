@@ -16,7 +16,7 @@ code (this file imports only the standard library, on purpose):
   `,` and `:` with no whitespace, UTF-8, non-ASCII left unescaped.
 * Streamed crossing — assemble the OpenAI-shaped SSE chunks into one
   `chat.completion` object by the rule in `assemble_completion` below (the
-  pipe's own rule, verbatim), then hash that object as above. A stream that
+  gateway's own rule, verbatim), then hash that object as above. A stream that
   never carried a `finish_reason` has no digest; the receipt will not carry
   one either.
 * `api_call` — the decoded response body bytes exactly as returned, hashed
@@ -84,9 +84,9 @@ def _usage_total(usage: Optional[dict[str, Any]]) -> Optional[int]:
 
 
 def assemble_completion(lines: list[str]) -> Optional[dict[str, Any]]:
-    """The published assembly rule. Mirrors the pipe's
+    """The published assembly rule. Mirrors the gateway's
     `stream_usage.assemble_completion_from_sse_lines` exactly; a fixture
-    test in the pipe's repo pins the two together."""
+    test in the gateway's repo pins the two together."""
     completion_id = ""
     model = ""
     created = 0

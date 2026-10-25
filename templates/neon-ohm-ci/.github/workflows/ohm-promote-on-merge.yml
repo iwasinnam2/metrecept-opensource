@@ -1,4 +1,4 @@
-# Neon + withOhm — Promote tip into main on merge
+# Neon + Metrecept — Promote tip into main on merge
 # Copy to your app as .github/workflows/ohm-promote-on-merge.yml
 #
 # Secrets: OHM_API_KEY
@@ -38,7 +38,7 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "tree_id=pr-${PR}" >> "$GITHUB_OUTPUT"
 
-      - name: Promote Ohm tip into main
+      - name: Promote cache tip into main
         if: steps.tree.outputs.skip != 'true'
         env:
           OHM_API_KEY: ${{ secrets.OHM_API_KEY }}

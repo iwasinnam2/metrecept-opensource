@@ -1,54 +1,42 @@
-# Why this shape
+# Positioning
 
-**withOhm is the metered pipe on wasted, repeated inference.** For enterprises the same pipe is a **chaos governor** over shadow AI spend across a multi-vendor stack.
+**Metrecept: proof, not trust.** Metrecept issues a signed Ed25519 receipt (compact JWS) for each call an autonomous AI agent makes through it, so the record of what the agent did can be checked independently instead of taken on trust.
 
-## The inefficiency
+Source of this wording: the live site, https://metrecept.co.uk ("Proof, not trust"; "Verifiable session receipts for AI agent activity. Signed Ed25519 claims, published public keys, and independent verification. Recorder, not governor.").
 
-Agent products scale context across consecutive turns: tool results, retrieved files, compacted history. Naive routing re-pays prefill on every call. Cursor-style IDE agents are the sharpest case — every turn resends the entire growing transcript, so cost scales combinatorially with conversation length even when nothing else changed.
+## What Metrecept does
 
-Provider-native prompt caching (Anthropic `cache_control`, OpenAI automatic caching) exists to fix exactly this — but only if a breakpoint lands on the right block, before the TTL expires. Many clients place it wrong or not at all.
+- **A receipt per call.** Each model completion, compliant public-web fetch, and third-party API call made through the gateway gets a signed receipt naming what was called, when, and what it cost. Where the response was captured, the receipt can also carry `response_sha256`, so the bytes you received can be matched to the receipt.
+- **A receipt per run.** Calls tagged with the same session id roll up into one signed session receipt with a `verify_url` you can paste into the PR, ticket, or email the agent produced.
+- **Independent verification.** Signing keys are published at `/.well-known/http-message-signatures-directory`. Anyone can verify a receipt in the browser at `https://metrecept.co.uk/verify` or with [`demo/verify_receipt.py`](../demo/verify_receipt.py), with no account and no Metrecept code.
 
-## What withOhm does
+## Who it is for
 
-| Layer | Role |
-|-------|------|
-| Labs | Generation + model billing (BYOK or managed pool) |
-| Any client | Cockpit (Cursor, custom apps, MCP) |
-| **withOhm** | Metered pipe + governance: replay, compliant ingest, ledger |
+- **Autonomous AI agent companies** that need to show customers or auditors what an unattended agent actually called.
+- **Stablecoin and settlement firms** that need a verifiable, per-call record of agent-initiated activity.
 
-withOhm does not sell bigger context windows or wholesale tokens. It rents plumbing that makes context scaling economically survivable, and makes enterprise AI spend governable.
+## What it is not
 
-## Promise
+- **A recorder, not a governor.** Metrecept does not block a bad call, and a receipt does not grade the work. It proves the call happened as recorded.
+- **Not a model reseller.** You keep your own upstream keys (BYOK); Metrecept bills for the receipted calls.
+- **Not self-hostable.** The hosted gateway at `https://api.metrecept.co.uk` is proprietary, and every real call needs a Metrecept API key. This repo is the MIT thin client: MCP server, SDK helpers, n8n node, verifiers and demos.
 
-> Point any OpenAI-compatible client at one base URL. Keep your keys or use a managed pool. Gain prompt replay, compliant web context, and a clean ledger — rent the plumbing, govern the chaos.
+## Side benefits of the same gateway
 
-## Why not a routing proxy, an observability platform, or provider-native caching alone
+These are real but secondary:
 
-Different jobs — not a strict superset of any one category:
-
-- **Provider-native prompt caching** discounts repeated *input prefix* tokens on a continuation. It never replays a full response, does not work cross-provider, and does nothing for web fetch. Many clients place the cache breakpoint wrong or not at all, so they don't reliably get that discount. withOhm's exact-replay cache skips the call entirely on a byte-identical repeat.
-- **Gateway / routing proxies** are routing layers first; caching bolted on top is typically best-effort in that category and not always billing-grade. withOhm's cache is billing-grade: cross-language (Python/Rust) key parity, a signed receipt per hit.
-- **Observability platforms** instrument and log calls; they don't, by default, remove the call. withOhm's replay removes the call itself on an exact repeat.
-
-If routing or logging is genuinely all a team needs, one of the above is the right tool. The bet here is specifically metered, auditable, cross-provider exact-replay plus compliant fetch, in one pipe.
+- **Exact-repeat cache.** A byte-identical request can be served from the tenant's cache instead of calling the upstream model again. Exact match only; no semantic or fuzzy matching. Savings figures are always marked `estimate_only`.
+- **Compliant web fetch.** Purpose-bound, robots-aware, PII-redacting public-web retrieval. See [COMPLIANCE.md](COMPLIANCE.md).
 
 ## Non-goals
 
-- Semantic / fuzzy cache — every placement decision is exact-match over normalized request units, never embeddings or similarity scoring
-- PAYG reseller of upstream lab tokens
-- Guaranteed savings SLAs — savings endpoints are always `estimate_only`
-- Two-tier consent pricing — no "pay more and we won't train on it, pay less and we will" toggle at any layer; the no-training boundary is fixed, not a monetized opt-out
-
-## Honest exposure
-
-No technical moat is claimed against a lab or IDE shipping native response-level dedup someday — that's a real, named risk, not hidden. What's expected to hold up regardless:
-
-- **Cross-provider consistency** — one cache contract across many provider families (BYOK) is not something any single lab has an incentive to ship for its competitors' traffic.
-- **The governance / ledger layer** — SSO tenancy, cost-center attribution, and a receipted, auditable bill are multi-vendor problems no single lab's inference API solves.
-- **Compliant web ingest** is orthogonal to model-side caching entirely.
+- Semantic or fuzzy caching
+- Reselling upstream lab tokens
+- Guaranteed savings SLAs
+- Pricing that trades privacy for price: the no-training boundary is fixed
 
 ## See also
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — how the pipe is actually built
-- [RECEIPTS.md](RECEIPTS.md) — the auditable-claim mechanism
-- [COMPLIANCE.md](COMPLIANCE.md) — the compliant-ingest mechanism
+- [RECEIPTS.md](RECEIPTS.md): the receipt, field by field
+- [ARCHITECTURE.md](ARCHITECTURE.md): how the hosted gateway is shaped
+- [COMPLIANCE.md](COMPLIANCE.md): the web-fetch gate

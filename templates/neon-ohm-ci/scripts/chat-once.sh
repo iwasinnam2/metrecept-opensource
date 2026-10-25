@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke chat on an Ohm tip (mock model — no upstream key required).
+# Smoke chat on an cache tip (mock model — no upstream key required).
 set -euo pipefail
 
 : "${OHM_API_URL:=https://api.withohm.dev}"

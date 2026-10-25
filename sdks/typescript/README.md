@@ -2,7 +2,6 @@
 
 Thin helper so the official OpenAI SDK becomes a one-line `baseURL` swap for **Metrecept**.
 
-Package name remains `@at-utility/sdk` until first npm publish; then rename to `@ohm/sdk`.
 
 ## Install
 
@@ -13,7 +12,7 @@ npm install
 
 ## Publish to npm
 
-Only after `https://api.withohm.dev/v1` answers chat — see [docs/PLATFORM.md](../../docs/PLATFORM.md).
+Every real call needs a Metrecept API key; the default base URL is `https://api.metrecept.co.uk/v1`.
 
 ```bash
 cd sdks/typescript

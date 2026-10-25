@@ -93,7 +93,7 @@ export async function verifyReceipt(receipt: string, baseUrl: string): Promise<V
 }
 
 /**
- * GET /v1/usage — a live snapshot of cache hits/misses, tokens, and pipe
+ * GET /v1/usage — a live snapshot of cache hits/misses, tokens, and billed
  * spend for the authenticated tenant. Returned as-is (the gateway's own
  * field names) rather than remapped, so the node's output always matches
  * whatever metrecept.co.uk/docs documents at the time it's called.

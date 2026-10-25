@@ -73,7 +73,7 @@ so a bad key or URL is caught immediately, not on the first workflow run.
 |---|---|---|---|
 | Chat | Send Message | POSTs an OpenAI-shaped `chat/completions` request through the gateway | `content`, `model`, `cache` (`HIT`/`MISS`/`BYPASS`), `billedUsd`, `receiptVerified`, `receiptKid`, `receiptPayload`, `receiptRaw` |
 | Receipt | Verify | Verifies a standalone receipt JWS (Ed25519) against Metrecept's public JWKS | `verified`, `kid`, `payload` |
-| Usage | Get | Live cache hit/miss, token, and pipe-spend snapshot for this API key | gateway's own `/v1/usage` fields, unmapped |
+| Usage | Get | Live cache hit/miss, token, and billed spend snapshot for this API key | gateway's own `/v1/usage` fields, unmapped |
 
 Use `model: "mock"` on Chat → Send Message for a zero-cost, no-BYOK smoke
 test — it needs no upstream provider key and proves the cache/receipt

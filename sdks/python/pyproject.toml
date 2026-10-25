@@ -5,17 +5,17 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "at-utility-sdk"
 version = "0.1.1"
-description = "Drop-in OpenAI base_url helpers for Ohm (api.withohm.dev)"
+description = "OpenAI base_url helper and receipt verifier for Metrecept: signed Ed25519 receipts for AI agent calls (api.metrecept.co.uk)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-keywords = ["ohm", "openai", "llm", "cache"]
+keywords = ["metrecept", "openai", "llm", "receipts", "ed25519", "jws", "agents"]
 dependencies = []
 
 [project.urls]
-Homepage = "https://withohm.dev"
-Documentation = "https://withohm.dev/docs"
-Repository = "https://github.com/iwasinnam2/withohm-open"
+Homepage = "https://metrecept.co.uk"
+Documentation = "https://metrecept.co.uk/docs"
+Repository = "https://github.com/iwasinnam2/metrecept-opensource"
 
 [project.optional-dependencies]
 openai = ["openai>=1.40.0"]

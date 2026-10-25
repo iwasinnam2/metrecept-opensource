@@ -121,7 +121,7 @@ export class Metrecept implements INodeType {
 						value: 'get',
 						action: 'Get current usage',
 						description:
-							'Live cache hits/misses, tokens, and pipe spend for this API key — the same numbers billed, not an estimate',
+							'Live cache hits/misses, tokens, and billed spend for this API key — the same numbers billed, not an estimate',
 					},
 				],
 				default: 'get',

@@ -7,8 +7,8 @@ No sales call. Steal the skeleton.
 ## Clone → set key → fetch
 
 ```bash
-git clone https://github.com/iwasinnam2/withohm-open.git
-cd withohm-open/templates/cursor-agent-with-web
+git clone https://github.com/iwasinnam2/metrecept-opensource.git
+cd metrecept-opensource/templates/cursor-agent-with-web
 ```
 
 1. Get a free Intermediate seat (card on file, $0 membership): https://metrecept.co.uk/billing/intermediate
@@ -27,19 +27,19 @@ Add Metrecept MCP from https://metrecept.co.uk/i
 
 | Path | Role |
 |------|------|
-| `.cursor/mcp.json.example` | Metrecept MCP (`ohm_fetch_web`, `ohm_chat`, `ohm_usage`) |
-| `.cursor/skills/ohm-fetch-web/SKILL.md` | Skill: compliant fetch for agents |
+| `.cursor/mcp.json.example` | Metrecept MCP (`metrecept_fetch_web`, `metrecept_chat`, `metrecept_usage`) |
+| `.cursor/skills/metrecept-fetch-web/SKILL.md` | Skill: compliant fetch for agents |
 | `AGENTS.md` | One-screen agent instructions |
 
 ## Show your savings
 
-Once cache hits accrue, ask the agent for `ohm_receipt` — it mints a public
+Once cache hits accrue, ask the agent for `metrecept_receipt` — it mints a public
 savings receipt and returns badge markdown like:
 
 ```markdown
 [![Metrecept savings](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.metrecept.co.uk%2Fv1%2Fpublic%2Freceipts%2F<token>%2Fbadge)](https://metrecept.co.uk/r/<token>)
 ```
 
-Paste it here (or in any repo on the pipe).
+Paste it here (or in any repo on the gateway).
 
-Powered by [Metrecept](https://metrecept.co.uk) — pipe rent, not token wholesale. BYOK.
+Powered by [Metrecept](https://metrecept.co.uk) — signed receipts for every agent call. BYOK.

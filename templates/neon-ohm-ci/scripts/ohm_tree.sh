@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ohm cache-tree helpers for Neon-compose CI.
+# Metrecept cache-tree helpers for Neon-compose CI.
 # Fence: Neon owns DATABASE_URL / NEON_BRANCH; Ohm owns X-Ohm-Cache-Tree.
 set -euo pipefail
 

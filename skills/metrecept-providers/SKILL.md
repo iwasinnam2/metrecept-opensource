@@ -12,6 +12,6 @@ metrecept_providers()
 ```
 
 Returns provider health and failover state from `GET /v1/providers`.
-`ohm_providers` is the same handler.
+`metrecept_providers` is the same handler.
 
 Requires Metrecept MCP (`OHM_API_KEY`, `OHM_BASE_URL`).

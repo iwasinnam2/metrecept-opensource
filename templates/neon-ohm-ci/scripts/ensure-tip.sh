@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ensure an Ohm cache tip exists (fork from main). Idempotent enough for CI:
+# Ensure a Metrecept cache tip exists (fork from main). Idempotent enough for CI:
 # create succeeds, or list confirms the tip is already present.
 set -euo pipefail
 

@@ -1,6 +1,6 @@
 # Demo — verify the claims yourself
 
-Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no withOhm source code required, and none of it depends on trusting the docs in this repo.
+Everything here runs against the **live, hosted** `https://api.metrecept.co.uk` — no Metrecept source code required, and none of it depends on trusting the docs in this repo.
 
 ## Prerequisite
 
@@ -26,7 +26,7 @@ x-at-cache: MISS
 x-at-cache: HIT
 x-at-billed-usd: 0.000100
 
-== Verifying the signed receipt (zero withOhm code) ==
+== Verifying the signed receipt (zero Metrecept code) ==
 OK: signature verifies against https://api.metrecept.co.uk/.well-known/http-message-signatures-directory
 {
   "admit": "allow",
@@ -65,7 +65,7 @@ The older lead-triage template stays in this folder until the Hub accepts this o
 
 ### `verify_receipt.py`
 
-Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from withOhm.
+Standalone verifier — takes any `X-Ohm-Receipt` value and checks it against the public JWKS. Depends only on the `cryptography` package (`pip install cryptography`), nothing else from Metrecept.
 
 ```bash
 python demo/verify_receipt.py "<receipt-jws>" --base https://api.metrecept.co.uk
@@ -75,18 +75,18 @@ A `https://metrecept.co.uk/verify#<jws>` or `.../functions/receipt?kind=...#<jws
 
 ### `attest_demo.py` — co-sign a crossing (no account for three of four steps)
 
-A receipt signed by the pipe is one party's count. An **attestation** is the caller's own Ed25519 signature over the body it sent, carried as the `X-Metrecept-Attest` request header; the pipe verifies it against the body it received and binds its hash into the receipt (`attest_sha256`, `attest_kid`, `body_sha256`). Two keys, one record. A stranger checks both.
+A receipt signed by the gateway is one party's count. An **attestation** is the caller's own Ed25519 signature over the body it sent, carried as the `X-Metrecept-Attest` request header; the gateway verifies it against the body it received and binds its hash into the receipt (`attest_sha256`, `attest_kid`, `body_sha256`). Two keys, one record. A stranger checks both.
 
-`keygen`, `sign` and `check` need no account. Only `send` talks to the pipe (`METRECEPT_API_KEY` in the environment).
+`keygen`, `sign` and `check` need no account. Only `send` talks to the gateway (`METRECEPT_API_KEY` in the environment).
 
 ```bash
-# a real co-signed pair minted on the hosted pipe is in demo/fixtures/cosigned/
+# a real co-signed pair minted on the hosted gateway is in demo/fixtures/cosigned/
 python demo/attest_demo.py check \
   --receipt demo/fixtures/cosigned/receipt.jws \
   --attest  demo/fixtures/cosigned/attest.jws \
   --body    demo/fixtures/cosigned/body.json
 # OK: signature verifies against .../.well-known/http-message-signatures-directory
-# OK (co-sign): caller key <kid> signed body_sha256 <hex> and the pipe bound that attestation into this receipt
+# OK (co-sign): caller key <kid> signed body_sha256 <hex> and the gateway bound that attestation into this receipt
 # OK (body): body.json canonicalises to body_sha256 <hex>; this is the body both keys signed
 
 # your own key and body

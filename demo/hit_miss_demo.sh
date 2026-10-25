@@ -15,7 +15,7 @@ if [ -z "${OHM_API_KEY:-}" ]; then
   exit 1
 fi
 
-BODY='{"model":"mock","messages":[{"role":"user","content":"withohm-open demo '"$(date +%s)"'"}]}'
+BODY='{"model":"mock","messages":[{"role":"user","content":"metrecept-opensource demo '"$(date +%s)"'"}]}'
 
 echo "== Request 1 (expect MISS) =="
 resp1=$(curl -sSi "$BASE_URL/v1/chat/completions" \
@@ -37,7 +37,7 @@ receipt=$(echo "$resp2" | grep -i "^x-ohm-receipt:" | sed 's/^[Xx]-[Oo]hm-[Rr]ec
 
 if [ -n "$receipt" ]; then
   echo
-  echo "== Verifying the signed receipt (zero withOhm code) =="
+  echo "== Verifying the signed receipt (zero Metrecept code) =="
   python3 "$(dirname "$0")/verify_receipt.py" "$receipt" --base "$BASE_URL"
 else
   echo "(no X-Ohm-Receipt header on this response — receipts may be disabled for this tenant)"
