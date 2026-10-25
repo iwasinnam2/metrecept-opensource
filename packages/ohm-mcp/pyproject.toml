@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 # project). The console script and import module remain ohm-mcp / ohm_mcp.
 name = "withohm-mcp"
 version = "0.2.3"
-description = "Metrecept MCP server for Cursor — prompt cache replay + compliant public-web fetch over one OpenAI-compatible pipe"
+description = "Metrecept MCP server: signed, independently verifiable Ed25519 receipts for autonomous AI agent calls (chat, web fetch, third-party APIs). Thin client; hosted gateway needs an API key."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
@@ -19,7 +19,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://metrecept.co.uk"
 Documentation = "https://metrecept.co.uk/docs/cursor"
-Repository = "https://github.com/iwasinnam2/withohm-open"
+Repository = "https://github.com/iwasinnam2/metrecept-opensource"
 
 [project.scripts]
 ohm-mcp = "ohm_mcp:main"

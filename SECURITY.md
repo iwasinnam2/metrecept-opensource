@@ -1,13 +1,11 @@
 # Security
 
 The code in this repository is MIT-licensed client tooling. The hosted
-pipe at `api.metrecept.co.uk` is a commercial service.
+gateway at `api.metrecept.co.uk` is a commercial service.
 
 ## Report a vulnerability
 
-Email **partners@metrecept.co.uk** with subject `Security`. If that mailbox
-is unreachable, the legacy alias `partners@withohm.dev` is still
-monitored.
+Email **partners@metrecept.co.uk** with subject `Security`.
 
 Please include:
 

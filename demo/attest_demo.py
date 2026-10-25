@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Co-sign a crossing: the caller's own signature, bound into the pipe's receipt.
+"""Co-sign a crossing: the caller's own signature, bound into the gateway's receipt.
 
-A receipt signed by the pipe says "the pipe counted this crossing". An
+A receipt signed by the gateway says "the gateway counted this crossing". An
 attestation is the caller's own Ed25519 signature over the body it sent,
-carried as the `X-Metrecept-Attest` request header. The pipe checks it
+carried as the `X-Metrecept-Attest` request header. The gateway checks it
 against the body it received and binds its hash into the receipt
 (`attest_sha256`, `attest_kid`, `body_sha256`). Two keys, one record;
 neither party can mint it alone, and a stranger checks both halves.
 
 No account is needed for `keygen`, `sign` and `check`. Only `send` talks
-to the pipe and needs an API key (env METRECEPT_API_KEY). A real co-signed
-pair minted on the hosted pipe is in demo/fixtures/cosigned/ so `check`
+to the gateway and needs an API key (env METRECEPT_API_KEY). A real co-signed
+pair minted on the hosted gateway is in demo/fixtures/cosigned/ so `check`
 can be run cold.
 
 Usage:
@@ -60,7 +60,7 @@ def b64u(data: bytes) -> str:
 
 def canonical_body_sha256(body: object) -> str:
     """SHA-256 over canonical JSON: keys sorted, no whitespace, UTF-8,
-    non-ASCII left as is. The pipe recomputes exactly this from the body
+    non-ASCII left as is. The gateway recomputes exactly this from the body
     it parsed, so the digest does not depend on anyone's serialiser."""
     canonical = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

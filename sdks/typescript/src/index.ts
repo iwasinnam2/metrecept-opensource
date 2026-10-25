@@ -1,6 +1,5 @@
 /**
- * Drop-in OpenAI baseURL helper for Ohm (package path still @at-utility/sdk
- * until the first npm publish renames to @ohm/sdk).
+ * Drop-in OpenAI baseURL helper for Metrecept (npm package @at-utility/sdk).
  *
  *   import OpenAI from "openai";
  *   import { openaiArgs } from "@at-utility/sdk";

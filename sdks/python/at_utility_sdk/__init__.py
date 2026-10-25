@@ -1,7 +1,7 @@
-"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Ohm.
+"""Thin helpers so OpenAI clients become a one-line base_url drop-in for Metrecept.
 
-Package path remains at_utility_sdk / at-utility-sdk until first PyPI publish
-renames to ohm-sdk.
+Metrecept returns a signed Ed25519 receipt (JWS) for every call; see
+receipt_check for verifying it.
 """
 
 from __future__ import annotations

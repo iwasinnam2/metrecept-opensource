@@ -9,7 +9,7 @@ description: >
 # Metrecept session
 
 Call `metrecept_session` for one aggregated, signed receipt covering every
-call tagged with the same session id. `ohm_session` is the same handler.
+call tagged with the same session id. `metrecept_session` is the same handler.
 
 Tag first:
 

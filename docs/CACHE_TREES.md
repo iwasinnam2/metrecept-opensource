@@ -11,7 +11,7 @@ Parent concept: [ARCHITECTURE.md](ARCHITECTURE.md)'s Ephemeral Side / Pipeline S
 | Hot exact-replay inventory (blobs, trees, edge HIT) | Durable money, policy, compliance, trust |
 | Fork / reset / promote / freeze | Auth, meters, receipts, audit |
 
-**The idea in one sentence:** other tools branch state, or discount a prefix. Metrecept branches exact replay — and the pipeline bills the crossing.
+**The idea in one sentence:** other tools branch state, or discount a prefix. Metrecept branches the cache of exact repeats, and every call is still metered and receipted.
 
 ## Key layout
 

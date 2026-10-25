@@ -1,7 +1,7 @@
 {
   "name": "@at-utility/sdk",
   "version": "0.1.1",
-  "description": "Drop-in OpenAI baseURL helpers for Metrecept (api.metrecept.co.uk)",
+  "description": "OpenAI baseURL helper and receipt check for Metrecept: signed Ed25519 receipts for AI agent calls (api.metrecept.co.uk)",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
@@ -19,7 +19,7 @@
     "directory": "sdks/typescript"
   },
   "keywords": [
-    "ohm",
+    "metrecept",
     "openai",
     "baseURL",
     "llm",
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "node -e \"console.log('Publish only after https://api.metrecept.co.uk/v1 answers chat — see docs/PLATFORM.md')\""
+    "prepublishOnly": "node -e \"console.log('Metrecept SDK: default base URL https://api.metrecept.co.uk/v1')\""
   },
   "peerDependencies": {
     "openai": ">=4.0.0"

@@ -1,10 +1,8 @@
-# Metrecept — open client tools + architecture exhibition
+# Metrecept — open client tools
 
-**Metrecept is a metered pipe between your app (or Cursor) and OpenAI/Anthropic/etc.** It replays byte-identical requests for free instead of re-paying the model, fetches public web context under compliance controls, and gives you one auditable, cryptographically-receipted bill instead of several opaque provider invoices.
+**Proof, not trust.** Metrecept issues a signed Ed25519 receipt (compact JWS) for every call an autonomous AI agent makes through it — model completions, compliant public-web fetches, and calls to third-party business APIs — and can roll a whole agent run into one signed session receipt. Anyone can verify a receipt against Metrecept's published public keys, with no account and no Metrecept code.
 
-For **indie builders / Cursor users**, that's a waste check: stop re-paying for prompts you already sent. For **enterprises**, the same pipe is a **chaos governor**: SSO tenancy, compliant ingest, spend caps, and a clean ledger over shadow AI spend across a multi-vendor stack.
-
-> Exact-replay hits that cost zero upstream tokens. Cross-provider consistency. Locality — Redis edge reads. Replay and audit value.
+Metrecept is a **recorder, not a governor**: it does not stop a bad call, and a receipt does not grade the work. It proves what was called, when, and what it cost. It is built for **autonomous AI agent companies** that need a record a customer or auditor can check, and for **stablecoin and settlement firms** that need a verifiable record of each agent-initiated call.
 
 **Site:** https://metrecept.co.uk · **API:** https://api.metrecept.co.uk/v1 · **Docs:** https://metrecept.co.uk/docs
 
@@ -12,21 +10,21 @@ For **indie builders / Cursor users**, that's a waste check: stop re-paying for 
 
 ## What's in this repo
 
-This is the **public, MIT-licensed** half of Metrecept — the client-side surface plus a from-scratch, redacted tour of the architecture behind the hosted pipe. Nothing here requires trusting prose: every claim below links to a command you can run yourself.
+This is the **public, MIT-licensed thin client** for Metrecept — an MCP server (28 tools: 14 `metrecept_*` tools plus 14 legacy `ohm_*` aliases), Python and TypeScript SDK helpers, an n8n node, receipt verifiers and demos, plus a redacted tour of the architecture behind the hosted gateway. The hosted gateway is proprietary, and every real call needs a Metrecept API key. Nothing here requires trusting prose: every claim below links to a command you can run yourself.
 
 | Path | What it is |
 |------|------------|
-| [`docs/`](docs/) | Architecture exhibition — how the pipe is built, what a signed receipt is, how compliant web fetch works, why this shape instead of a routing proxy |
+| [`docs/`](docs/) | Architecture exhibition — how the gateway is built, what a signed receipt is, how compliant web fetch works, why this shape instead of a routing proxy |
 | [`demo/`](demo/) | Runnable scripts that prove the claims against the **live** hosted API — no Metrecept code required to verify a receipt |
 | [`sdks/python/`](sdks/python/) | Python OpenAI `base_url` helper (`at-utility-sdk` on PyPI) |
 | [`sdks/typescript/`](sdks/typescript/) | TypeScript/JS helper (`@at-utility/sdk` on npm) |
-| [`packages/ohm-mcp/`](packages/ohm-mcp/) | MCP server for Cursor/Claude agents |
+| [`packages/ohm-mcp/`](packages/ohm-mcp/) | MCP server for Cursor/Claude agents (installed from PyPI as `withohm-mcp`; command `ohm-mcp`) |
 | [`templates/`](templates/) | Ready-to-clone agent integration templates |
 | [`actions/receipt-link/`](actions/receipt-link/) | GitHub Action: comment the run's signed session receipt on a pull request as a link (`https://metrecept.co.uk/verify#<jws>`) — whoever opens it checks the Ed25519 signature in their browser against the public key directory, no account |
 
 ## What's *not* in this repo
 
-The gateway (`gateway-rs` Rust edge + Python control plane), the cache/replay engine internals, the adaptive model routing, and the billing/compliance core are **proprietary** and stay closed — no self-hosting option, and that's a deliberate, permanent split, not a staged reveal. What's below is a genuine architectural tour of *how* the pipe is shaped and *what* it commits to publicly, not a copy of the implementation. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for the exact split.
+The gateway (`gateway-rs` Rust edge + Python control plane), the cache engine internals, the adaptive model routing, and the billing/compliance core are **proprietary** and stay closed — no self-hosting option, and that's a deliberate, permanent split, not a staged reveal. What's below is a genuine architectural tour of *how* the gateway is shaped and *what* it commits to publicly, not a copy of the implementation. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for the exact split.
 
 ## Architecture at a glance
 
@@ -58,47 +56,47 @@ flowchart TB
   ingest --> meters
 ```
 
-One OpenAI-compatible ingress. Two containers that meet at every request on a named crossing — **HIT or MISS** — that's always metered and, on HIT, receipted. Full walkthrough: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+One OpenAI-compatible ingress. Every call is metered and signed: the response carries a receipt you can verify independently. Exact repeats can be served from the tenant's cache. Full walkthrough: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Verify it yourself
 
-Prose is cheap; every claim below ships with the command that checks it against the **live, hosted pipe** — nothing in this table depends on trusting this README.
+Prose is cheap; every claim below ships with the command that checks it against the **live, hosted gateway** — nothing in this table depends on trusting this README.
 
 | Claim | Check |
 |-------|-------|
-| The pipe is up | `curl -s https://api.metrecept.co.uk/health && curl -s https://api.metrecept.co.uk/ready` |
-| Hits replay and are billed as hits | Send the same body twice — second response has `X-AT-Cache: HIT` + `X-AT-Billed-USD` — see [`demo/hit_miss_demo.sh`](demo/hit_miss_demo.sh) |
-| **A hit is cryptographic, not asserted** | Hit responses carry `X-Ohm-Receipt` (signed JWS) — verify with zero Metrecept code: `python demo/verify_receipt.py "<receipt>"` — see [`docs/RECEIPTS.md`](docs/RECEIPTS.md) |
-| **The bytes you got are the bytes the receipt names** | Crossing receipts may carry `response_sha256`. Recompute it from your own capture with zero Metrecept code: `python demo/response_digest.py body.json` for a JSON body, `python demo/response_digest.py --sse stream.txt` for the raw stream you received (the pipe's assembly rule is in the file). A stream that never finished carries no digest |
+| The gateway is up | `curl -s https://api.metrecept.co.uk/health && curl -s https://api.metrecept.co.uk/ready` |
+| Exact repeats are served from cache and billed as hits | Send the same body twice — second response has `X-AT-Cache: HIT` + `X-AT-Billed-USD` — see [`demo/hit_miss_demo.sh`](demo/hit_miss_demo.sh) |
+| **Every call carries a signed receipt** | Responses carry a signed JWS receipt header (`X-Metrecept-Receipt`, legacy `X-Ohm-Receipt`) — verify with zero Metrecept code: `python demo/verify_receipt.py "<receipt>"` — see [`docs/RECEIPTS.md`](docs/RECEIPTS.md) |
+| **The bytes you got are the bytes the receipt names** | Crossing receipts may carry `response_sha256`. Recompute it from your own capture with zero Metrecept code: `python demo/response_digest.py body.json` for a JSON body, `python demo/response_digest.py --sse stream.txt` for the raw stream you received (the gateway's assembly rule is in the file). A stream that never finished carries no digest |
 | Signing keys are public | `curl -s https://api.metrecept.co.uk/.well-known/http-message-signatures-directory` |
-| **The run's receipt is a link a stranger can open** | Tag calls with `X-Metrecept-Session: <id>`, then `GET /v1/sessions/<id>` returns a signed `kind: "session"` receipt. Put it after `https://metrecept.co.uk/verify#` and send the link: the Ed25519 check runs in the browser against the directory above, no account. The session receipt is $0. It proves the pipe signed this record of the run; it does not grade the work, and it did not stop anything |
-| Published limits and refusals | `curl -s https://api.metrecept.co.uk/v1/public/honesty` — what the pipe won't do, with the endpoint that proves each item |
+| **The run's receipt is a link a stranger can open** | Tag calls with `X-Metrecept-Session: <id>`, then `GET /v1/sessions/<id>` returns a signed `kind: "session"` receipt. Put it after `https://metrecept.co.uk/verify#` and send the link: the Ed25519 check runs in the browser against the directory above, no account. The session receipt is $0. It proves Metrecept signed this record of the run; it does not grade the work, and it did not stop anything |
+| Published limits and refusals | `curl -s https://api.metrecept.co.uk/v1/public/honesty` — what the gateway won't do, with the endpoint that proves each item |
 | Cross-tenant savings counter | `curl -s https://api.metrecept.co.uk/v1/public/stats` (always `estimate_only: true`) |
 
 ## Quickstart
 
-Get a free key ($0 seat, no card) at [metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate), then:
+Every real call needs an API key. Get one ($0 seat, no card) at [metrecept.co.uk/billing/intermediate](https://metrecept.co.uk/billing/intermediate), then:
 
 ```python
 from at_utility_sdk import openai_client
 
 client = openai_client("sk-at-...", base_url="https://api.metrecept.co.uk/v1")
 completion = client.chat.completions.create(
-    model="mock",  # or gpt-*/claude-*/etc. with X-Ohm-Upstream-Key (BYOK)
+    model="mock",  # or gpt-*/claude-*/etc. with your own upstream key (BYOK)
     messages=[{"role": "user", "content": "Hello"}],
 )
 ```
 
-Or jump straight to the proof: [`demo/`](demo/) walks through cache MISS -> HIT -> a verified receipt in under a minute.
+Or jump straight to the proof: [`demo/`](demo/) makes a call, captures its receipt and verifies it in under a minute.
 
 ## Read next
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the Ephemeral Side / Pipeline System split, HIT and MISS sequence diagrams
-- [`docs/CACHE_TREES.md`](docs/CACHE_TREES.md) — branchable exact-replay inventory, and the honesty note on what's shipped vs. not
-- [`docs/RECEIPTS.md`](docs/RECEIPTS.md) — the signed cache-hit receipt, field by field
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — how the hosted gateway is shaped, with request sequence diagrams
+- [`docs/CACHE_TREES.md`](docs/CACHE_TREES.md) — named cache namespaces for exact repeats, and what's shipped vs. not
+- [`docs/RECEIPTS.md`](docs/RECEIPTS.md) — the signed receipt, field by field, and how to verify it
 - [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) — the purpose-bound, robots-aware, PII-redacting web fetch gate
-- [`docs/POSITIONING.md`](docs/POSITIONING.md) — why this shape instead of a routing proxy or provider-native caching
-- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — tip/tree, HIT/MISS, receipt, pipe rent, BYOK in one page
+- [`docs/POSITIONING.md`](docs/POSITIONING.md) — what Metrecept is, who it is for, and what it is not
+- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — receipt, session, JWKS, HIT/MISS, BYOK in one page
 
 ## License
 

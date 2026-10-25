@@ -1,13 +1,13 @@
-Metrecept / Metrecept / Ohm — open client tools
-Copyright (c) 2026 Ohm / Metrecept / Metrecept
+Metrecept — open client tools
+Copyright (c) 2026 Metrecept
 
 Everything in this repository (client SDKs, MCP server, integration
 templates, and the architecture/demo content under docs/ and demo/) is
 MIT-licensed. See LICENSE.
 
 This repo is a periodically-synced mirror of the public-facing directories
-in Metrecept's private monorepo. The GitHub slug remains `withohm-open`
-until a rename runbook. The gateway, cache/replay engine, adaptive
+in Metrecept's private monorepo. The GitHub repository is
+iwasinnam2/metrecept-opensource. The gateway, cache/replay engine, adaptive
 model routing, and billing/compliance core live in that private monorepo
 and are proprietary — not included here, no self-hosting option.
 
@@ -15,6 +15,5 @@ The hosted Metrecept service (api.metrecept.co.uk and related managed
 infrastructure) is a commercial offering: usage is metered and subject to
 the Terms of Service and Privacy Policy at
 https://metrecept.co.uk/docs/terms and https://metrecept.co.uk/docs/privacy.
-Using the code in this repo does not grant free access to the hosted pipe.
-Legacy hostnames (api.withohm.dev) may still resolve during cutover; do
-not treat them as the customer destination.
+Using the code in this repo does not grant free access to the hosted
+gateway; every real call needs a Metrecept API key.

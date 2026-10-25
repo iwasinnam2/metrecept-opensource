@@ -1,8 +1,8 @@
 """Co-sign the crossing: the caller's own signature over the body it sends.
 
-A Metrecept receipt proves the pipe's key signed a count. On its own that
+A Metrecept receipt proves the gateway's key signed a count. On its own that
 is one party's word. ``attest_headers`` adds the caller's Ed25519 signature
-over the request body (``X-Metrecept-Attest``); the pipe verifies it
+over the request body (``X-Metrecept-Attest``); the gateway verifies it
 against the body it received and binds its hash into the receipt. The
 receipt then carries ``attest_sha256``, ``attest_kid``, ``body_sha256``,
 and neither party could have minted it alone.
@@ -16,13 +16,13 @@ and neither party could have minted it alone.
         **body, extra_headers=headers
     )
     receipt = resp.headers["x-metrecept-receipt"]
-    payload = check_receipt(receipt)            # pipe's half, public key
+    payload = check_receipt(receipt)            # gateway's half, public key
     check_cosigned(payload, headers["X-Metrecept-Attest"])  # your half + binding
 
 ``body_sha256`` is SHA-256 over canonical JSON (sorted keys, no
 whitespace, UTF-8, non-ASCII unescaped) of the dict you pass, so you do
 not need to control your HTTP library's serialiser. Pass the same dict you
-send. If the pipe's view of the body differs, it answers 400
+send. If the gateway's view of the body differs, it answers 400
 ``attest_invalid`` rather than minting an unbound receipt.
 
 Requires ``cryptography`` (loaded lazily; ``openai_client`` never imports
@@ -145,7 +145,7 @@ def check_cosigned(receipt_payload: dict[str, Any], attest_jws: str) -> dict[str
     """Offline check of the caller's half and the binding.
 
     ``receipt_payload`` must already be signature-verified against the
-    pipe's published key (``check_receipt`` / scripts/verify_receipt.py).
+    gateway's published key (``check_receipt`` / scripts/verify_receipt.py).
     Verifies: sha256(attest_jws) == receipt.attest_sha256; attestation is an
     EdDSA JWS of typ metrecept-attest+jws whose header.jwk is OKP/Ed25519
     with kid == RFC 7638 thumbprint == receipt.attest_kid; the signature

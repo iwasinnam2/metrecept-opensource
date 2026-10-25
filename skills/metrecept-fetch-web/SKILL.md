@@ -8,7 +8,7 @@ description: >
 
 # Metrecept fetch web
 
-Call `metrecept_fetch_web` for compliant public-page retrieval. `ohm_fetch_web`
+Call `metrecept_fetch_web` for compliant public-page retrieval. `metrecept_fetch_web`
 is the same handler.
 
 ```text

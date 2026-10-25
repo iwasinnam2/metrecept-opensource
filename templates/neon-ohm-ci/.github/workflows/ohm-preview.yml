@@ -29,7 +29,7 @@ jobs:
           echo "tree_id=${TREE_ID}" >> "$GITHUB_OUTPUT"
           echo "X-Ohm-Cache-Tree=${TREE_ID}"
 
-      - name: Fork Ohm tip from main (reuse if exists)
+      - name: Fork cache tip from main (reuse if exists)
         env:
           OHM_API_KEY: ${{ secrets.OHM_API_KEY }}
           OHM_API_URL: ${{ vars.OHM_API_URL }}

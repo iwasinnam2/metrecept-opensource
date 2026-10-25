@@ -2,7 +2,7 @@
 
 Drop-in CI compose: **Neon branches database state** (and AI Gateway per branch in beta); **Metrecept branches exact-replay inventory**. Same PR slug. Upgrade alongside Gateway — not instead of it.
 
-Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache trees](https://www.withohm.dev/docs/cache-trees) · [CI preview](https://www.withohm.dev/use-cases/ci-preview)
+Docs: [Compose with Neon](https://metrecept.co.uk/docs/compose-neon) · [Cache trees](https://metrecept.co.uk/docs/cache-trees) · [CI preview](https://metrecept.co.uk/use-cases/ci-preview)
 
 ## Fence
 
@@ -68,4 +68,4 @@ curl -sS -X POST "$OHM_API_URL/v1/cache/trees/${OHM_TIP}/promote" \
 | `.github/workflows/ohm-promote-on-merge.yml` | Merge: promote tip → `main` |
 | `scripts/ohm_tree.sh` | `fork` / `promote` / `echo-tree` helpers |
 
-Powered by [Metrecept](https://www.withohm.dev) — pipe rent, not token wholesale. BYOK.
+Powered by [Metrecept](https://metrecept.co.uk) — signed receipts for every agent call. BYOK.

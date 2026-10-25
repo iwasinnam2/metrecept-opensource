@@ -103,7 +103,7 @@ def verify(receipt: str, base: str = "https://api.metrecept.co.uk", attest: str 
             return False, payload, lines
         lines.append(
             f"OK (co-sign): caller key {payload.get('attest_kid')} signed "
-            f"body_sha256 {payload.get('body_sha256')} and the pipe bound that "
+            f"body_sha256 {payload.get('body_sha256')} and the gateway bound that "
             "attestation into this receipt"
         )
     elif payload.get("attest_sha256"):

@@ -41,7 +41,7 @@ def build_comment(session: dict) -> str:
     pipe = float(session.get("pipe_usd") or 0.0)
     parts = [
         f"{count} events",
-        f"${pipe:.4f} pipe",
+        f"${pipe:.4f} billed",
         f"{int(session.get('cache_hits') or 0)} cache hits",
         f"{int(session.get('cache_misses') or 0)} misses",
     ]

@@ -15,7 +15,7 @@ if [ -z "${OHM_API_KEY:-}" ]; then
   exit 1
 fi
 
-BODY='{"model":"mock","messages":[{"role":"user","content":"withohm-open demo '"$(date +%s)"'"}]}'
+BODY='{"model":"mock","messages":[{"role":"user","content":"metrecept-opensource demo '"$(date +%s)"'"}]}'
 
 echo "== Request 1 (expect MISS) =="
 resp1=$(curl -sSi "$BASE_URL/v1/chat/completions" \

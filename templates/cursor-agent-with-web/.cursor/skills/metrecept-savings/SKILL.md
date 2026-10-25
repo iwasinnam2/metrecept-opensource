@@ -1,0 +1,22 @@
+---
+name: metrecept-savings
+description: >
+  Metrecept cache savings snapshot via MCP metrecept_savings (dual ledger: provider
+  avoided, metered charges, ROI). Use when checking how much the prompt cache is
+  saving — Metrecept, savings, cache.
+---
+
+# Metrecept savings
+
+Call the Metrecept MCP tool `metrecept_savings` for a cache savings snapshot.
+
+## Call
+
+```text
+metrecept_savings()
+```
+
+Returns the dual savings ledger from `GET /v1/savings`: estimated provider
+$ avoided, metered charges, roi_ratio (all estimate_only). Pair with `/metrecept-usage`.
+
+Requires Metrecept MCP attached (`OHM_BASE_URL`, `OHM_API_KEY`). See `docs/CURSOR.md`.

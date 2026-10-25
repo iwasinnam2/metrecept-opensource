@@ -22,7 +22,7 @@ if (-not $env:OHM_API_KEY) {
 
 $body = @{
     model    = "mock"
-    messages = @(@{ role = "user"; content = "withohm-open demo $(Get-Date -UFormat %s)" })
+    messages = @(@{ role = "user"; content = "metrecept-opensource demo $(Get-Date -UFormat %s)" })
 } | ConvertTo-Json -Compress
 
 $headers = @{
