@@ -16,7 +16,9 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Optional
+from typing import Annotated, Any, Literal, Optional
+
+from pydantic import BaseModel, Field
 
 import httpx
 
@@ -115,11 +117,11 @@ def _headers(
 
 
 async def metrecept_fetch_web_pages(
-    urls: list[str],
-    purpose: str = "public_web_retrieval",
-    query: str = "",
-    format: str = "markdown",
-    session_id: str = "",
+    urls: Annotated[list[str], Field(description='Public http(s) page URLs to fetch; keep it to a handful (per-source and total character caps from metrecept_get_fetch_policy apply).')],
+    purpose: Annotated[str, Field(description='Compliance purpose: public_web_retrieval (default), business_catalog, public_company_info or job_listings.')] = "public_web_retrieval",
+    query: Annotated[str, Field(description='Optional plain-text question that focuses the summary; empty string for a general summary.')] = "",
+    format: Annotated[str, Field(description='"markdown" (default) or "json" (title/text/meta/json_ld); anything else falls back to markdown.')] = "markdown",
+    session_id: Annotated[str, Field(description='Optional session tag grouping this call with others; read the signed aggregate later with metrecept_get_session_receipt.')] = "",
     ctx: Optional[Context] = None,
 ) -> str:
     """
@@ -197,9 +199,9 @@ async def metrecept_list_cache_trees(ctx: Optional[Context] = None) -> str:
 
 
 async def metrecept_list_cache_entries(
-    tree_id: str = "main",
-    limit: int = 25,
-    offset: int = 0,
+    tree_id: Annotated[str, Field(description='Cache tree id from metrecept_list_cache_trees (default "main").')] = "main",
+    limit: Annotated[int, Field(description='Entries per page, 1-100 (clamped server-side; default 25).')] = 25,
+    offset: Annotated[int, Field(description="Zero-based offset into the tree's digest index; add limit to page forward (default 0).")] = 0,
     ctx: Optional[Context] = None,
 ) -> str:
     """
@@ -220,7 +222,10 @@ async def metrecept_get_savings(ctx: Optional[Context] = None) -> str:
     return await _get("/savings", ctx)
 
 
-async def metrecept_publish_savings_receipt(display_name: str = "", ctx: Optional[Context] = None) -> str:
+async def metrecept_publish_savings_receipt(
+    display_name: Annotated[str, Field(description='Optional public name shown on the receipt (team or project); empty shows "an anonymous workspace".')] = "",
+    ctx: Optional[Context] = None,
+) -> str:
     """
     Mint a public, shareable savings receipt (POST /v1/savings/receipt).
 
@@ -244,11 +249,11 @@ async def metrecept_publish_savings_receipt(display_name: str = "", ctx: Optiona
 
 
 async def metrecept_register_api_service(
-    name: str,
-    base_url: str,
-    allowed_path_prefix: str = "/",
-    auth_header_name: str = "Authorization",
-    purpose: str = "business_api_audit",
+    name: Annotated[str, Field(description='Service id matching [a-z0-9_-]{1,64}, e.g. "vehicle_data". Re-using a name overwrites it.')],
+    base_url: Annotated[str, Field(description='Absolute public http(s) base URL of the vendor API, e.g. "https://api.vendor.example". Private/internal hosts are rejected.')],
+    allowed_path_prefix: Annotated[str, Field(description='Path prefix every call must stay under (default "/").')] = "/",
+    auth_header_name: Annotated[str, Field(description='Header the vendor expects the credential in, e.g. "Authorization" or "X-Api-Key" (default "Authorization").')] = "Authorization",
+    purpose: Annotated[str, Field(description='Compliance purpose label (default business_api_audit).')] = "business_api_audit",
     ctx: Optional[Context] = None,
 ) -> str:
     """
@@ -290,12 +295,12 @@ async def metrecept_list_api_services(ctx: Optional[Context] = None) -> str:
 
 
 async def metrecept_call_api(
-    service: str,
-    path: str,
-    query: Optional[dict[str, Any]] = None,
-    service_key: str = "",
-    purpose: str = "business_api_audit",
-    session_id: str = "",
+    service: Annotated[str, Field(description='Registered service name (see metrecept_list_api_services).')],
+    path: Annotated[str, Field(description='Path under the service\'s allowed_path_prefix, e.g. "/v1/lookup".')],
+    query: Annotated[Optional[dict[str, Any]], Field(description='Optional query-string parameters as a flat object.')] = None,
+    service_key: Annotated[str, Field(description='Vendor credential forwarded to the third party and never stored; falls back to METRECEPT_SERVICE_KEY env.')] = "",
+    purpose: Annotated[str, Field(description='Compliance purpose label (default business_api_audit).')] = "business_api_audit",
+    session_id: Annotated[str, Field(description='Optional session tag grouping this call into a metrecept_get_session_receipt receipt.')] = "",
     ctx: Optional[Context] = None,
 ) -> str:
     """
@@ -332,7 +337,10 @@ async def metrecept_call_api(
         return res.text
 
 
-async def metrecept_get_session_receipt(session_id: str, ctx: Optional[Context] = None) -> str:
+async def metrecept_get_session_receipt(
+    session_id: Annotated[str, Field(description='The same session_id passed on the tagged chat, fetch and API calls.')],
+    ctx: Optional[Context] = None,
+) -> str:
     """
     Aggregated, signed receipt for one audit-mode session
     
@@ -373,27 +381,116 @@ def _seg(value: str) -> str:
     return quote(str(value or ""), safe="")
 
 
-async def metrecept_unregister_api_service(name: str, ctx: Optional[Context] = None) -> str:
+async def metrecept_unregister_api_service(
+    name: Annotated[str, Field(description='Registered service name to remove, e.g. "vehicle_data" ([a-z0-9_-]{1,64}).')],
+    ctx: Optional[Context] = None,
+) -> str:
     """Unregister a third-party API service (DELETE /v1/api_services/{name})."""
     return await _delete(f"/api_services/{_seg(name)}", ctx)
 
 
-async def metrecept_get_usage_history(days: int = 30, ctx: Optional[Context] = None) -> str:
+async def metrecept_get_usage_history(
+    days: Annotated[int, Field(description='Window length in UTC days ending today, 1-90 (default 30; out-of-range values are clamped).')] = 30,
+    ctx: Optional[Context] = None,
+) -> str:
     """Per-UTC-day usage meter series (GET /v1/usage/history?days=N)."""
     d = max(1, min(int(days), 90))
     return await _get(f"/usage/history?days={d}", ctx)
 
 
 async def metrecept_evict_cache_entry(
-    digest: str, tree_id: str = "main", ctx: Optional[Context] = None
+    digest: Annotated[str, Field(description='Request digest exactly as returned in entries[].digest by metrecept_list_cache_entries: a 64-character lowercase hex SHA-256 of the normalized request (the server accepts 8-200 characters of A-Z a-z 0-9 : _ - and rejects anything else with 400 invalid_digest).')],
+    tree_id: Annotated[str, Field(description='Cache tree id that holds the entry (default "main").')] = "main",
+    ctx: Optional[Context] = None,
 ) -> str:
     """Evict one cached entry by digest (DELETE /v1/cache/trees/{tree_id}/entries/{digest})."""
     return await _delete(f"/cache/trees/{_seg(tree_id)}/entries/{_seg(digest)}", ctx)
 
 
-async def metrecept_delete_cache_tree(tree_id: str, ctx: Optional[Context] = None) -> str:
+async def metrecept_delete_cache_tree(
+    tree_id: Annotated[str, Field(description='Id of the tree to delete; any tree except "main".')],
+    ctx: Optional[Context] = None,
+) -> str:
     """Delete a non-main cache tree (DELETE /v1/cache/trees/{tree_id})."""
     return await _delete(f"/cache/trees/{_seg(tree_id)}", ctx)
+
+
+class CacheTreeResult(BaseModel):
+    """Structured result of metrecept_manage_cache_tree (fields depend on action)."""
+
+    action: Literal["create", "fork", "promote"] = Field(description="The action that was requested.")
+    ok: bool = Field(description="True when the gateway accepted the request (HTTP 2xx).")
+    status: int = Field(description="HTTP status returned by the gateway (200 on success).")
+    tree_id: Optional[str] = Field(default=None, description="create/fork: id of the new tree.")
+    name: Optional[str] = Field(default=None, description="create/fork: name of the new tree (same as tree_id).")
+    parent_tree_id: Optional[str] = Field(default=None, description="create/fork: tree the new tree reads through to copy-on-write.")
+    tree_status: Optional[str] = Field(default=None, description='create/fork: lifecycle status of the new tree, "active".')
+    default: Optional[bool] = Field(default=None, description="create/fork: always false; main stays the tenant default.")
+    created_at: Optional[int] = Field(default=None, description="create/fork: creation time, Unix seconds (UTC).")
+    promoted_from: Optional[str] = Field(default=None, description="promote: the child tree whose entries were merged.")
+    promoted_into: Optional[str] = Field(default=None, description="promote: the target tree that now references them.")
+    digests_considered: Optional[int] = Field(default=None, description="promote: digests in the child's local index.")
+    digests_referenced: Optional[int] = Field(default=None, description="promote: new references added to the target (digests it could not already resolve).")
+    bytes_copied: Optional[int] = Field(default=None, description="promote: always 0; promote shares bytes by reference.")
+    billed: Optional[bool] = Field(default=None, description="Always false on success: tree management is not billed.")
+    error: Optional[str] = Field(default=None, description="On failure: gateway error code, e.g. tree_exists, parent_missing, tree_missing, cannot_promote_main, parent_frozen, invalid_cache_tree, tree_id_required.")
+
+
+async def metrecept_manage_cache_tree(
+    action: Annotated[Literal["create", "fork", "promote"], Field(description='"create": new tree under parent (default main). "fork": new child of tree_id. "promote": merge tree_id\'s own entries into into (default its parent).')],
+    tree_id: Annotated[str, Field(description="fork: tree to fork (main allowed). promote: tree whose entries are merged (not main). Required for fork and promote; ignored by create.")] = "",
+    name: Annotated[str, Field(description='create/fork: optional id for the new tree, [a-z0-9_-]{1,64}; empty generates "t-" plus 10 hex characters. Ignored by promote.')] = "",
+    parent: Annotated[str, Field(description='create only: parent tree id the new tree reads through to; empty means "main".')] = "",
+    into: Annotated[str, Field(description='promote only: target tree id; empty means the child\'s parent. Use "main" to land a grandchild directly in main.')] = "",
+    ctx: Optional[Context] = None,
+) -> CacheTreeResult:
+    base, _, _ = _cfg(ctx)
+    if action == "create":
+        url = f"{base}/cache/trees"
+        body = {k: v for k, v in (("name", name), ("parent", parent)) if v}
+    elif action in ("fork", "promote"):
+        if not tree_id:
+            return CacheTreeResult(action=action, ok=False, status=400, error="tree_id_required")
+        url = f"{base}/cache/trees/{_seg(tree_id)}/{action}"
+        if action == "fork":
+            body = {"name": name} if name else {}
+        else:
+            body = {"into": into} if into else {}
+    else:
+        return CacheTreeResult(action="create", ok=False, status=400, error="invalid_action")
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        res = await client.post(url, headers=_headers(ctx=ctx), json=body)
+    try:
+        data = res.json()
+    except ValueError:
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    if res.status_code >= 400:
+        code = ""
+        err = data.get("error")
+        if isinstance(err, dict):
+            code = (err.get("details") or {}).get("code") or err.get("code") or ""
+        elif isinstance(err, str):
+            code = err
+        if not code and isinstance(data.get("detail"), dict):
+            code = data["detail"].get("code", "")
+        return CacheTreeResult(action=action, ok=False, status=res.status_code, error=code or "http_error")
+    if action == "promote":
+        return CacheTreeResult(
+            action=action, ok=True, status=res.status_code,
+            promoted_from=data.get("from"), promoted_into=data.get("into"),
+            digests_considered=data.get("digests_considered"),
+            digests_referenced=data.get("digests_referenced"),
+            bytes_copied=data.get("bytes_copied"), billed=data.get("billed", False),
+        )
+    return CacheTreeResult(
+        action=action, ok=True, status=res.status_code,
+        tree_id=data.get("tree_id"), name=data.get("name"),
+        parent_tree_id=data.get("parent_tree_id"), tree_status=data.get("status"),
+        default=data.get("default"), created_at=data.get("created_at"),
+        billed=data.get("billed", False),
+    )
 
 
 async def metrecept_list_providers(ctx: Optional[Context] = None) -> str:
@@ -407,12 +504,12 @@ async def metrecept_get_fetch_policy(ctx: Optional[Context] = None) -> str:
 
 
 async def metrecept_create_chat_completion(
-    prompt: str,
-    model: str = "mock",
-    fetch_urls: Optional[list[str]] = None,
-    purpose: str = "public_web_retrieval",
-    upstream_api_key: str = "",
-    session_id: str = "",
+    prompt: Annotated[str, Field(description='The user message text.')],
+    model: Annotated[str, Field(description='Model id from metrecept_list_models; "mock" (default) needs no upstream key, others need BYOK.')] = "mock",
+    fetch_urls: Annotated[Optional[list[str]], Field(description='Optional public URLs whose compliant, redacted content is attached as context before the model answers (Terms/DPA must be accepted).')] = None,
+    purpose: Annotated[str, Field(description='Fetch purpose used only when fetch_urls is set (default public_web_retrieval).')] = "public_web_retrieval",
+    upstream_api_key: Annotated[str, Field(description='Optional vendor key for this call (else METRECEPT_UPSTREAM_KEY env); forwarded, never stored.')] = "",
+    session_id: Annotated[str, Field(description='Optional session tag; read the signed aggregate later with metrecept_get_session_receipt.')] = "",
     ctx: Optional[Context] = None,
 ) -> str:
     """
@@ -464,25 +561,25 @@ async def metrecept_create_chat_completion(
 _AUTH = "Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only."
 _TOOL_DESCRIPTIONS: dict[str, str] = {
     'fetch_web_pages': (
-        "Fetch public web pages through the Metrecept gateway's compliance filter and return redacted markdown or JSON context; each fetch is metered and receipted. Use it when an agent needs public page content with a verifiable record; use metrecept_create_chat_completion with fetch_urls instead when you want a model answer grounded in those pages. Call metrecept_get_fetch_policy first to see allowed purposes and size limits. The tenant must already have Terms/DPA accepted at Checkout, otherwise the call is refused. Built to be web compliant: robots.txt is respected (fail-closed), purpose and data-protection rules are enforced before any text reaches a model, PII is redacted, and login walls, HTTP 401/403 blocks and 402 pay-per-crawl refusals are honoured, never bypassed (no auto-pay). Use it for public pages; for an authenticated third-party JSON API you hold a key for, use metrecept_call_api instead. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only.\n"
+        "Fetch public web pages through the Metrecept gateway's compliance filter and return redacted markdown or JSON context; each fetch is metered and receipted. Use it when an agent needs public page content with a verifiable record; fetch_web_pages vs metrecept_create_chat_completion fetch_urls: use this tool for the page content itself; use fetch_urls on a chat call when you want a model answer grounded in those pages. Call metrecept_get_fetch_policy first to see allowed purposes and size limits. The tenant must already have Terms/DPA accepted at Checkout, otherwise the call is refused. Built to be web compliant: robots.txt is respected (fail-closed), purpose and data-protection rules are enforced before any text reaches a model, PII is redacted, and login walls, HTTP 401/403 blocks and 402 pay-per-crawl refusals are honoured, never bypassed (no auto-pay). Use it for public pages; for an authenticated third-party JSON API you hold a key for, use metrecept_call_api instead. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only.\n"
         'Args: urls — list of public http(s) URLs (keep it to a handful; per-source and total character caps from policy apply). purpose — one of public_web_retrieval (default), business_catalog, public_company_info, job_listings. query — optional plain-text question to focus the summary. format — "markdown" (default) or "json" (title/text/meta/json_ld). session_id — optional id to group this call with metrecept_create_chat_completion/metrecept_call_api calls; fetch the signed session receipt later with metrecept_get_session_receipt.\n'
         'Returns the context text; on failure returns JSON {"error", "status"} with secrets redacted. Never cached.'
     ),
     'get_usage': (
-        "Read the tenant's live, cumulative usage meters since the account was created: requests, cache hit/miss tokens and hit ratio, web fetches, API calls, billed USD per meter and in total (revenue_usd), plus today's UTC-day values (today_*), plan, billing status and whether the soft web-fetch cap is lifted (usage_unlocked). Read-only, not billed, never cached. Use it for 'how much have I used / what plan am I on'. Use metrecept_get_usage_history instead for a per-day series over a window, metrecept_get_savings for estimated upstream spend avoided, and metrecept_get_session_receipt for a signed per-run record. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters. Returns a JSON object; on a bad or missing key returns the gateway's 401 JSON error."
+        "Read the tenant's live, cumulative usage meters since the account was created: requests, cache hit/miss tokens and hit ratio, web fetches, API calls, billed USD per meter and in total (revenue_usd), plus today's UTC-day values (today_*), plan, billing status and whether the soft web-fetch cap is lifted (usage_unlocked). Read-only, not billed, never cached. When to use which: metrecept_get_usage = lifetime totals and plan status now; metrecept_get_usage_history = per-day series over a window; metrecept_get_savings = estimated upstream spend avoided by cache and ROI. Use it for 'how much have I used / what plan am I on'. Use metrecept_get_usage_history instead for a per-day series over a window, metrecept_get_savings for estimated upstream spend avoided, and metrecept_get_session_receipt for a signed per-run record. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters. Returns a JSON object; on a bad or missing key returns the gateway's 401 JSON error."
     ),
     'list_models': (
         "List model ids the gateway can route chat to (mock plus examples per vendor: OpenAI, Anthropic, Gemini, DeepSeek, Moonshot, Z.ai, Qwen, xAI) and the prefix routing table. Read-only, no charge; static list. Use it before metrecept_create_chat_completion to pick a model id; any id under a routed prefix is forwarded verbatim. Non-mock models need your own upstream key (BYOK). Use metrecept_list_providers instead to see which vendors are actually configured/ready. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters."
     ),
     'list_cache_trees': (
-        'List the tenant\'s cache trees (named, isolated exact-replay namespaces, default "main") with their metadata. Read-only, no charge, live. Use it to discover tree ids; then call metrecept_list_cache_entries with a tree_id to see the entries inside one tree, or metrecept_delete_cache_tree to remove a non-main tree. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key\'s tenant only. No parameters.'
+        'List every cache tree the tenant owns (isolated exact-replay namespaces), always including the default "main". Response: JSON {"trees": [{"tree_id", "name", "parent_tree_id" (null for main), "status" ("active", "frozen" or "archived"), "default" (true only for main), "created_at" (Unix seconds)}]}. Ordered main first, then by creation time. Not paginated: all trees are returned in one call. Read-only, not billed, live. Next steps: metrecept_list_cache_entries to see one tree\'s entries, metrecept_manage_cache_tree to create, fork or promote, metrecept_delete_cache_tree to remove a non-main tree. Needs a Metrecept API key; tenant-scoped. No parameters.'
     ),
     'list_cache_entries': (
         "List entries cached in one cache tree: request digest, model, token count, byte size and TTL remaining. Metadata only — never returns prompt or response content. Read-only, no charge, live. Get tree ids from metrecept_list_cache_trees first; pass a digest from here to metrecept_evict_cache_entry to remove one entry. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only.\n"
         'Args: tree_id — tree id (default "main"). limit — entries per page, 1-100 (server caps at 100; default 25). offset — page offset; increase by limit to page through.'
     ),
     'get_savings': (
-        "Read the tenant's cumulative savings ledger: cache hit ratio and hit tokens, estimated upstream provider spend avoided by cache replays, what Metrecept billed for hits and misses, net saving and ROI ratio. Avoided-spend figures are estimates from list prices (the response carries a disclaimer); billed figures are exact meters. Read-only, not billed, never cached. Use it for the money view; use metrecept_get_usage for raw meters and plan status, and metrecept_publish_savings_receipt to turn these numbers into a public, signed page. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters. Returns a JSON object; on a bad or missing key returns the gateway's 401 JSON error."
+        "Read the tenant's cumulative savings ledger: cache hit ratio and hit tokens, estimated upstream provider spend avoided by cache replays, what Metrecept billed for hits and misses, net saving and ROI ratio. Avoided-spend figures are estimates from list prices (the response carries a disclaimer); billed figures are exact meters. Read-only, not billed, never cached. When to use which: metrecept_get_savings = money saved by cache; metrecept_get_usage = lifetime meters and plan; metrecept_get_usage_history = per-day meters over a window. Use it for the money view; use metrecept_get_usage for raw meters and plan status, and metrecept_publish_savings_receipt to turn these numbers into a public, signed page. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters. Returns a JSON object; on a bad or missing key returns the gateway's 401 JSON error."
     ),
     'publish_savings_receipt': (
         "Publish a public, shareable savings receipt: an immutable snapshot of the current savings figures, signed as an Ed25519 JWS, at metrecept.co.uk/r/<token> plus a README badge snippet. Side effect: creates a public page that lives for 90 days and shows only the display name (never tenant id or key). Not billed. Call metrecept_get_savings first if you want to check the numbers. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only.\n"
@@ -504,13 +601,13 @@ _TOOL_DESCRIPTIONS: dict[str, str] = {
         'Args: session_id — the same id passed as session_id on the tagged calls.'
     ),
     'list_providers': (
-        "Show which upstream vendors the gateway has configured and ready (OpenAI, Anthropic and OpenAI-compatible vendors), whether each is BYOK, and the BYOK header name. Reports key presence only; keys are not validated upstream and never returned. Read-only, no charge, live. Use it when a metrecept_create_chat_completion call fails or routing looks wrong; use metrecept_list_models instead to pick a model id. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters."
+        "Show which upstream vendors the gateway has configured and ready, for picking a model or debugging a failed metrecept_create_chat_completion. Response: JSON {\"providers\": {<vendor>: {\"configured\", \"ready\", \"byok\", optional \"base_url\" and \"protocol\"}}, \"byok_header\", \"billing_model\"}, covering mock, openai, anthropic and each OpenAI-compatible vendor. Reports key presence only; keys are never validated upstream or returned. Read-only, not billed, live. Use metrecept_list_models instead to pick a model id. Needs a Metrecept API key; tenant-scoped. No parameters."
     ),
     'get_fetch_policy': (
         "Read the web-fetch compliance policy that the gateway enforces for this tenant: allowed purpose values, robots.txt and PII-redaction settings, whether Terms/DPA acceptance is required, and per-source and total character caps. Read-only, not billed. Call it before metrecept_fetch_web_pages or metrecept_create_chat_completion with fetch_urls to choose a valid purpose and keep within limits, or after a refused fetch to see which rule applied. It does not cover metrecept_call_api (third-party APIs use registered services instead). Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only. No parameters. Returns a JSON object; on a bad or missing key returns the gateway's 401 JSON error."
     ),
     'create_chat_completion': (
-        'Send one user message to a model through the Metrecept gateway (OpenAI-compatible) and return the reply text. Each call is metered and gets a signed receipt; an exact repeat of the same request is served from the tenant\'s cache instead of the upstream model. Optionally attaches compliant public web context. Use metrecept_fetch_web_pages instead if you only want page content. Failures (bad model, missing BYOK key, refused fetch, rate limit) return JSON {"error", "status"}. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key\'s tenant only.\n'
+        'Send one user message to a model through the Metrecept gateway (OpenAI-compatible) and return the reply text. Each call is metered and gets a signed receipt; an exact repeat of the same request is served from the tenant\'s cache instead of the upstream model. Optionally attaches compliant public web context. fetch_urls vs metrecept_fetch_web_pages: pass fetch_urls when you want a model answer grounded in those pages (one metered chat call plus the fetches); call metrecept_fetch_web_pages when you want the page content itself with no model answer. Failures (bad model, missing BYOK key, refused fetch, rate limit) return JSON {"error", "status"}. Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key\'s tenant only.\n'
         'Args: prompt — the user message text. model — model id from metrecept_list_models; "mock" (default) needs no upstream key, others need BYOK. fetch_urls — optional list of public URLs to add as context (Terms/DPA must be accepted; see metrecept_get_fetch_policy). purpose — fetch purpose when fetch_urls is set (default public_web_retrieval). upstream_api_key — your vendor key for this call (else METRECEPT_UPSTREAM_KEY env); forwarded, never stored. session_id — optional id grouping calls; read the signed aggregate with metrecept_get_session_receipt.'
     ),
     'unregister_api_service': (
@@ -519,19 +616,25 @@ _TOOL_DESCRIPTIONS: dict[str, str] = {
         'Returns JSON {"unregistered": true, "service": {...removed record...}, "billed": false}; on failure JSON {"error", "status"} (404 service_not_found, 401 bad key, 404 feature_disabled if API passthrough is off).'
     ),
     'get_usage_history': (
-        "Read the tenant's usage meters as a per-UTC-day series over a recent window, oldest day first: requests, cache hit and miss tokens and USD, prewarm, web fetches and fetch USD, API calls and API-call USD, custody and statement meters, upstream provider cache tokens, and billed_usd per day, plus window totals. Read from the gateway's durable per-day ledger; days with no activity are 0, nothing is estimated. Read-only, not billed. Use it for trends or 'what did I spend each day'; use metrecept_get_usage for lifetime totals and plan status. " + _AUTH + "\n"
+        "Read the tenant's usage meters as a per-UTC-day series over a recent window, oldest day first: requests, cache hit and miss tokens and USD, prewarm, web fetches and fetch USD, API calls and API-call USD, custody and statement meters, upstream provider cache tokens, and billed_usd per day, plus window totals. Read from the gateway's durable per-day ledger; days with no activity are 0, nothing is estimated. Read-only, not billed. Use it for trends or 'what did I spend each day'; use metrecept_get_usage for lifetime totals and plan status, and metrecept_get_savings for estimated spend avoided by cache. " + _AUTH + "\n"
         "Args: days — window length in days ending today (UTC), 1-90, default 30; values outside the range are clamped.\n"
         'Returns JSON {"period": "day", "timezone": "UTC", "days", "start", "end", "series": [{"date", ...meters, "billed_usd"}], "totals": {...}}; on failure JSON or text with the gateway error.'
     ),
     'evict_cache_entry': (
-        "Evict one cached response from a cache tree by its request digest, so the next identical request in that tree is a fresh MISS sent upstream (and billed as a miss). Destructive and immediate, no undo. Only the named tree's own copy or reference is removed; a copy inherited from a parent tree is untouched (evict it in the parent). If this tree owns the bytes, other trees that reference them after a promote also stop seeing the entry. Frozen trees refuse (409 tree_frozen). The eviction itself is not billed. Get digests from metrecept_list_cache_entries; use metrecept_delete_cache_tree to drop a whole non-main tree. " + _AUTH + "\n"
-        'Args: digest — the entry\'s request digest exactly as shown by metrecept_list_cache_entries. tree_id — tree id (default "main").\n'
-        'Returns JSON {"tree_id", "digest", "evicted": true, "blob_deleted", "ref_deleted", "index_removed", "shared_refs_affected", "billed": false}; on failure JSON {"error", "status"} (404 tree_missing or entry_missing — a repeat eviction returns entry_missing; 409 tree_frozen; 400 invalid digest).'
+        "Evict one cached response from a cache tree by its request digest. The next identical request in that tree is a fresh MISS sent upstream and billed as a miss. Destructive and immediate; there is no undo. The eviction itself is not billed. Frozen trees refuse with 409 tree_frozen.\n"
+        "Ownership rules: A tree either owns an entry's bytes or holds a reference to bytes another tree owns. Eviction removes only this tree's own copy or reference. An entry this tree only inherits from a parent is not touched; evict it in the parent instead. If this tree owns the bytes, every other tree that references them (after a promote) also stops seeing the entry.\n"
+        "Get digests from metrecept_list_cache_entries. Use metrecept_delete_cache_tree to drop a whole non-main tree. Errors: 404 tree_missing or entry_missing (a repeat eviction returns entry_missing), 409 tree_frozen, 400 invalid_digest. Needs a Metrecept API key; tenant-scoped."
     ),
     'delete_cache_tree': (
         "Delete a whole non-main cache tree: its metadata, digest index, references and the cached responses it owns. Destructive and immediate, no undo. Refuses \"main\" (409 cannot_delete_main) and any tree that still has child trees forked from it (409 tree_has_children; delete the children first). Responses that another tree still references after a promote are kept until their TTL so that tree keeps serving them. Not billed. Use metrecept_list_cache_trees to find tree ids; use metrecept_evict_cache_entry to remove a single entry instead. " + _AUTH + "\n"
         "Args: tree_id — the tree to delete (anything except \"main\").\n"
         'Returns JSON {"tree_id", "deleted": true, "digests_indexed", "blobs_deleted", "blobs_retained_for_refs", "refs_deleted", "billed": false}; on failure JSON {"error", "status"} (404 tree_missing, also on a repeat call; 409 as above).'
+    ),
+    'manage_cache_tree': (
+        "Create, fork or promote a cache tree (an isolated exact-replay namespace). Not billed; every call is audit-logged and tenant-scoped.\n"
+        "action=create: new tree under parent (default main). action=fork: new child of tree_id (main allowed). Both give the new tree an empty local index that reads its parent chain copy-on-write, so it serves every parent entry by reference with zero bytes copied; its own new entries stay local.\n"
+        "action=promote: merge tree_id's own entries into into (default its parent) by adding references; bytes_copied is always 0 and the child is left intact. Promote never swaps trees: main always stays the tenant default. main itself cannot be promoted.\n"
+        "Typical flow: fork main for an experiment or PR, send chat calls into it, promote it back to main when good, then metrecept_delete_cache_tree it. See trees with metrecept_list_cache_trees. Errors come back as ok=false with status and error: 409 tree_exists, 404 parent_missing, 404 tree_missing, 409 cannot_promote_main, 409 parent_frozen, 400 invalid_cache_tree. Needs a Metrecept API key."
     ),
 }
 

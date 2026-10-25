@@ -44,7 +44,7 @@ Get a key from the $0 Intermediate seat at
 
 ## Tools
 
-18 tools. All require a Metrecept API key and are scoped to
+19 tools. All require a Metrecept API key and are scoped to
 that key's tenant.
 
 | Tool | What it does |
@@ -67,6 +67,7 @@ that key's tenant.
 | `metrecept_list_cache_entries` | Metadata of cached entries in one namespace (never content). |
 | `metrecept_evict_cache_entry` | Evict one cached entry by request digest (destructive; not billed). |
 | `metrecept_delete_cache_tree` | Delete a non-main cache namespace (refuses `main`; destructive; not billed). |
+| `metrecept_manage_cache_tree` | Create, fork or promote a cache tree (`action` = create / fork / promote; forks share parent entries copy-on-write, promote merges by reference into the parent or `main`; not billed). |
 
 ## Remote (stateless streamable HTTP)
 
