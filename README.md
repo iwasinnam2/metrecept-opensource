@@ -1,3 +1,5 @@
+> **This repository is archived.** It has moved to **[github.com/iwasinnam2/metrecept-opensource](https://github.com/iwasinnam2/metrecept-opensource)**. Please use that repository for issues, releases, and source.
+
 # Metrecept — open client tools
 
 **Proof, not trust.** Metrecept issues a signed Ed25519 receipt (compact JWS) for every call an autonomous AI agent makes through it — model completions, compliant public-web fetches, and calls to third-party business APIs — and can roll a whole agent run into one signed session receipt. Anyone can verify a receipt against Metrecept's published public keys, with no account and no Metrecept code.
