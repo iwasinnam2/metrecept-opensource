@@ -48,11 +48,16 @@ def main() -> int:
             "metrecept_list_providers", "metrecept_get_fetch_policy",
             "metrecept_list_cache_trees", "metrecept_list_cache_entries",
             "metrecept_evict_cache_entry", "metrecept_delete_cache_tree",
-            "metrecept_manage_cache_tree",
+            "metrecept_manage_cache_tree", "metrecept_freeze_cache_tree",
+            "metrecept_archive_cache_tree", "metrecept_prewarm_cache",
+            "metrecept_mint_receipt",
         ])
-        assert len(names) == 19, names
+        assert len(names) == 23, names
         assert names == expected, names
         assert all(n.startswith("metrecept_") for n in names), names
+        groups = {t["name"]: (t.get("_meta") or {}).get("io.metrecept/toolset") for t in tools}
+        assert set(groups.values()) == {"core", "cache", "receipts"}, groups
+        assert all(t.get("title", "").split(":")[0] in ("Core", "Cache", "Receipts") for t in tools)
         return 0
     finally:
         proc.stdin.close()

@@ -12,7 +12,7 @@ Metrecept is a **recorder, not a governor**: it does not stop a bad call, and a 
 
 ## What's in this repo
 
-This is the **public, MIT-licensed thin client** for Metrecept — an MCP server (19 `metrecept_*` tools), Python and TypeScript SDK helpers, an n8n node, receipt verifiers and demos, plus a redacted tour of the architecture behind the hosted gateway. The hosted gateway is proprietary, and every real call needs a Metrecept API key. Nothing here requires trusting prose: every claim below links to a command you can run yourself.
+This is the **public, MIT-licensed thin client** for Metrecept — an MCP server (23 `metrecept_*` tools in three toolsets: core, cache, receipts), Python and TypeScript SDK helpers, an n8n node, receipt verifiers and demos, plus a redacted tour of the architecture behind the hosted gateway. The hosted gateway is proprietary, and every real call needs a Metrecept API key. Nothing here requires trusting prose: every claim below links to a command you can run yourself.
 
 | Path | What it is |
 |------|------------|

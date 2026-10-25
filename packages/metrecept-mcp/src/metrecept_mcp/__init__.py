@@ -14,8 +14,12 @@ Run remote: `METRECEPT_MCP_TRANSPORT=http metrecept-mcp` (or `metrecept-mcp-http
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import os
+import re
+import time
 from typing import Annotated, Any, Literal, Optional
 
 from pydantic import BaseModel, Field
@@ -193,9 +197,12 @@ async def metrecept_list_models(ctx: Optional[Context] = None) -> str:
     return await _get("/models", ctx)
 
 
-async def metrecept_list_cache_trees(ctx: Optional[Context] = None) -> str:
+async def metrecept_list_cache_trees(
+    include_archived: Annotated[bool, Field(description="Also list archived trees (hidden by default). Default false.")] = False,
+    ctx: Optional[Context] = None,
+) -> str:
     """List the tenant's cache-tree inventory: named exact-replay namespaces (GET /v1/cache/trees)."""
-    return await _get("/cache/trees", ctx)
+    return await _get("/cache/trees" + ("?include_archived=true" if include_archived else ""), ctx)
 
 
 async def metrecept_list_cache_entries(
@@ -559,6 +566,181 @@ async def metrecept_create_chat_completion(
 
 # Tool registration: one metrecept_* tool per handler.
 _AUTH = "Requires a Metrecept API key (METRECEPT_API_KEY env on stdio, or Authorization: Bearer on remote HTTP); results are scoped to that key's tenant only."
+async def _post_json(path: str, body: dict[str, Any], ctx: Optional[Context] = None, *, session_id: str = "", upstream: str = "", timeout: float = 30.0) -> tuple[int, str, Any]:
+    """POST JSON to the gateway; return (status, text, response)."""
+    base, _, _ = _cfg(ctx)
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        res = await client.post(
+            f"{base}{path}",
+            headers=_headers(upstream, ctx=ctx, session_id=session_id),
+            json=body,
+        )
+    return res.status_code, res.text, res
+
+
+async def metrecept_freeze_cache_tree(
+    tree_id: Annotated[str, Field(description='Id of the cache tree to freeze or unfreeze; any tree except "main".')],
+    frozen: Annotated[bool, Field(description="true (default) freezes the tree; false unfreezes it back to active.")] = True,
+    ctx: Optional[Context] = None,
+) -> str:
+    try:
+        status, text, _ = await _post_json(f"/cache/trees/{_seg(tree_id)}/freeze", {"frozen": bool(frozen)}, ctx)
+    except RuntimeError as exc:
+        return str(exc)
+    return _safe_error_body(text, status) if status >= 400 else text
+
+
+async def metrecept_archive_cache_tree(
+    tree_id: Annotated[str, Field(description='Id of the cache tree to archive or restore; any tree except "main".')],
+    archived: Annotated[bool, Field(description="true (default) archives the tree; false restores it to the status it had before archiving.")] = True,
+    ctx: Optional[Context] = None,
+) -> str:
+    try:
+        status, text, _ = await _post_json(f"/cache/trees/{_seg(tree_id)}/archive", {"archived": bool(archived)}, ctx)
+    except RuntimeError as exc:
+        return str(exc)
+    return _safe_error_body(text, status) if status >= 400 else text
+
+
+class PrewarmMessage(BaseModel):
+    """One chat message of the transcript to pre-warm."""
+
+    role: Literal["system", "user", "assistant"] = Field(description="Message role.")
+    content: str = Field(description="Message text, exactly as the next real turn will send it.")
+
+
+async def metrecept_prewarm_cache(
+    session_id: Annotated[str, Field(description="Session id of the conversation to keep warm; the same id the client sends on its real chat turns.")],
+    messages: Annotated[list[PrewarmMessage], Field(description="The conversation's current transcript (system, user and assistant turns in order). The cached prefix is computed from it; nothing is stored.")],
+    model: Annotated[str, Field(description='Anthropic model id, must start with "claude" (e.g. "claude-sonnet-4-5"); other vendors cache automatically and are refused.')],
+    upstream_api_key: Annotated[str, Field(description="Optional Anthropic key for this call (else the configured upstream key env); forwarded, never stored.")] = "",
+    ctx: Optional[Context] = None,
+) -> str:
+    body = {
+        "model": model,
+        "messages": [m.model_dump() if isinstance(m, BaseModel) else dict(m) for m in messages],
+    }
+    try:
+        status, text, _ = await _post_json(
+            "/chat/completions/prewarm", body, ctx,
+            session_id=session_id, upstream=upstream_api_key, timeout=90.0,
+        )
+    except RuntimeError as exc:
+        return str(exc)
+    return _safe_error_body(text, status) if status >= 400 else text
+
+
+_MINT_KINDS = (
+    "cache_miss", "cache_hit", "cache_bypass", "finops", "api_call", "session",
+    "custody", "statement", "carve", "savings", "web_fetch",
+)
+_MINT_HEADERS = ("X-Metrecept-Receipt", "X-Metrecept-Finops-Receipt", "X-Metrecept-Fetch-Receipt")
+_JWS_RE = re.compile(r"eyJ[\w-]+\.eyJ[\w-]+\.[\w-]+")
+_VERIFY_PREFIX = "https://metrecept.co.uk/verify#"
+
+
+def _jws_claims(jws: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    def _b64(part: str) -> dict[str, Any]:
+        raw = base64.urlsafe_b64decode(part + "=" * (-len(part) % 4))
+        out = json.loads(raw)
+        return out if isinstance(out, dict) else {}
+
+    head, payload, _sig = jws.split(".")
+    return _b64(head), _b64(payload)
+
+
+async def metrecept_mint_receipt(
+    kind: Annotated[Literal["cache_miss", "cache_hit", "cache_bypass", "finops", "api_call", "session", "custody", "statement", "carve", "savings", "web_fetch"], Field(description='Receipt kind to mint. cache_miss/finops: one fresh "mock" chat call. cache_hit: the same prompt twice, receipt from the replay. cache_bypass: fresh call with cache_control no_store. web_fetch: chat call grounded in https://example.com/. session: one tagged chat call, then the session aggregate. custody: one "access" custody record for a placeholder subject. statement: this month\'s ledger statement. carve: one carve hop over the label, disperse off. savings: savings attestation. api_call: GET through your first registered API service (needs one).')],
+    label: Annotated[str, Field(description='Free text mixed into the minted request so each run is unique and recognisable, e.g. a PR or ticket id (default "metrecept-mint").')] = "metrecept-mint",
+    ctx: Optional[Context] = None,
+) -> str:
+    try:
+        base, _, _ = _cfg(ctx)
+    except RuntimeError as exc:
+        return str(exc)
+    if kind not in _MINT_KINDS:
+        return json.dumps({"error": "invalid_kind", "kinds": list(_MINT_KINDS)})
+    tag = f"{label or 'metrecept-mint'} {kind} {time.time_ns()}"
+    found: list[str] = []
+
+    async with httpx.AsyncClient(timeout=90.0) as client:
+        async def call(method: str, path: str, body: Optional[dict[str, Any]] = None) -> Any:
+            res = await client.request(method, f"{base}{path}", headers=_headers(ctx=ctx), json=body)
+            if res.status_code >= 400:
+                raise _MintError(_safe_error_body(res.text, res.status_code))
+            found.extend(res.headers[h] for h in _MINT_HEADERS if res.headers.get(h))
+            found.extend(_JWS_RE.findall(res.text))
+            try:
+                return res.json()
+            except ValueError:
+                return None
+
+        def chat_body(**extra: Any) -> dict[str, Any]:
+            return {"model": "mock", "messages": [{"role": "user", "content": tag}], **extra}
+
+        try:
+            if kind in ("cache_miss", "finops"):
+                await call("POST", "/chat/completions", chat_body())
+            elif kind == "cache_hit":
+                await call("POST", "/chat/completions", chat_body())
+                found.clear()
+                await call("POST", "/chat/completions", chat_body())
+            elif kind == "cache_bypass":
+                await call("POST", "/chat/completions", chat_body(cache_control="no_store"))
+            elif kind == "web_fetch":
+                await call("POST", "/chat/completions", chat_body(
+                    fetch_web_context=True, web_urls=["https://example.com/"],
+                    web_purpose="public_web_retrieval"))
+            elif kind == "session":
+                sid = f"metrecept-mint-{time.time_ns()}"
+                await call("POST", "/chat/completions", chat_body(metrecept_session=sid))
+                found.clear()
+                await call("GET", f"/sessions/{_seg(sid)}")
+            elif kind == "custody":
+                await call("POST", "/custody", {
+                    "action": "access", "subject_id": "metrecept-mint",
+                    "item_sha256": hashlib.sha256(tag.encode()).hexdigest(),
+                    "source": "metrecept-mint", "store": "mint"})
+            elif kind == "statement":
+                await call("GET", "/org/ledger/statement?month=" + time.strftime("%Y-%m", time.gmtime()))
+            elif kind == "carve":
+                await call("POST", "/carve", {"ingest": tag, "disperse": False})
+            elif kind == "savings":
+                await call("POST", "/savings/receipt", {})
+            elif kind == "api_call":
+                data = await call("GET", "/api_services")
+                services = (data or {}).get("services") if isinstance(data, dict) else None
+                if not services:
+                    return json.dumps({"error": "no_api_service", "message": "api_call needs a registered API service; add one with metrecept_register_api_service."})
+                svc = services[0]
+                found.clear()
+                await call("POST", "/api_call", {
+                    "service": svc["name"], "path": svc.get("allowed_path_prefix") or "/",
+                    "query": {"metrecept_mint": label or "metrecept-mint"}})
+        except _MintError as exc:
+            return str(exc)
+
+    for jws in found:
+        try:
+            header, payload = _jws_claims(jws)
+        except (ValueError, TypeError):
+            continue
+        if payload.get("kind") == kind:
+            return json.dumps({
+                "kind": kind,
+                "kid": header.get("kid"),
+                "iat": payload.get("iat"),
+                "meter_event_id": payload.get("meter_event_id"),
+                "receipt": jws,
+                "verify_url": _VERIFY_PREFIX + jws,
+            })
+    return json.dumps({"error": "no_receipt", "message": f"The gateway returned no receipt of kind {kind}."})
+
+
+class _MintError(Exception):
+    pass
+
+
 _TOOL_DESCRIPTIONS: dict[str, str] = {
     'fetch_web_pages': (
         "Fetch public web pages through the Metrecept compliance filter and return redacted markdown or JSON context, metered and receipted. "
@@ -578,9 +760,9 @@ _TOOL_DESCRIPTIONS: dict[str, str] = {
         "Static list, read-only, not billed. Non-mock models need your own upstream key (BYOK). " + _AUTH
     ),
     'list_cache_trees': (
-        "List every cache tree (isolated exact-replay namespace) the tenant owns, always including the default \"main\", ordered main first then by creation time. All trees come back in one call. "
+        "List every cache tree (isolated exact-replay namespace) the tenant owns, always including the default \"main\", ordered main first then by creation time. All trees come back in one call. Each tree reports its status: active, frozen or archived. "
         "Use it to find a tree_id for the other cache tools. Not for a tree's contents: use metrecept_list_cache_entries. To create, fork or promote use metrecept_manage_cache_tree; to remove a non-main tree use metrecept_delete_cache_tree. "
-        "Read-only, not billed, live. " + _AUTH
+        "Archived trees are hidden unless include_archived=true. Read-only, not billed, live. " + _AUTH
     ),
     'list_cache_entries': (
         "List entries cached in one tree: request digest, model, token count, byte size and TTL remaining. Metadata only; never returns prompt or response content. "
@@ -661,10 +843,91 @@ _TOOL_DESCRIPTIONS: dict[str, str] = {
         "Use it to isolate cache for an experiment or PR: fork main, send chat calls into the fork, promote it back when good, then remove it with metrecept_delete_cache_tree. Not for listing trees: use metrecept_list_cache_trees. Not for deleting a tree or entry: use metrecept_delete_cache_tree or metrecept_evict_cache_entry. "
         "create and fork give the new tree an empty local index that reads its parent chain copy-on-write, so it serves parent entries by reference with zero bytes copied; its own new entries stay local. "
         "promote adds references to tree_id's own entries in the target tree (bytes_copied is always 0) and leaves the child intact; it never swaps trees, main stays the default and cannot itself be promoted. "
-        "Not billed; audit-logged. Errors return ok=false with status and error: 409 tree_exists, 404 parent_missing, 404 tree_missing, 409 cannot_promote_main, 409 parent_frozen, 400 invalid_cache_tree. " + _AUTH
+        "Not billed; audit-logged. Errors return ok=false with status and error: 409 tree_exists, 404 parent_missing, 404 tree_missing, 409 cannot_promote_main, 409 parent_frozen, 409 tree_archived or parent_archived, 400 invalid_cache_tree. " + _AUTH
     ),
 }
 
+
+
+_TOOL_DESCRIPTIONS.update({
+    'freeze_cache_tree': (
+        "Freeze a cache tree so it keeps serving its cached responses but accepts no new writes, or unfreeze it (frozen=false) back to active. "
+        "Use it to pin a known-good cache, for example a release branch's tree, while experiments continue in forks. Not for hiding or retiring a tree: use metrecept_archive_cache_tree. Not for removing it: use metrecept_delete_cache_tree. "
+        "While frozen, misses are served upstream but not stored, eviction returns 409 tree_frozen and the tree cannot be a fork parent or promote target. Idempotent, not billed, audit-logged. "
+        "Errors: 409 cannot_freeze_main, 409 tree_archived (restore it first), 404 tree_missing. "
+    ),
+    'archive_cache_tree': (
+        "Archive a cache tree: make it read-only and hide it from metrecept_list_cache_trees, keeping every entry so it can be restored later; archived=false restores it to the status it had before (active or frozen). "
+        "Use it to retire a finished experiment's tree without losing it. Not for a temporary write lock: use metrecept_freeze_cache_tree. Not for freeing storage: use metrecept_delete_cache_tree. "
+        "Archived trees still serve hits, but writes, eviction, reset and freeze return 409 tree_archived, and they cannot be a fork parent or promote target. List them with include_archived=true. Idempotent, not billed, audit-logged. "
+        "Errors: 409 cannot_archive_main, 404 tree_missing. "
+    ),
+    'prewarm_cache': (
+        "Refresh an about-to-expire Anthropic prompt-cache breakpoint for a session with a one-token call, so the next real turn reads the cache instead of paying a fresh cache write. "
+        "Use it from an idle timer when a long Claude conversation is about to sit past the cache TTL. Not for the gateway's own exact-replay cache (it never touches it): use metrecept_create_chat_completion. Not for OpenAI or other vendors, whose prompt caching is automatic. "
+        "Sends your transcript and your upstream key exactly like a chat call; nothing is stored. Unbilled by the gateway (returns billed:false, billed_usd 0; the vendor still charges its own tokens) and audit-logged. "
+        "Errors: 400 prewarm_unsupported_model for non-claude models, 400 cache_autopilot_disabled when the gateway has cache autopilot off, 401/402 for a missing upstream key. "
+    ),
+    'mint_receipt': (
+        "Mint one fresh signed Ed25519 receipt (compact JWS) of a chosen kind by making the smallest real gateway call that produces it, and return the receipt with its kid, iat and a verify_url. "
+        "Use it to show or test receipt verification end to end, or to attach a real receipt to a demo or bug report. Not for a run you already made: use metrecept_get_session_receipt. Not for a public savings page: use metrecept_publish_savings_receipt. "
+        "Each kind makes real calls billed as normal (cache_miss, finops, cache_bypass, web_fetch and api_call are metered; cache_hit bills one miss then a hit). Anyone can check verify_url in a browser against the public key directory. "
+        "Errors come back as JSON {\"error\", ...}: no_api_service when kind api_call has no registered service, no_receipt when none of that kind came back. "
+    ),
+})
+for _short in ('freeze_cache_tree', 'archive_cache_tree', 'prewarm_cache', 'mint_receipt'):
+    _TOOL_DESCRIPTIONS[_short] += _AUTH
+
+
+# MCP has no grouping primitive in the spec (SEP-2084 "Primitive Grouping" was
+# not accepted), so tools are grouped by the METRECEPT_TOOLSETS env: a comma
+# list of core, cache, receipts (default: all). Each tool carries its group in
+# _meta["io.metrecept/toolset"] and as a prefix on its display title.
+TOOLSETS: dict[str, tuple[str, ...]] = {
+    "cache": (
+        "list_cache_trees", "list_cache_entries", "manage_cache_tree",
+        "evict_cache_entry", "delete_cache_tree", "freeze_cache_tree",
+        "archive_cache_tree", "prewarm_cache",
+    ),
+    "receipts": ("mint_receipt", "get_session_receipt", "publish_savings_receipt"),
+}
+_TOOLSET_TITLES = {"core": "Core", "cache": "Cache", "receipts": "Receipts"}
+TOOLSET_META_KEY = "io.metrecept/toolset"
+
+
+def toolset_of(tool_name: str) -> str:
+    short = tool_name.removeprefix("metrecept_")
+    for group, names in TOOLSETS.items():
+        if short in names:
+            return group
+    return "core"
+
+
+def enabled_toolsets(raw: Optional[str] = None) -> set[str]:
+    if raw is None:
+        raw = os.environ.get("METRECEPT_TOOLSETS", "")
+    picked = {p.strip().lower() for p in raw.split(",") if p.strip()}
+    if not picked or "all" in picked:
+        return set(_TOOLSET_TITLES)
+    unknown = picked - set(_TOOLSET_TITLES)
+    if unknown:
+        raise SystemExit(
+            f"METRECEPT_TOOLSETS: unknown toolset(s) {sorted(unknown)}; choose from core, cache, receipts, all"
+        )
+    return picked
+
+
+def _apply_toolsets(raw: Optional[str] = None) -> None:
+    enabled = enabled_toolsets(raw)
+    for tool in list(mcp._tool_manager.list_tools()):
+        group = toolset_of(tool.name)
+        if group not in enabled:
+            mcp.remove_tool(tool.name)
+            continue
+        label = tool.name.removeprefix("metrecept_").replace("_", " ").capitalize()
+        label = re.sub(r"\bapi\b", "API", label, flags=re.I)
+        tool.title = f"{_TOOLSET_TITLES[group]}: {label}"
+        tool.meta = {**(tool.meta or {}), TOOLSET_META_KEY: group}
 
 
 def _register_tools() -> None:
@@ -673,6 +936,7 @@ def _register_tools() -> None:
 
 
 _register_tools()
+_apply_toolsets()
 
 
 def _env_flag(name: str, default: bool) -> bool:
