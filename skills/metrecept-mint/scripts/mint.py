@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mint a fresh signed Metrecept receipt and verify it locally.
 
-Usage: mint.py <kind> [label]   kinds: cache_miss cache_hit cache_bypass finops api_call session custody statement carve
+Usage: mint.py <kind> [label]   kinds: cache_miss cache_hit cache_bypass finops api_call session custody statement carve savings web_fetch
 Env: OHM_API_KEY (required), OHM_BASE_URL (default https://api.metrecept.co.uk/v1)
 """
 import base64, hashlib, json, os, re, sys, time, urllib.error, urllib.request
@@ -24,6 +24,8 @@ KINDS = {
     'custody': 'one "access" custody record for a placeholder subject (POST /v1/custody)',
     'statement': "this month's ledger statement (GET /v1/org/ledger/statement)",
     'carve': 'carve hop over the label text (POST /v1/carve, disperse off)',
+    'savings': 'savings attestation for your org (POST /v1/savings/receipt)',
+    'web_fetch': 'chat call with fetch_web_context over https://example.com (X-Metrecept-Fetch-Receipt)',
 }
 HEADERS = ('X-Metrecept-Receipt', 'X-Metrecept-Finops-Receipt', 'X-Metrecept-Fetch-Receipt')
 JWS_RE = re.compile(r'eyJ[\w-]+\.eyJ[\w-]+\.[\w-]+')
@@ -71,6 +73,11 @@ def mint_candidates(kind, base, key, label):
         return req(base, key, '/v1/org/ledger/statement?month=' + time.strftime('%Y-%m', time.gmtime()), method='GET')[1]
     if kind == 'carve':
         return req(base, key, '/v1/carve', {"ingest": tag, "disperse": False})[1]
+    if kind == 'savings':
+        return req(base, key, '/v1/savings/receipt', {})[1]
+    if kind == 'web_fetch':
+        return chat(base, key, tag, fetch_web_context=True, web_urls=['https://example.com/'],
+                    web_purpose='public_web_retrieval')
     if kind == 'api_call':
         svcs, _ = req(base, key, '/v1/api_services', method='GET')
         svcs = (svcs or {}).get('services') or []

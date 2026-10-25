@@ -2,7 +2,7 @@
 name: metrecept-mint
 description: >
   Mint a fresh signed Metrecept receipt on demand (cache_miss, cache_hit,
-  cache_bypass, finops, api_call, session, custody, statement, carve) and verify its Ed25519 signature locally against the live key
+  cache_bypass, finops, api_call, session, custody, statement, carve, savings, web_fetch) and verify its Ed25519 signature locally against the live key
   directory. Use to prove receipts work, grab a verify link, or demo
   independent checking — Metrecept, receipts, JWS, verify.
 ---
@@ -28,10 +28,11 @@ python3 skills/metrecept-mint/scripts/mint.py <kind> [label]
 | `custody` | one `access` custody record for the placeholder subject `metrecept-mint` (`POST /v1/custody`); it is appended to your custody chain |
 | `statement` | this UTC month's ledger statement (`GET /v1/org/ledger/statement`); needs an org-bound key |
 | `carve` | a carve hop over the label text (`POST /v1/carve`, disperse off) |
+| `savings` | a savings attestation for your org (`POST /v1/savings/receipt`, body `{}`); estimate-only, no meter event |
+| `web_fetch` | one `mock` chat call with `fetch_web_context` over `https://example.com/`; receipt from `X-Metrecept-Fetch-Receipt`; the fetch is metered |
 
-The gateway also defines `web_fetch`, `disperse` and `savings`. They are not
-offered here because the hosted gateway did not return a signed receipt of
-those kinds when tested.
+The gateway also defines `disperse`. It is not offered here because the
+hosted gateway did not return a signed receipt of that kind when tested.
 
 Each call is metered like any other gateway call.
 
