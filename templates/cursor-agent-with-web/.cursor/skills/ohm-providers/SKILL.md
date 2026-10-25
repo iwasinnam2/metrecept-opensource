@@ -1,8 +1,8 @@
 ---
 name: ohm-providers
 description: >
-  withOhm upstream provider and failover status via MCP ohm_providers. Use when
-  a model call fails, routing looks off, or you want pipe health — withOhm,
+  Metrecept upstream provider and failover status via MCP ohm_providers. Use when
+  a model call fails, routing looks off, or you want pipe health — Metrecept,
   ohm, providers, failover, status.
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: ohm-fetch-web
 description: >
-  Compliant fetch for agents via withOhm MCP ohm_fetch_web (markdown or JSON).
+  Compliant fetch for agents via Metrecept MCP ohm_fetch_web (markdown or JSON).
   Use when the agent needs public URL / docs context without hand-browsing.
 ---
 

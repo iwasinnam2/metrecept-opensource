@@ -1,9 +1,9 @@
 ---
 name: ohm-models
 description: >
-  List model ids the withOhm pipe routes to via MCP ohm_models (BYOK upstreams
+  List model ids the Metrecept pipe routes to via MCP ohm_models (BYOK upstreams
   included). Use when picking a model for ohm_chat or checking what the pipe
-  can reach — withOhm, ohm, models, routing.
+  can reach — Metrecept, ohm, models, routing.
 ---
 
 # Ohm models

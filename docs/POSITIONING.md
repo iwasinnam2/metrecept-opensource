@@ -1,6 +1,6 @@
 # Why this shape
 
-**withOhm is the metered pipe on wasted, repeated inference.** For enterprises the same pipe is a **chaos governor** over shadow AI spend across a multi-vendor stack.
+**Metrecept is the metered pipe on wasted, repeated inference.** For enterprises the same pipe is a **chaos governor** over shadow AI spend across a multi-vendor stack.
 
 ## The inefficiency
 
@@ -8,15 +8,15 @@ Agent products scale context across consecutive turns: tool results, retrieved f
 
 Provider-native prompt caching (Anthropic `cache_control`, OpenAI automatic caching) exists to fix exactly this — but only if a breakpoint lands on the right block, before the TTL expires. Many clients place it wrong or not at all.
 
-## What withOhm does
+## What Metrecept does
 
 | Layer | Role |
 |-------|------|
 | Labs | Generation + model billing (BYOK or managed pool) |
 | Any client | Cockpit (Cursor, custom apps, MCP) |
-| **withOhm** | Metered pipe + governance: replay, compliant ingest, ledger |
+| **Metrecept** | Metered pipe + governance: replay, compliant ingest, ledger |
 
-withOhm does not sell bigger context windows or wholesale tokens. It rents plumbing that makes context scaling economically survivable, and makes enterprise AI spend governable.
+Metrecept does not sell bigger context windows or wholesale tokens. It rents plumbing that makes context scaling economically survivable, and makes enterprise AI spend governable.
 
 ## Promise
 
@@ -26,9 +26,9 @@ withOhm does not sell bigger context windows or wholesale tokens. It rents plumb
 
 Different jobs — not a strict superset of any one category:
 
-- **Provider-native prompt caching** discounts repeated *input prefix* tokens on a continuation. It never replays a full response, does not work cross-provider, and does nothing for web fetch. Many clients place the cache breakpoint wrong or not at all, so they don't reliably get that discount. withOhm's exact-replay cache skips the call entirely on a byte-identical repeat.
-- **Gateway / routing proxies** are routing layers first; caching bolted on top is typically best-effort in that category and not always billing-grade. withOhm's cache is billing-grade: cross-language (Python/Rust) key parity, a signed receipt per hit.
-- **Observability platforms** instrument and log calls; they don't, by default, remove the call. withOhm's replay removes the call itself on an exact repeat.
+- **Provider-native prompt caching** discounts repeated *input prefix* tokens on a continuation. It never replays a full response, does not work cross-provider, and does nothing for web fetch. Many clients place the cache breakpoint wrong or not at all, so they don't reliably get that discount. Metrecept's exact-replay cache skips the call entirely on a byte-identical repeat.
+- **Gateway / routing proxies** are routing layers first; caching bolted on top is typically best-effort in that category and not always billing-grade. Metrecept's cache is billing-grade: cross-language (Python/Rust) key parity, a signed receipt per hit.
+- **Observability platforms** instrument and log calls; they don't, by default, remove the call. Metrecept's replay removes the call itself on an exact repeat.
 
 If routing or logging is genuinely all a team needs, one of the above is the right tool. The bet here is specifically metered, auditable, cross-provider exact-replay plus compliant fetch, in one pipe.
 

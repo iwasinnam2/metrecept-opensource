@@ -1,9 +1,9 @@
 ---
 name: ohm-policy
 description: >
-  withOhm compliance policy via MCP ohm_policy (allowed web-fetch purposes and
+  Metrecept compliance policy via MCP ohm_policy (allowed web-fetch purposes and
   limits). Use before a fetch to confirm the purpose is permitted, or when a
-  fetch is rejected — withOhm, ohm, policy, compliance, purposes.
+  fetch is rejected — Metrecept, ohm, policy, compliance, purposes.
 ---
 
 # Ohm policy

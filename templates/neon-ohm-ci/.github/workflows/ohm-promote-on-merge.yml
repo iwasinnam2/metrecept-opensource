@@ -1,4 +1,4 @@
-# Neon + withOhm — Promote tip into main on merge
+# Neon + Metrecept — Promote tip into main on merge
 # Copy to your app as .github/workflows/ohm-promote-on-merge.yml
 #
 # Secrets: OHM_API_KEY

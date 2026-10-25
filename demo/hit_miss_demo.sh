@@ -37,7 +37,7 @@ receipt=$(echo "$resp2" | grep -i "^x-ohm-receipt:" | sed 's/^[Xx]-[Oo]hm-[Rr]ec
 
 if [ -n "$receipt" ]; then
   echo
-  echo "== Verifying the signed receipt (zero withOhm code) =="
+  echo "== Verifying the signed receipt (zero Metrecept code) =="
   python3 "$(dirname "$0")/verify_receipt.py" "$receipt" --base "$BASE_URL"
 else
   echo "(no X-Ohm-Receipt header on this response — receipts may be disabled for this tenant)"

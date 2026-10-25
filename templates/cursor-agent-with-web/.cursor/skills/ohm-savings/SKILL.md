@@ -1,9 +1,9 @@
 ---
 name: ohm-savings
 description: >
-  withOhm cache savings snapshot via MCP ohm_savings (dual ledger: provider
+  Metrecept cache savings snapshot via MCP ohm_savings (dual ledger: provider
   avoided, pipe rent, ROI). Use when checking how much the prompt cache is
-  saving — withOhm, ohm, savings, cache.
+  saving — Metrecept, ohm, savings, cache.
 ---
 
 # Ohm savings

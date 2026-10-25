@@ -1,9 +1,9 @@
 ---
 name: ohm-receipt
 description: >
-  Mint a public withOhm savings receipt via MCP ohm_receipt (shareable /r/…
+  Mint a public Metrecept savings receipt via MCP ohm_receipt (shareable /r/…
   URL, estimate_only). Use when proving cache savings publicly — receipt,
-  bounty, share, withOhm, ohm.
+  bounty, share, Metrecept, ohm.
 ---
 
 # Ohm receipt

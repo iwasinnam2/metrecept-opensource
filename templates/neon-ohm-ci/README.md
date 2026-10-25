@@ -1,6 +1,6 @@
 # neon-ohm-ci
 
-Drop-in CI compose: **Neon branches database state** (and AI Gateway per branch in beta); **withOhm branches exact-replay inventory**. Same PR slug. Upgrade alongside Gateway — not instead of it.
+Drop-in CI compose: **Neon branches database state** (and AI Gateway per branch in beta); **Metrecept branches exact-replay inventory**. Same PR slug. Upgrade alongside Gateway — not instead of it.
 
 Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache trees](https://www.withohm.dev/docs/cache-trees) · [CI preview](https://www.withohm.dev/use-cases/ci-preview)
 
@@ -9,7 +9,7 @@ Docs: [Compose with Neon](https://www.withohm.dev/docs/compose-neon) · [Cache t
 | Product | Branches | Noun |
 |---------|----------|------|
 | Neon | Postgres state (+ Gateway endpoint per branch in beta) | Preview connection / branch |
-| withOhm | Exact-replay inventory | `X-Ohm-Cache-Tree` |
+| Metrecept | Exact-replay inventory | `X-Ohm-Cache-Tree` |
 
 ## Quick start
 
@@ -68,4 +68,4 @@ curl -sS -X POST "$OHM_API_URL/v1/cache/trees/${OHM_TIP}/promote" \
 | `.github/workflows/ohm-promote-on-merge.yml` | Merge: promote tip → `main` |
 | `scripts/ohm_tree.sh` | `fork` / `promote` / `echo-tree` helpers |
 
-Powered by [withOhm](https://www.withohm.dev) — pipe rent, not token wholesale. BYOK.
+Powered by [Metrecept](https://www.withohm.dev) — pipe rent, not token wholesale. BYOK.

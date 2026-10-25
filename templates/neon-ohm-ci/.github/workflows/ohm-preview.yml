@@ -1,4 +1,4 @@
-# Neon + withOhm — PR preview tip
+# Neon + Metrecept — PR preview tip
 # Copy to your app as .github/workflows/ohm-preview.yml
 #
 # Secrets: OHM_API_KEY (required), OHM_UPSTREAM_KEY (optional BYOK)

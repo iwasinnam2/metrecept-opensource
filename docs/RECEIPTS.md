@@ -14,7 +14,7 @@ Payload fields:
 | `iat`, `region`, `plane` | When and where the hit was served (`python` / `rust-edge`) |
 | `model` | Requested model id |
 | `tokens_replayed` | Upstream tokens that were **not** re-bought |
-| `pipe_usd` | What withOhm billed for the hit (the meter event, 6 dp) |
+| `pipe_usd` | What Metrecept billed for the hit (the meter event, 6 dp) |
 | `request_sha256` | The exact-replay identity — digest of the canonicalized request |
 | `tenant_sha256` | Truncated tenant fingerprint (self-verifiable, not identifying) |
 | `admit` | `allow` on a served HIT |
@@ -30,11 +30,11 @@ curl -si https://api.metrecept.co.uk/v1/chat/completions \
   -d '{"model":"mock","messages":[{"role":"user","content":"receipt demo"}]}' \
   | grep -i x-ohm-receipt
 
-# 2. Verify it against the public key directory — no withOhm code required
+# 2. Verify it against the public key directory — no Metrecept code required
 python demo/verify_receipt.py "<X-Ohm-Receipt value>" --base https://api.metrecept.co.uk
 ```
 
-The verifier ([`demo/verify_receipt.py`](../demo/verify_receipt.py)) fetches `/.well-known/http-message-signatures-directory`, resolves the signing key by the JWS `kid` (RFC 7638 JWK thumbprint), and checks the Ed25519 signature itself using only the `cryptography` package — it imports nothing from withOhm. A forged or altered receipt fails to verify; so does a receipt signed by a key that isn't in the published directory.
+The verifier ([`demo/verify_receipt.py`](../demo/verify_receipt.py)) fetches `/.well-known/http-message-signatures-directory`, resolves the signing key by the JWS `kid` (RFC 7638 JWK thumbprint), and checks the Ed25519 signature itself using only the `cryptography` package — it imports nothing from Metrecept. A forged or altered receipt fails to verify; so does a receipt signed by a key that isn't in the published directory.
 
 ## Co-signed receipts: the caller's half
 
@@ -59,7 +59,7 @@ python demo/attest_demo.py check --receipt demo/fixtures/cosigned/receipt.jws \
 
 ## Operator-side, for context
 
-The receipt signing key is intentionally distinct from withOhm's separate Web Bot Auth signing key (used for compliant crawl identification, see [COMPLIANCE.md](COMPLIANCE.md)), so either can rotate independently; both public keys are served from the same well-known directory. The private key material never leaves the control plane — the edge only ever receives an already-minted receipt to attach to a response.
+The receipt signing key is intentionally distinct from Metrecept's separate Web Bot Auth signing key (used for compliant crawl identification, see [COMPLIANCE.md](COMPLIANCE.md)), so either can rotate independently; both public keys are served from the same well-known directory. The private key material never leaves the control plane — the edge only ever receives an already-minted receipt to attach to a response.
 
 ## Why this exists
 
