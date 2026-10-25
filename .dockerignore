@@ -1,0 +1,4 @@
+packages/ohm-mcp/build/
+packages/ohm-mcp/src/*.egg-info/
+**/__pycache__/
+.git
