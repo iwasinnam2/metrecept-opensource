@@ -4,8 +4,8 @@ alwaysApply: false
 ---
 
 When the user wants receipted LLM calls or public URL fetch, use the
-Metrecept MCP tools (`metrecept_chat`, `metrecept_fetch_web`,
-`metrecept_session`).
+Metrecept MCP tools (`metrecept_create_chat_completion`, `metrecept_fetch_web_pages`,
+`metrecept_get_session_receipt`).
 
 Identical canonical requests HIT (exact-match Redis replay). Unique calls
 MISS. Prefix overlap is labelled and is not a HIT. Do not claim semantic

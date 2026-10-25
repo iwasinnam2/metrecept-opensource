@@ -38,7 +38,19 @@ def main() -> int:
         tools = r.get("result", {}).get("tools", [])
         print(f"tools/list returned {len(tools)} tools")
         names = sorted(t["name"] for t in tools)
-        assert len(names) == 14, names
+        expected = sorted([
+            "metrecept_create_chat_completion", "metrecept_fetch_web_pages",
+            "metrecept_call_api", "metrecept_register_api_service",
+            "metrecept_list_api_services", "metrecept_unregister_api_service",
+            "metrecept_get_session_receipt", "metrecept_get_usage",
+            "metrecept_get_usage_history", "metrecept_get_savings",
+            "metrecept_publish_savings_receipt", "metrecept_list_models",
+            "metrecept_list_providers", "metrecept_get_fetch_policy",
+            "metrecept_list_cache_trees", "metrecept_list_cache_entries",
+            "metrecept_evict_cache_entry", "metrecept_delete_cache_tree",
+        ])
+        assert len(names) == 18, names
+        assert names == expected, names
         assert all(n.startswith("metrecept_") for n in names), names
         return 0
     finally:

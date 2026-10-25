@@ -1,18 +1,17 @@
 ---
 name: metrecept-fetch-web
 description: >
-  Compliant public URL scrape via Metrecept MCP metrecept_fetch_web
+  Compliant public URL scrape via Metrecept MCP metrecept_fetch_web_pages
   (markdown or JSON). Use when the agent needs public URL / docs context
   without hand-browsing — Metrecept, web-fetch, compliance.
 ---
 
 # Metrecept fetch web
 
-Call `metrecept_fetch_web` for compliant public-page retrieval. `metrecept_fetch_web`
-is the same handler.
+Call `metrecept_fetch_web_pages` for compliant public-page retrieval.
 
 ```text
-metrecept_fetch_web(
+metrecept_fetch_web_pages(
   urls=["https://example.com"],
   purpose="public_web_retrieval",
   query="",

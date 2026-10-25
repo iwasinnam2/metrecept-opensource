@@ -1,20 +1,20 @@
 ---
 name: metrecept-receipt
 description: >
-  Mint a public Metrecept savings receipt via MCP metrecept_receipt (shareable /r/…
+  Mint a public Metrecept savings receipt via MCP metrecept_publish_savings_receipt (shareable /r/…
   URL, estimate_only). Use when proving cache savings publicly — receipt,
   bounty, share, Metrecept.
 ---
 
 # Metrecept receipt
 
-Call the Metrecept MCP tool `metrecept_receipt` to mint a public savings receipt from
+Call the Metrecept MCP tool `metrecept_publish_savings_receipt` to mint a public savings receipt from
 the tenant's dual savings ledger.
 
 ## Call
 
 ```text
-metrecept_receipt(display_name="")
+metrecept_publish_savings_receipt(display_name="")
 ```
 
 Optional `display_name` labels the public page. Returns a `/r/…` URL (and

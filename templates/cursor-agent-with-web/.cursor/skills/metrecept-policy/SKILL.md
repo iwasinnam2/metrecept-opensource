@@ -1,19 +1,19 @@
 ---
 name: metrecept-policy
 description: >
-  Metrecept compliance policy via MCP metrecept_policy (allowed web-fetch purposes and
+  Metrecept compliance policy via MCP metrecept_get_fetch_policy (allowed web-fetch purposes and
   limits). Use before a fetch to confirm the purpose is permitted, or when a
   fetch is rejected — Metrecept, policy, compliance, purposes.
 ---
 
 # Metrecept policy
 
-Call the Metrecept MCP tool `metrecept_policy` for the tenant's compliance policy.
+Call the Metrecept MCP tool `metrecept_get_fetch_policy` for the tenant's compliance policy.
 
 ## Call
 
 ```text
-metrecept_policy()
+metrecept_get_fetch_policy()
 ```
 
 Returns the allowed web-fetch purposes (`public_web_retrieval`,

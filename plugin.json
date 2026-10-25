@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "metrecept",
   "version": "1.0.0",
-  "description": "Metrecept: proof, not trust. A signed Ed25519 receipt (JWS) for every call an autonomous AI agent makes, independently verifiable against published keys. 14 MCP tools, hosted or stdio (metrecept-mcp). API key required.",
+  "description": "Metrecept: proof, not trust. A signed Ed25519 receipt (JWS) for every call an autonomous AI agent makes, independently verifiable against published keys. 18 MCP tools, hosted or stdio (metrecept-mcp). API key required.",
   "author": {
     "name": "Metrecept",
     "email": "partners@metrecept.co.uk",

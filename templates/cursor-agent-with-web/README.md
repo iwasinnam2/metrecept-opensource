@@ -27,13 +27,13 @@ Add Metrecept MCP from https://metrecept.co.uk/i
 
 | Path | Role |
 |------|------|
-| `.cursor/mcp.json.example` | Metrecept MCP (`metrecept_fetch_web`, `metrecept_chat`, `metrecept_usage`) |
+| `.cursor/mcp.json.example` | Metrecept MCP (`metrecept_fetch_web_pages`, `metrecept_create_chat_completion`, `metrecept_get_usage`) |
 | `.cursor/skills/metrecept-fetch-web/SKILL.md` | Skill: compliant fetch for agents |
 | `AGENTS.md` | One-screen agent instructions |
 
 ## Show your savings
 
-Once cache hits accrue, ask the agent for `metrecept_receipt` — it mints a public
+Once cache hits accrue, ask the agent for `metrecept_publish_savings_receipt` — it mints a public
 savings receipt and returns badge markdown like:
 
 ```markdown

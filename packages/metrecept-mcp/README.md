@@ -44,25 +44,29 @@ Get a key from the $0 Intermediate seat at
 
 ## Tools
 
-14 tools. All require a Metrecept API key and are scoped to
+18 tools. All require a Metrecept API key and are scoped to
 that key's tenant.
 
 | Tool | What it does |
 |---|---|
-| `metrecept_chat` | One chat call through the gateway (OpenAI-compatible); metered and receipted; exact repeats served from cache; optional web context. |
-| `metrecept_fetch_web` | Compliant public-web fetch (purpose-bound, robots-aware, PII-redacted); metered and receipted. |
-| `metrecept_api_call` | Receipted, metered GET to a registered third-party API; the vendor key is forwarded, never stored. |
-| `metrecept_register_api_service` | Register or update a third-party API (base URL, path prefix, auth header name) for `metrecept_api_call`. |
-| `metrecept_api_services` | List registered third-party API services. |
-| `metrecept_session` | One signed receipt for every call tagged with a session id, plus a `verify_url` anyone can open. |
-| `metrecept_usage` | Current usage meters, plan and billing status. |
-| `metrecept_savings` | Estimated upstream spend avoided by cache hits versus what was billed. |
-| `metrecept_receipt` | Publish a public, signed savings snapshot page and badge (90 days). |
-| `metrecept_models` | Model ids the gateway can route to (BYOK). |
-| `metrecept_providers` | Which upstream vendors are configured and ready. |
-| `metrecept_policy` | Web-fetch compliance policy: allowed purposes and limits. |
-| `metrecept_cache_trees` | List the tenant's named cache namespaces. |
-| `metrecept_cache_inventory` | Metadata of cached entries in one namespace (never content). |
+| `metrecept_create_chat_completion` | One chat call through the gateway (OpenAI-compatible); metered and receipted; exact repeats served from cache; optional web context. |
+| `metrecept_fetch_web_pages` | Compliant public-web fetch (purpose-bound, robots-aware, PII-redacted); metered and receipted. |
+| `metrecept_call_api` | Receipted, metered GET to a registered third-party API; the vendor key is forwarded, never stored. |
+| `metrecept_register_api_service` | Register or update a third-party API (base URL, path prefix, auth header name) for `metrecept_call_api`. |
+| `metrecept_list_api_services` | List registered third-party API services. |
+| `metrecept_unregister_api_service` | Unregister a third-party API service (destructive; not billed). |
+| `metrecept_get_session_receipt` | One signed receipt for every call tagged with a session id, plus a `verify_url` anyone can open. |
+| `metrecept_get_usage` | Current usage meters, plan and billing status. |
+| `metrecept_get_usage_history` | Per-day usage meter series over the last 1-90 days (default 30). |
+| `metrecept_get_savings` | Estimated upstream spend avoided by cache hits versus what was billed. |
+| `metrecept_publish_savings_receipt` | Publish a public, signed savings snapshot page and badge (90 days). |
+| `metrecept_list_models` | Model ids the gateway can route to (BYOK). |
+| `metrecept_list_providers` | Which upstream vendors are configured and ready. |
+| `metrecept_get_fetch_policy` | Web-fetch compliance policy: allowed purposes and limits. |
+| `metrecept_list_cache_trees` | List the tenant's named cache namespaces. |
+| `metrecept_list_cache_entries` | Metadata of cached entries in one namespace (never content). |
+| `metrecept_evict_cache_entry` | Evict one cached entry by request digest (destructive; not billed). |
+| `metrecept_delete_cache_tree` | Delete a non-main cache namespace (refuses `main`; destructive; not billed). |
 
 ## Remote (stateless streamable HTTP)
 

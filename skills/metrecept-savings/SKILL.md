@@ -1,17 +1,17 @@
 ---
 name: metrecept-savings
 description: >
-  Metrecept cache savings snapshot via MCP metrecept_savings (dual ledger:
+  Metrecept cache savings snapshot via MCP metrecept_get_savings (dual ledger:
   provider avoided, metered charges, ROI, estimate_only).
 ---
 
 # Metrecept savings
 
 ```text
-metrecept_savings()
+metrecept_get_savings()
 ```
 
 Returns estimated provider $ avoided, metered charges, and roi_ratio — all
-`estimate_only`. `metrecept_savings` is the same handler.
+`estimate_only`.
 
 Requires Metrecept MCP (`METRECEPT_API_KEY`, `METRECEPT_BASE_URL`).

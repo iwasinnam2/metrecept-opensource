@@ -1,19 +1,19 @@
 ---
 name: metrecept-savings
 description: >
-  Metrecept cache savings snapshot via MCP metrecept_savings (dual ledger: provider
+  Metrecept cache savings snapshot via MCP metrecept_get_savings (dual ledger: provider
   avoided, metered charges, ROI). Use when checking how much the prompt cache is
   saving — Metrecept, savings, cache.
 ---
 
 # Metrecept savings
 
-Call the Metrecept MCP tool `metrecept_savings` for a cache savings snapshot.
+Call the Metrecept MCP tool `metrecept_get_savings` for a cache savings snapshot.
 
 ## Call
 
 ```text
-metrecept_savings()
+metrecept_get_savings()
 ```
 
 Returns the dual savings ledger from `GET /v1/savings`: estimated provider
