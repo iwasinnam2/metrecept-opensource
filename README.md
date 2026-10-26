@@ -1,5 +1,3 @@
-> **This repository is archived.** It has moved to **[github.com/iwasinnam2/metrecept-opensource](https://github.com/iwasinnam2/metrecept-opensource)**. Please use that repository for issues, releases, and source.
-
 # Metrecept — open client tools
 
 **Proof, not trust.** Metrecept issues a signed Ed25519 receipt (compact JWS) for every call an autonomous AI agent makes through it — model completions, compliant public-web fetches, and calls to third-party business APIs — and can roll a whole agent run into one signed session receipt. Anyone can verify a receipt against Metrecept's published public keys, with no account and no Metrecept code.
@@ -9,8 +7,6 @@ Metrecept is a **recorder, not a governor**: it does not stop a bad call, and a 
 **Site:** https://metrecept.co.uk · **API:** https://api.metrecept.co.uk/v1 · **Docs:** https://metrecept.co.uk/docs
 
 ---
-
-> **Ohm is a sibling brand name of Metrecept; some identifiers keep the ohm prefix for compatibility.** These are: the `ohm-mcp` and `ohm-mcp-http` commands and the `ohm_mcp` Python import name (aliases of `metrecept-mcp`, `metrecept-mcp-http` and `metrecept_mcp`); `OHM_*` environment variables (`OHM_API_KEY`, `OHM_BASE_URL`, `OHM_UPSTREAM_KEY`, `OHM_SERVICE_KEY`, `OHM_MCP_*`), read by the MCP server only when the matching `METRECEPT_*` variable is unset; the `api.withohm.dev` and `mcp.withohm.dev` hostnames in the MCP server's host allowlist; and the `X-Ohm-*` headers the hosted gateway still accepts and emits next to their `X-Metrecept-*` equivalents. This client sends only `X-Metrecept-*` headers. Use the Metrecept names in new setups.
 
 ## What's in this repo
 
