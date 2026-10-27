@@ -35,20 +35,16 @@ except ImportError as exc:  # pragma: no cover
         "(or, in the monorepo: pip install 'at-utility[mcp]')"
     ) from exc
 
-mcp = MCPServer("metrecept")
+mcp = MCPServer("metrecept", version="0.7.0")
 
 DEFAULT_BASE = "https://api.metrecept.co.uk/v1"
-# Public API hosts. api.withohm.dev is the compatibility hostname of the
-# sibling brand Ohm, kept so existing configurations get the same check.
-_PUBLIC_API_HOSTS = ("api.metrecept.co.uk", "api.withohm.dev")
+_PUBLIC_API_HOSTS = ("api.metrecept.co.uk",)
 UPSTREAM_HEADER = "X-Metrecept-Upstream-Key"
 
 
 def _env(name: str, default: str = "") -> str:
-    """Read METRECEPT_<name>; fall back to the compatibility OHM_<name> variable."""
+    """Read METRECEPT_<name>."""
     v = os.environ.get(f"METRECEPT_{name}")
-    if v is None:
-        v = os.environ.get("OHM_" + name)
     return default if v is None else v
 
 
@@ -946,10 +942,9 @@ def _env_flag(name: str, default: bool) -> bool:
     return raw.strip().lower() in ("1", "true", "yes", "on")
 
 
-# *.withohm.dev: compatibility hostnames of the sibling brand Ohm.
 DEFAULT_ALLOWED_HOSTS = (
-    "mcp.withohm.dev,mcp.metrecept.co.uk,"
-    "api.withohm.dev,api.metrecept.co.uk,"
+    "mcp.metrecept.co.uk,"
+    "api.metrecept.co.uk,"
     "gateway,localhost,127.0.0.1"
 )
 
